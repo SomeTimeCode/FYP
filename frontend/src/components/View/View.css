@@ -1,0 +1,25 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+#Header{
+    width: 100vw;
+    min-height: 10vh;
+}
+
+#Body{
+    display: flex;
+    flex-direction: row;
+}
+
+
+#SideBar{
+    min-width: 20vw;
+    min-height: 90vh;
+}
+
+#Content{
+    min-width: 80vw;
+    min-height: 90vh;
+}
