@@ -5,6 +5,7 @@ const Admin = require('./models/adminModel')
 const Supervisor = require('./models/supervisorModel')
 const Student = require('./models/studentModel')
 const Group = require('./models/groupModel')
+const Topic = require('./models/topicModel')
 require('dotenv').config();
 
 const main = async() => {
@@ -21,6 +22,7 @@ const main = async() => {
     await Supervisor.createCollection();
     await Student.createCollection();
     await Group.createCollection();
+    await Topic.createCollection();
     //create default student account
     var password = await bcrypt.hash('Student', 10)
     var user = new User({

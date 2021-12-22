@@ -2,6 +2,9 @@ import React, { useState } from "react";
 
 const AuthContext = React.createContext({
     isLoggedIn: null,
+    adminLink: [],
+    studentLink: [],
+    supervisorLink: [],
     onLogin: () => {},
     onLogout: () => {},
 });
@@ -22,12 +25,19 @@ export const AuthContextProvider = (props) => {
         setIsLoggedIn({state: false, role: ""})
     };
 
+    const adminLink = [""]
+    const studentLink = [""]
+    const supervisorLink = ["", "/FYPTopics"]
+
     return (
         <AuthContext.Provider
             value={{
                 isLoggedIn: isLoggedIn,
                 onLogin: loginHandler,
                 onLogout: logoutHandler,
+                adminLink: adminLink,
+                studentLink: studentLink,
+                supervisorLink: supervisorLink,
             }}
         >
             {props.children}

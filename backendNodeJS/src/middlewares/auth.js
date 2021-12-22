@@ -38,8 +38,8 @@ const verifyAdmin = async (req, res, next) => {
 }
 
 const verifySupervisor = async (req, res, next) => {
-    var admin = await Admin.findOne({ user: req.decoded._id })
-    if(admin){
+    var supervisor = await Supervisor.findOne({ user: req.decoded._id })
+    if(supervisor){
         console.log('User is found in Supervisor')
         next()
     }else{

@@ -6,9 +6,9 @@ const Student = require('../models/studentModel');
 
 
 
-const checkToken = async (req, res, next) => {
+const checkToken = async (req, res) => {
     try{
-        var user = await User.findOne({ _id: req.decoded._id }).catch((err) => {next(err)})
+        var user = await User.findOne({ _id: req.decoded._id }).catch((err) => {throw err})
         if(user.role.toLowerCase() != req.params.role.toLowerCase()){
             console.log("Wrong token")
             res.status(400).json({message: "Wrong token or role"})
@@ -17,14 +17,14 @@ const checkToken = async (req, res, next) => {
             res.status(200).json({message: "OK"})
             return
         }
-    }catch{
-        console.log("Wrong token")
-        res.status(400).json({message: "Wrong token or role"})
+    }catch(err){
+        console.log("Fail to check token")
+        res.status(400).json({error: err, message: "Fail to check token"})
         return
     }
 }
 
-const login = async (req, res, next) => {
+const login = async (req, res) => {
     try{
         console.log(req.body)
         if(!(req.body.username && req.body.password)){
@@ -32,7 +32,7 @@ const login = async (req, res, next) => {
             return
         }
         var user = await User.findOne({ username: req.body.username }).catch((err) => {
-            next(err)
+            throw err
         })
         if(!user){
             console.log("Wrong username")
@@ -52,7 +52,9 @@ const login = async (req, res, next) => {
             }
         }
     }catch(err){
-        throw err
+        console.log("Fail to login")
+        res.status(400).json({error: err, message: "Fail to login"})
+        return
     }
 }
 

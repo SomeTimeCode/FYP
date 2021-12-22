@@ -6,13 +6,16 @@ function Header(props) {
 
     const ctx = useContext(AuthContext)
 
-    
-
 
     return (
         <div id='HeaderBase'>
-            Welcome back {props.role}
-            <button onClick={(e) => {ctx.onLogout()}}>test</button>
+            <div className="Left">
+                <h1>FYP Management System</h1>
+            </div>
+            <div className="Right">
+                {props.role}
+                <button onClick={(e) => {ctx.onLogout()}}>test</button>
+            </div>
         </div>
     )
 }

@@ -5,6 +5,9 @@ import View from "./components/View/View";
 import { AuthContextProvider } from "./context/AuthContext";
 import AdminIndex from "./pages/Admin/Index/AdminIndex";
 import Login from "./pages/Login/Login";
+import StudentIndex from "./pages/Student/Index/StudentIndex";
+import FYPTopics from "./pages/Supervisor/FYPTopics/FYPTopics";
+import SupervisorIndex from "./pages/Supervisor/Index/SupervisorIndex";
 
 function App() {
   return (
@@ -17,11 +20,12 @@ function App() {
               <Route path="" element={<View role={ "admin" } element={ <AdminIndex />}/>} />
               <Route path="test" element= {<div>Test</div>}/>
             </Route>
-            <Route element={<ProtectedRoute role={"student"}/>}>
-              <Route path="/student" element={<AdminIndex/>} />
+            <Route path="/student" element={<ProtectedRoute role={"student"}/>}>
+              <Route path="" element={<View role={ "student" } element={ <StudentIndex />}/>} />
             </Route>
-            <Route element={<ProtectedRoute role={"supervisor"}/>}>
-              <Route path="/supervisor" element={<AdminIndex/>} />
+            <Route path="/supervisor" element={<ProtectedRoute role={"supervisor"}/>}>
+              <Route path="" element={<View role={ "supervisor" } element={ <SupervisorIndex />}/>} />  
+              <Route path="FYPTopics" element={<View role={ "supervisor" } element={ <FYPTopics />}/>} />  
             </Route>
           </Routes>
         </BrowserRouter>
