@@ -18,7 +18,7 @@ function SideBar(props) {
     return (
         <div>
             {link.map((link) => {
-                return <Cards link={link} role={props.role}/>
+                return <Cards key={link} link={link} role={props.role}/>
             })}
         </div>
     )

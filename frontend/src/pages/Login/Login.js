@@ -49,33 +49,35 @@ function Login() {
 
     return (
         <>
-        <form onSubmit={formik.handleSubmit}>
-            <label htmlFor="username">username</label>
-            <input
-                id="username"
-                name="username"
-                type="text"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.username}
-            />
-            {formik.touched.username && formik.errors.username ? ( <div> {formik.errors.username} </div> ) : null}
+            <div id='LoginBase'>
+                <form onSubmit={formik.handleSubmit}>
+                    <label htmlFor="username">username</label>
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.username}
+                    />
+                    {formik.touched.username && formik.errors.username ? ( <div> {formik.errors.username} </div> ) : null}
 
-            <label htmlFor="password">password</label>
-            <input
-                id="password"
-                name="password"
-                type="password"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.password}
-            />
-            {formik.touched.password && formik.errors.password ? ( <div> {formik.errors.password} </div> ) : null}
-            <button type="submit">Submit</button>
-            <div>
-                {!correctLogin? <div className="warning"><p>Incorrect input Email/Password. Please try again.</p></div> : null}
+                    <label htmlFor="password">password</label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.password}
+                    />
+                    {formik.touched.password && formik.errors.password ? ( <div> {formik.errors.password} </div> ) : null}
+                    <button type="submit">Submit</button>
+                    <div>
+                        {!correctLogin? <div className="warning"><p>Incorrect input Email/Password. Please try again.</p></div> : null}
+                    </div>
+                </form>
             </div>
-        </form>
         </>
     );
 

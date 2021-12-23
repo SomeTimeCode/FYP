@@ -1,6 +1,57 @@
 const Topic = require('../models/topicModel')
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// FYP Topic controller
+// topic create/update/detele/view
+
+const viewTopic = async (req, res) => {
+    // new to chagne the logic
+    try{
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 5;
+        const skip = (page - 1) * limit
+        const total_topics = await Topic.countDocuments({}).catch((err) => {throw err})
+        const total_pages = Math.ceil(total_topics / limit)
+        if(page > total_pages){
+            res.status(404).json({message: "Out of pages"})
+            return
+        }
+        var topic_list = await Topic.find().sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
+        res.status(200).json(topic_list)
+        return
+    }catch(err){
+        console.log(err)
+        console.log("Error in viewing topics")
+        res.status(400).json({error: err, message: "Error in viewing topics"})
+        return
+    }
+}
+
 const createTopic = async (req, res) => {
     try{
         if(req.body.topic_name != null && req.body.short_description != null && req.body.number_group != null && req.body.genre != null && req.body.genre != []){
@@ -79,4 +130,4 @@ const deleteTopic = async (req, res) => {
     }
 }
 
-module.exports = { createTopic, updateTopic, deleteTopic }
+module.exports = { viewTopic, createTopic, updateTopic, deleteTopic }

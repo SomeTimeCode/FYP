@@ -8,6 +8,7 @@ router.get("/", (req, res) => {
 
 
 //topic management
+router.get("/topic/view", supervisorController.viewTopic)
 router.post("/topic/create", supervisorController.createTopic);
 router.post("/topic/update", supervisorController.updateTopic);
 router.post("/topic/delete", supervisorController.deleteTopic)
