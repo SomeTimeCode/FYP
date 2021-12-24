@@ -2,30 +2,6 @@ const Topic = require('../models/topicModel')
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // FYP Topic controller
 // topic create/update/detele/view
 
@@ -37,12 +13,15 @@ const viewTopic = async (req, res) => {
         const skip = (page - 1) * limit
         const total_topics = await Topic.countDocuments({}).catch((err) => {throw err})
         const total_pages = Math.ceil(total_topics / limit)
+        var last = false
         if(page > total_pages){
             res.status(404).json({message: "Out of pages"})
             return
+        }else if(page == total_pages){
+            last = true
         }
         var topic_list = await Topic.find().sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
-        res.status(200).json(topic_list)
+        res.status(200).json({topic_list: topic_list, last: last})
         return
     }catch(err){
         console.log(err)
@@ -56,6 +35,13 @@ const createTopic = async (req, res) => {
     try{
         if(req.body.topic_name != null && req.body.short_description != null && req.body.number_group != null && req.body.genre != null && req.body.genre != []){
             const detail_description = (req.body.detail_description == null ? req.body.short_description : req.body.detail_description )
+            // check topic name is exist or not
+            var topic = await Topic.findOne({topic_name: req.body.topic_name}).catch(err => {throw err})
+            if(topic){
+                console.log(topic)
+                res.status(400).json({message: "topic exist"})
+                return
+            }
             var newTopic = new Topic({
                 topic_name: req.body.topic_name,
                 short_description: req.body.short_description,
@@ -86,6 +72,12 @@ const updateTopic = async (req, res) => {
     try{
         if(req.body.topic_name != null && req.body.short_description != null && req.body.number_group != null && req.body.genre != null && req.body.genre != [] && req.body._id){
             const detail_description = (req.body.detail_description == null ? req.body.short_description : req.body.detail_description )
+            var topic = await Topic.findOne({topic_name: req.body.topic_name}).catch(err => {throw err})
+            if(topic){
+                console.log(topic)
+                res.status(400).json({message: "topic exist"})
+                return
+            }
             await Topic.updateOne({ _id: req.body._id }, {
                 topic_name: req.body.topic_name,
                 short_description: req.body.short_description,

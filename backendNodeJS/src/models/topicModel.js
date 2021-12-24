@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const topicSchema = new mongoose.Schema({
-    topic_name: {type: String, required: true},
+    topic_name: {type: String, required: true, unique: true},
     short_description: {type: String, required: true},
     detail_description: String,
     genre: {type: [String], enum: ["Web/Mobile Application", "AI", "BlockChains", "Fintech", "Game Development", "Others"]},

@@ -14,7 +14,7 @@ function Header(props) {
             </div>
             <div className="Right">
                 {props.role}
-                <button onClick={(e) => {ctx.onLogout()}}>test</button>
+                <button onClick={(e) => {ctx.onLogout()}}>Logout</button>
             </div>
         </div>
     )

@@ -14,7 +14,8 @@ function Card(props){
 
 
 
-function FYPTopics() {    
+function FYPTopics() {
+    const [lastPage, setLastPage] = useState(false)    
     const [page, setPage] = useState(1)
     const [topicList, setTopicList] = useState([])
     const [loading, setLoading] = useState(true)
@@ -25,22 +26,25 @@ function FYPTopics() {
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
             };
 
-            let answer = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/topic/view?page=${page}&limit=5`, requestOptions)
+            let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/topic/view?page=${page}&limit=5`, requestOptions)
             .then((response) => {
+                console.log('check')
                 if(response.status === 200){
                     return response.json()
                 }else{
                     return []
                 }
             }).then((data) => {
-                if(data !== []){
+                console.log(data)
+                if(data.length !== 0){
                     return data
                 }else{
-                    return []
+                    return {topic_list: [], last: true}
                 }
             })
-            console.log(answer)
-            setTopicList(answer)
+            console.log(response)
+            setLastPage(response.last)
+            setTopicList(response.topic_list)
             setLoading(false)
         }
         fetchData()
@@ -69,7 +73,7 @@ function FYPTopics() {
                     <div id='Controller'>
                         <button disabled={page === 1} onClick={(e) => {setPage((page => page - 1)); setLoading(true)}}>{'<'}</button>
                         <p>{page}</p>
-                        <button onClick={(e) => {setPage((page => page + 1)); setLoading(true)}}>{'>'}</button>
+                        <button disabled={lastPage} onClick={(e) => {setPage((page => page + 1)); setLoading(true)}}>{'>'}</button>
                     </div>
                 </>
             }
