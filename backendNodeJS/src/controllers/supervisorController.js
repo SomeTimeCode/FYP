@@ -8,8 +8,8 @@ const Topic = require('../models/topicModel')
 const viewTopic = async (req, res) => {
     // new to chagne the logic
     try{
-        const page = req.query.page || 1;
-        const limit = req.query.limit || 5;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit
         const total_topics = await Topic.countDocuments({}).catch((err) => {throw err})
         const total_pages = Math.ceil(total_topics / limit)
@@ -27,6 +27,27 @@ const viewTopic = async (req, res) => {
         console.log(err)
         console.log("Error in viewing topics")
         res.status(400).json({error: err, message: "Error in viewing topics"})
+        return
+    }
+}
+
+const viewSpecificTopic = async (req, res) => {
+    try{
+        console.log("here")
+        var topic = await Topic.findOne({_id: req.params.id}).catch((err) => {throw err})
+        if(topic){
+            var {__v, supervisor, group, ...rest} = topic._doc
+            console.log(rest)
+            res.status(200).json(rest)
+            return
+        }else{
+            res.status(404).json({message: "Specific topic does not found"})
+            return
+        }
+    }catch(err){
+        console.log(err)
+        console.log(`Error in viewing topic ${req.params.id}`)
+        res.status(400).json({error: err, message: "Error in viewing specific topic"})
         return
     }
 }
@@ -122,4 +143,4 @@ const deleteTopic = async (req, res) => {
     }
 }
 
-module.exports = { viewTopic, createTopic, updateTopic, deleteTopic }
+module.exports = { viewTopic, viewSpecificTopic, createTopic, updateTopic, deleteTopic }
