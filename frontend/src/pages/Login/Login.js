@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import { useNavigate } from "react-router-dom";
 import * as Yup from 'yup';
 import AuthContext from '../../context/AuthContext';
+import "./Login.css"
 
 function Login() {
     const [correctLogin, setCorrectLogin] = useState(true)
@@ -50,32 +51,41 @@ function Login() {
     return (
         <>
             <div id='LoginBase'>
+                <div id='title'><p>FYP Management System</p></div>
                 <form onSubmit={formik.handleSubmit}>
-                    <label htmlFor="username">username</label>
-                    <input
-                        id="username"
-                        name="username"
-                        type="text"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.username}
-                    />
-                    {formik.touched.username && formik.errors.username ? ( <div> {formik.errors.username} </div> ) : null}
-
-                    <label htmlFor="password">password</label>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.password}
-                    />
-                    {formik.touched.password && formik.errors.password ? ( <div> {formik.errors.password} </div> ) : null}
-                    <button type="submit">Submit</button>
-                    <div>
-                        {!correctLogin? <div className="warning"><p>Incorrect input Email/Password. Please try again.</p></div> : null}
+                    <div id="login"><p>Login</p></div>
+                    <div id='input'>
+                        <div style={{width: "100%", height: "30%"}}>
+                            <label htmlFor="username">User Name:</label>
+                            <input
+                                id="username"
+                                name="username"
+                                type="text"
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.username}
+                            />
+                        </div>
+                        {formik.touched.username && formik.errors.username ? ( <div id='warning'> <p>{formik.errors.username}</p> </div> ) : null}
                     </div>
+                    <div id='input'>
+                        <div style={{width: "100%", height: "30%"}}>
+                            <label htmlFor="password">Password:</label>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.password}
+                            />
+                        </div>
+                        {formik.touched.password && formik.errors.password ? ( <div id='warning'> <p>{formik.errors.password}</p> </div> ) : null}
+                    </div>      
+                    <div>
+                        {!correctLogin? <div id="warning"><p>Incorrect Email/Password Input. Please Try Again.</p></div> : null}
+                    </div>
+                    <button type="submit">Submit</button>
                 </form>
             </div>
         </>

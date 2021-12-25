@@ -26,7 +26,7 @@ export const AuthContextProvider = (props) => {
     };
 
     const adminLink = [""]
-    const studentLink = [""]
+    const studentLink = ["", "/StudentFYPTopics"]
     const supervisorLink = ["", "/FYPTopics"]
 
     return (

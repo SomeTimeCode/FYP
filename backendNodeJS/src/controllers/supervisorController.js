@@ -1,17 +1,16 @@
 const Topic = require('../models/topicModel')
 
-
-
 // FYP Topic controller
 // topic create/update/detele/view
-
+// need to do filtering may have bug
+//forget to update supervisor fyp list as well
 const viewTopic = async (req, res) => {
     // new to chagne the logic
     try{
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit
-        const total_topics = await Topic.countDocuments({}).catch((err) => {throw err})
+        const total_topics = await Topic.countDocuments({supervisor: req.decoded._id}).catch((err) => {throw err})
         const total_pages = Math.ceil(total_topics / limit)
         var last = false
         if(page > total_pages){
@@ -20,7 +19,7 @@ const viewTopic = async (req, res) => {
         }else if(page == total_pages){
             last = true
         }
-        var topic_list = await Topic.find().sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
+        var topic_list = await Topic.find({supervisor: req.decoded._id}).sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
         res.status(200).json({topic_list: topic_list, last: last})
         return
     }catch(err){
@@ -36,10 +35,15 @@ const viewSpecificTopic = async (req, res) => {
         console.log("here")
         var topic = await Topic.findOne({_id: req.params.id}).catch((err) => {throw err})
         if(topic){
-            var {__v, supervisor, group, ...rest} = topic._doc
-            console.log(rest)
-            res.status(200).json(rest)
-            return
+            if(topic.supervisor != req.decoded._id){
+                res.status(400).json({message: "You have no right to view"})
+                return
+            }else{
+                var {__v, supervisor, group, ...rest} = topic._doc
+                console.log(rest)
+                res.status(200).json(rest)
+                return
+            }
         }else{
             res.status(404).json({message: "Specific topic does not found"})
             return
@@ -94,8 +98,7 @@ const updateTopic = async (req, res) => {
         if(req.body.topic_name != null && req.body.short_description != null && req.body.number_group != null && req.body.genre != null && req.body.genre != [] && req.body._id){
             const detail_description = (req.body.detail_description == null ? req.body.short_description : req.body.detail_description )
             var topic = await Topic.findOne({topic_name: req.body.topic_name}).catch(err => {throw err})
-            if(topic){
-                console.log(topic)
+            if(topic && topic._id != req.body._id){
                 res.status(400).json({message: "topic exist"})
                 return
             }

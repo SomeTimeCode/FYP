@@ -1,11 +1,13 @@
 import * as React from "react";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import View from "./components/View/View";
 import { AuthContextProvider } from "./context/AuthContext";
 import AdminIndex from "./pages/Admin/Index/AdminIndex";
 import Login from "./pages/Login/Login";
 import StudentIndex from "./pages/Student/Index/StudentIndex";
+import StudentFYPTopics from "./pages/Student/StudentFYPTopics/StudentFYPTopics";
+import TopicDetail from "./pages/Student/TopicDetail/TopicDetail";
 import AddTopic from "./pages/Supervisor/AddTopic/AddTopic";
 import AdjustTopic from "./pages/Supervisor/AdjustTopic/AdjustTopic";
 import FYPTopics from "./pages/Supervisor/FYPTopics/FYPTopics";
@@ -24,6 +26,8 @@ function App() {
             </Route>
             <Route path="/student" element={<ProtectedRoute role={"student"}/>}>
               <Route path="" element={<View role={ "student" } element={ <StudentIndex />}/>} />
+              <Route path="StudentFYPTopics" element={<View role={ "student" } element={ <StudentFYPTopics />}/>} />
+              <Route path="FYPTopics/:id" element={<View role={ "student" } element={<TopicDetail/>}/>} /> 
             </Route>
             <Route path="/supervisor" element={<ProtectedRoute role={"supervisor"}/>}>
               <Route path="" element={<View role={ "supervisor" } element={ <SupervisorIndex />}/>} />
