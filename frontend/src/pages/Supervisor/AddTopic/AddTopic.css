@@ -1,0 +1,88 @@
+#AddTopicBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+#AddTopicBase #AddTopicTitle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 10%;
+    width: 100%;
+}
+
+#AddTopicBase #AddTopicTitle p{
+    font-size: 3vh;
+    font-weight: 500;
+}
+
+#AddTopicBase #AddTopicForm{
+    min-height: 90%;
+    width: 90%;
+    height: 90%;
+}
+
+#AddTopicBase #AddTopicForm form{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+#AddTopicBase #AddTopicForm form .input{
+    width: 100%;
+    margin-top: 8%;
+}
+
+#AddTopicBase #AddTopicForm form .input label{
+    font-size: 2vh;
+    width: 30%;
+    margin-top: 8%;
+    margin-right: 1%;
+}
+
+#AddTopicBase #AddTopicForm form .input input{
+    width: 60%;
+    margin-top: 3%;
+    height: 2vh;
+}
+
+#AddTopicBase #AddTopicForm form .input .Warning{
+    font-size: 1.8vh;
+    margin-top: 1vh;
+    color: red;
+}
+
+#AddTopicBase #AddTopicForm form #submit{
+    margin-top: 8%;
+    width: 100%;
+    height: 5%;
+    display: flex;
+    justify-content: center;
+}
+
+#AddTopicBase #AddTopicForm form #submit button{
+    width: 20%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2vh;
+    background-color: black;
+    color: white;
+    font-weight: 600;
+    transition: background-color 1s;
+    transition: color 1s;
+    cursor: pointer;
+}
+
+#AddTopicBase #AddTopicForm form #submit button:hover{
+    background-color: white;
+    color: black;
+}

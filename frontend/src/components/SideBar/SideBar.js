@@ -1,11 +1,21 @@
 import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AuthContext from '../../context/AuthContext'
 import "./SideBar.css"
 
 function Cards(props){
+
+    const navigate = useNavigate()
+
     return(
-        props.link === "" ? <Link to={`/${props.role}${props.link}`}>Index</Link> : <Link to={`/${props.role}${props.link}`}>{props.link.substring(1)}</Link>
+        props.link === "" ? 
+            <div className='SiderCard' onClick={(e) => {navigate(`/${props.role}${props.link}`)}}>
+                <p>Index</p>
+            </div>
+        :   
+            <div className='SiderCard' onClick={(e) => {navigate(`/${props.role}${props.link}`)}}>
+                <p>{props.link.substring(1)}</p>
+            </div>
     )
 }
 
@@ -16,7 +26,7 @@ function SideBar(props) {
     const link = (props.role === "admin" ? ctx.adminLink : (props.role === "student" ? ctx.studentLink : ctx.supervisorLink))
 
     return (
-        <div>
+        <div id='SiderBase'>
             {link.map((link) => {
                 return <Cards key={link} link={link} role={props.role}/>
             })}

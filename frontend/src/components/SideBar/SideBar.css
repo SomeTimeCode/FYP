@@ -1,0 +1,31 @@
+#SiderBase{
+    min-height: inherit;
+    min-width: inherit;
+    box-shadow: inset -3px 0 0 black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#SiderBase .SiderCard{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2vh;
+    width: 60%;
+    height: 4vh;
+    cursor: pointer;
+    border: 1px solid black;
+    color: black;
+    font-size: 1.8vh;
+    font-weight: 600;
+    transition: color 1s;
+    transition: background-color 1s;
+}
+
+#SiderBase .SiderCard:hover{
+    background-color: black;
+    color: white;
+}
+

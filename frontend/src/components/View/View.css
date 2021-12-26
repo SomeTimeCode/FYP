@@ -3,6 +3,13 @@
     padding: 0;
 }
 
+#Page{
+    min-height: 640px;
+    min-width: 360px;
+    width: 100vw;
+    height: 100vh;
+}
+
 #Header{
     width: 100vw;
     min-height: 10vh;
@@ -17,9 +24,20 @@
 #SideBar{
     min-width: 20vw;
     min-height: 90vh;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-y: auto;
 }
 
 #Content{
     min-width: 80vw;
     min-height: 90vh;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-y: auto;
+}
+
+@media only screen and (max-width: 600px) {
+    #SideBar {min-width: 35vw;}
+    #Content {min-width: 65vw;}
 }
