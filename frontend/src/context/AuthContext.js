@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 const AuthContext = React.createContext({
     isLoggedIn: null,
@@ -11,6 +13,7 @@ const AuthContext = React.createContext({
 
 export const AuthContextProvider = (props) => {
 
+    const MySwal = withReactContent(Swal)
     const [isLoggedIn, setIsLoggedIn] = useState({state: (localStorage.getItem("token") != null) , role: localStorage.getItem("role")});
 
     const loginHandler = (token, role) => {
@@ -20,9 +23,17 @@ export const AuthContextProvider = (props) => {
     }
 
     const logoutHandler = () => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('role')
-        setIsLoggedIn({state: false, role: ""})
+        MySwal.fire({
+            title: <p>Logout Success</p>,
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+          })
+          .then(() => {
+            localStorage.removeItem('token')
+            localStorage.removeItem('role')
+            setIsLoggedIn({state: false, role: ""})
+            return
+          })
     };
 
     const adminLink = [""]

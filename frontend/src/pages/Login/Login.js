@@ -3,9 +3,14 @@ import { useFormik } from 'formik';
 import { useNavigate } from "react-router-dom";
 import * as Yup from 'yup';
 import AuthContext from '../../context/AuthContext';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import "./Login.css"
 
+
 function Login() {
+    
+    const MySwal = withReactContent(Swal)
     const [correctLogin, setCorrectLogin] = useState(true)
     const navigate = useNavigate();
     const ctx = useContext(AuthContext)
@@ -33,8 +38,14 @@ function Login() {
                         console.log(data);
                         setCorrectLogin(true)
                         ctx.onLogin(data.token ,data.role)
-                        alert("Login Successfully")
-                        navigate(`/${data.role.toLowerCase()}`);
+                        MySwal.fire({
+                            title: <p>Login Success</p>,
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6',
+                          })
+                          .then(() => {
+                            return navigate(`/${data.role.toLowerCase()}`);
+                          })
                     }else{
                         console.log(data.message)
                         if(data.message === "Wrong username or password"){

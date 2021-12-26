@@ -42,10 +42,11 @@
 #LoginBase form #input label{
     margin-right: 3px;
     font-size: 18px;
+    width: 20%;
 }
 
 #LoginBase  form #input input{
-    width: 60%;
+    width: 80%;
     height: 60%;
 }
 
@@ -61,7 +62,8 @@
     background-color: white;
     padding: 1.5vh 4vw;
     cursor: pointer;
-    transition: 1s;
+    transition: color 1s;
+    transition: background-color 1s;
 }
 
 #LoginBase button:hover{
