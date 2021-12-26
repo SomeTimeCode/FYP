@@ -1,13 +1,21 @@
 import React, {useState ,useEffect} from 'react'
-import { Link } from 'react-router-dom'
-
+import { Link, useNavigate } from 'react-router-dom'
+import { IoIosAddCircle } from "react-icons/io";
+import "./FYPTopics.css"
 
 function Card(props){
+    const navigate = useNavigate()
+
     return(
-        <>
-            <Link to={`/supervisor/FYPTopics/${props.topic._id}`}>{props.topic.topic_name}</Link>
-            <div>{props.topic.short_description}</div>
-            <div>{props.topic.number_group}</div>
+        <>  
+            <div className='topic' onClick={(e) => {navigate(`/supervisor/FYPTopics/${props.topic._id}`)}}>
+                <div className='topicInfo'>
+                    <p>Topic Name: {props.topic.topic_name}</p>
+                    <p>Description: {props.topic.short_description}</p>
+                    <p>Number of Groups Opening: {props.topic.number_group}</p>
+                    <p>Current Number of Groups: {props.topic.group.length}</p>
+                </div>
+            </div>
         </>
     )
 }
@@ -15,6 +23,7 @@ function Card(props){
 
 
 function FYPTopics() {
+    const navigate = useNavigate()
     const [lastPage, setLastPage] = useState(false)    
     const [page, setPage] = useState(1)
     const [topicList, setTopicList] = useState([])
@@ -28,14 +37,12 @@ function FYPTopics() {
 
             let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/topic/view?page=${page}&limit=5`, requestOptions)
             .then((response) => {
-                console.log('check')
                 if(response.status === 200){
                     return response.json()
                 }else{
                     return []
                 }
             }).then((data) => {
-                console.log(data)
                 if(data.length !== 0){
                     return data
                 }else{
@@ -56,10 +63,16 @@ function FYPTopics() {
                 <div>Fetching Data</div>
             :   
                 <>
-                    <div id='Content'>
-                        <Link to="/supervisor/FYPTopics/addTopic">AddTopic</Link>
+                    <div id='FYPTopicsBase'>
+                        <div id='AddTopicButton'>
+                            <p id='iconTitle'>AddTopic</p>
+                            <IoIosAddCircle id="icon" onClick={(e) => {navigate("/supervisor/FYPTopics/addTopic")}}/>
+                        </div>
+                        <div id='title'>
+                            <p>FYP Topics</p>
+                        </div>
                         {topicList.length !== 0 ?
-                            <div>
+                            <div id='topicList'>
                                 {
                                     topicList.map((topic) => {
                                         return <Card key={topic.topic_name} topic={topic}/>
@@ -69,11 +82,11 @@ function FYPTopics() {
                             :
                             <div>no data is found</div>   
                         }
-                    </div>
-                    <div id='Controller'>
-                        <button disabled={page === 1} onClick={(e) => {setPage((page => page - 1)); setLoading(true)}}>{'<'}</button>
-                        <p>{page}</p>
-                        <button disabled={lastPage} onClick={(e) => {setPage((page => page + 1)); setLoading(true)}}>{'>'}</button>
+                        <div id='Controller'>
+                            <button disabled={page === 1} onClick={(e) => {setPage((page => page - 1)); setLoading(true)}}>{'<'}</button>
+                            <p>{page}</p>
+                            <button disabled={lastPage} onClick={(e) => {setPage((page => page + 1)); setLoading(true)}}>{'>'}</button>
+                        </div>
                     </div>
                 </>
             }
