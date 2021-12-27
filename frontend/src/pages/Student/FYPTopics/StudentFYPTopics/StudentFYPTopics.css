@@ -1,0 +1,89 @@
+#StudentFYPTopicsBase{
+    min-width: inherit;
+    min-height: inherit;
+    width: 100%;
+    height: 100%;
+}
+
+#StudentFYPTopicsBase #AddTopicButton{
+    width: 90%;
+    height: 8%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#StudentFYPTopicsBase #title{
+    height: 5%;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 3vh;
+}
+
+#StudentFYPTopicsBase #search{
+    height: 5%;
+    width: 100%;
+    border: 1px black solid;
+}
+
+#StudentFYPTopicsBase #topicList{
+    height: 74%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#StudentFYPTopicsBase #topicList .topic{
+    cursor: pointer;
+    border-radius: 2vw;
+    height: 15%;
+    width: 80%;
+    border: 2px solid black;
+    display: flex;
+    justify-content: center;
+}
+
+#StudentFYPTopicsBase #topicList .topic .topicInfo{
+    font-size: 2vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 95%;
+}
+
+#StudentFYPTopicsBase #Controller{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 10%;
+}
+
+#StudentFYPTopicsBase #Controller button{
+    height: 30%;
+    width: 10%;
+    font-size: 2vh;
+    font-weight: 500;
+    background-color: black;
+    color: white;
+}
+
+#StudentFYPTopicsBase #Controller button:disabled{
+    opacity: 40%;
+}
+
+#StudentFYPTopicsBase #Controller p{
+    font-size: 2.5vh;
+}
+
+@media only screen and (max-width: 600px) {
+    #StudentFYPTopicsBase #AddTopicButton #iconTitle{
+        font-size: 16px;
+    }
+    #StudentFYPTopicsBase #AddTopicButton #icon{
+        font-size: 36px;
+    }
+}

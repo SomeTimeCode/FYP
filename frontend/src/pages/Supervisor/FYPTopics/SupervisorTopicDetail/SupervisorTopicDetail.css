@@ -1,0 +1,67 @@
+#AdjustTopicBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+#AdjustTopicBase #controller{
+    width: 90%;
+    border: 1px solid black;
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#AdjustTopicBase #controller button{
+    height: 50%;
+    width: 10%;
+    margin-right: 5%;
+    color: white;
+    font-size: 2vh;
+    font-weight: 700;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+#AdjustTopicBase #AdjustTopicFrom{
+    width: 90%;
+    height: 90%;
+}
+
+#AdjustTopicBase #AdjustTopicFrom form{
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+}
+
+
+#AdjustTopicBase #AdjustTopicFrom .input{
+    margin-top: 2vh;
+    width: 100%;
+    height: 10%;
+}
+
+#AdjustTopicBase #AdjustTopicFrom .input label{
+    margin-top: 2vh;
+    width: 20%;
+    height: 50%;
+    font-size: 2vh;
+}
+
+#AdjustTopicBase #AdjustTopicFrom .input input{
+    margin-top: 2vh;
+    width: 50%;
+    height: 30%;
+    font-size: 1.5vh;
+}
+
+#AdjustTopicBase #AdjustTopicFrom .input .warning{
+    font-size: 2vh;
+    color: red;
+}
