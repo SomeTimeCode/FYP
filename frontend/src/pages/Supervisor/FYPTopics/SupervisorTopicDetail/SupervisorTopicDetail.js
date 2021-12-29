@@ -15,6 +15,7 @@ function SupervisorTopicDetail() {
     const [selectedValue, setSelectedValue] = useState(1)
     const [selectedOptions, setSelectedOptions] = useState(null)
     const [disabled, setDisabled] = useState(true)
+    const [minOpening, setMinOpening] = useState(0)
     const [loading, setLoading] = useState(true)
     
     const formik = useFormik({
@@ -22,19 +23,21 @@ function SupervisorTopicDetail() {
             topic_name: '',
             short_description: '',
             detail_description: '',
-            genre: '',
+            genre: [],
+            number_group_member: '',
             number_group: '',
         },
         validationSchema: Yup.object({
             topic_name: Yup.string()
             .max(30, 'Must be 30 characters or less')
-            .required('Required'),
+            .required('Topic name is required'),
             short_description: Yup.string()
             .max(100, 'Must be 100 characters or less')
-            .required('Required'),
+            .required('A short description is required'),
             detail_description: Yup.string(),
-            genre: Yup.array().min(1).required("Required"),
-            number_group: Yup.number().min(0).required('Required')
+            genre: Yup.array().min(1).required("At leasat 1 genre need to be selected"),
+            number_group: Yup.number().min(minOpening).required('Number of Group Openings cannot be negative'),
+            number_group_member: Yup.number().min(1).required('At least 1 member per Group is required')
         }),
         onSubmit: values => {
             MySwal.fire({
@@ -53,7 +56,7 @@ function SupervisorTopicDetail() {
                         const requestOptions = {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                            body: JSON.stringify({_id: params.id ,topic_name: values.topic_name, short_description: values.short_description, detail_description: values.detail_description, genre: genre, number_group: values.number_group })
+                            body: JSON.stringify({_id: params.id ,topic_name: values.topic_name, short_description: values.short_description, detail_description: values.detail_description, genre: genre, number_group: values.number_group, number_group_member: values.number_group_member })
                         };
                         await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/topic/update`, requestOptions).then(async (response) =>{
                             let data = await response.json()
@@ -169,7 +172,10 @@ function SupervisorTopicDetail() {
             var genre_list = response.genre.map((item) => {return {label: item, value: item}})
             console.log(genre_list)
             setSelectedOptions(genre_list)
-            formik.setValues({"topic_name": response.topic_name, "short_description":response.short_description, "detail_description":response.detail_description,"genre":genre_list, "number_group":response.number_group});
+            formik.setValues({"topic_name": response.topic_name, "short_description":response.short_description, "detail_description":response.detail_description,"genre":genre_list, "number_group":response.number_group, "number_group_member": response.number_group_member});
+            if(response.group.length === 0){
+                setMinOpening(1)
+            }
             setLoading(false)
         }
         fetchData()
@@ -252,6 +258,21 @@ function SupervisorTopicDetail() {
                         />
                         {formik.touched.number_group && formik.errors.number_group ? (
                             <div className='warning'>{formik.errors.number_group}</div>
+                        ) : null}
+                    </div>
+                    <div className='input'>
+                        <label htmlFor="number_group_member">Max number of members in group:</label>
+                        <input
+                            disabled={disabled}
+                            id="number_group_member"
+                            name="number_group_member"
+                            type="number"
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.number_group_member}
+                        />
+                        {formik.touched.number_group_member && formik.errors.number_group_member ? (
+                            <div className='warning'>{formik.errors.number_group_member}</div>
                         ) : null}
                     </div>
                     <div className='input'>

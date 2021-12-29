@@ -1,6 +1,7 @@
 const Topic = require('../models/topicModel')
 const Group = require("../models/groupModel")
 const Supervisor = require("../models/supervisorModel")
+const Student = require("../models/studentModel")
 const User = require("../models/userModel")
 const bcrypt = require('bcryptjs')
 
@@ -58,24 +59,29 @@ const viewSpecificTopic = async (req, res) =>{
     }
 }
 
+
+// More work need to be done
 const createGroup = async (req, res) => {
     try{
-        var topic = await Topic.findOne({_id: req.params.id}).catch((err) => {throw err})
+        var topic = await Topic.findOne({_id: req.body.id}).catch((err) => {throw err})
         if(topic.number_group == 0){
             res.status(400).json({message: "All the group has been filled up"})
         }
         var password = await bcrypt.hash(req.body.password, 10)
         var group = new Group({
             group_name: req.body.group_name, 
-            topic: req.params.id,
-            group_memebers: [req.decoded._id],
+            topic: topic._id,
+            group_members: [req.decoded._id],
             supervisor: topic.supervisor,
             password: password
         })
-        group.save().catch((err) => {throw err})
+        await group.save().catch((err) => {throw err})
         topic.number_group = topic.number_group - 1
-        topic.group = topic.group.push(group._id)
-        topic.save().catch((err) => {throw err})
+        topic.group.push(group._id)
+        await topic.save().catch((err) => {throw err})
+        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        student.group = group._id
+        student.save().catch((err) => {throw err})
         res.status(200).json({message: "Group has been created"})
         return
     }catch(err){

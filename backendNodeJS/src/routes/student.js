@@ -10,6 +10,6 @@ router.get("/", (req, res) => {
 router.get("/topic/view", StudentController.viewTopic)
 // joining or creating group
 router.get("/topic/:id" , StudentController.viewSpecificTopic)
-router.post("/topic/:id/createGroup", StudentController.createGroup)
+router.post("/topic/createGroup", StudentController.createGroup)
 
 module.exports = router

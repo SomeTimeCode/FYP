@@ -34,7 +34,7 @@ function StudentFYPTopics() {
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
             };
 
-            let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/topic/view?page=${page}&limit=5`, requestOptions)
+            let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/topic/view?page=${page}&limit=4`, requestOptions)
             .then((response) => {
                 console.log('check')
                 if(response.status === 200){

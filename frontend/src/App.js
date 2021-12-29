@@ -12,6 +12,7 @@ import SupervisorAddTopic from "./pages/Supervisor/FYPTopics/SupervisorAddTopic/
 import SupervisorTopicDetail from "./pages/Supervisor/FYPTopics/SupervisorTopicDetail/SupervisorTopicDetail";
 import SupervisorFYPTopics from "./pages/Supervisor/FYPTopics/SupervisorFYPTopics/SupervisorFYPTopics";
 import SupervisorIndex from "./pages/Supervisor/Index/SupervisorIndex";
+import SupervisorGroup from "./pages/Supervisor/GroupManagement/SupervisorGroup/SupervisorGroup";
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
             </Route>
             <Route path="/student" element={<ProtectedRoute role={"student"}/>}>
               <Route path="" element={<View role={ "student" } element={ <StudentIndex />}/>} />
-              <Route path="StudentFYPTopics" element={<View role={ "student" } element={ <StudentFYPTopics />}/>} />
+              <Route path="FYPTopics" element={<View role={ "student" } element={ <StudentFYPTopics />}/>} />
               <Route path="FYPTopics/:id" element={<View role={ "student" } element={<StudentTopicDetail/>}/>} /> 
             </Route>
             <Route path="/supervisor" element={<ProtectedRoute role={"supervisor"}/>}>
@@ -34,6 +35,7 @@ function App() {
               <Route path="FYPTopics" element={<View role={ "supervisor" } element={ <SupervisorFYPTopics />}/>} />
               <Route path="FYPTopics/addTopic" element={<View role={ "supervisor" } element={ <SupervisorAddTopic />}/>} />
               <Route path="FYPTopics/:id" element={<View role={ "supervisor" } element={<SupervisorTopicDetail/>}/>} /> 
+              <Route path="Groups" element={<View role={ "supervisor" } element={<SupervisorGroup/>}/>} /> 
             </Route>
           </Routes>
         </BrowserRouter>

@@ -18,6 +18,7 @@ function SupervisorAddTopic() {
             short_description: '',
             detail_description: '',
             genre: [],
+            number_group_member: '',
             number_group: '',
         },
         validationSchema: Yup.object({
@@ -29,7 +30,8 @@ function SupervisorAddTopic() {
             .required('A short description is required'),
             detail_description: Yup.string(),
             genre: Yup.array().min(1).required("At leasat 1 genre need to be selected"),
-            number_group: Yup.number().min(1).required('At least 1 Number of Group Opening is required')
+            number_group: Yup.number().min(1).required('At least 1 Number of Group Opening is required'),
+            number_group_member: Yup.number().min(1).required('At least 1 member per Group is required')
         }),
         onSubmit: values => {
             const addTopic = async(values) =>{
@@ -39,7 +41,7 @@ function SupervisorAddTopic() {
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                    body: JSON.stringify({topic_name: values.topic_name, short_description: values.short_description, detail_description: values.detail_description, genre: genre, number_group: values.number_group })
+                    body: JSON.stringify({topic_name: values.topic_name, short_description: values.short_description, detail_description: values.detail_description, genre: genre, number_group: values.number_group , number_group_member: values.number_group_member})
                 };
                 await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/topic/create`, requestOptions).then(async (response) =>{
                     let data = await response.json()
@@ -157,6 +159,21 @@ function SupervisorAddTopic() {
                         />
                         {formik.touched.number_group && formik.errors.number_group ? (
                             <div className='Warning'>{formik.errors.number_group}</div>
+                        ) : null}
+                    </div>
+                    
+                    <div className='input'>
+                        <label htmlFor="number_group_member">Max number of members in group:</label>
+                        <input
+                            id="number_group_member"
+                            name="number_group_member"
+                            type="number"
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.number_group_member}
+                        />
+                        {formik.touched.number_group_member && formik.errors.number_group_member ? (
+                            <div className='Warning'>{formik.errors.number_group_member}</div>
                         ) : null}
                     </div>
                     

@@ -22,7 +22,7 @@ function StudentTopicDetail() {
                                      if(response.status === 200){
                                          return response
                                      }else{
-                                        navigate('../StudentFYPTopics');
+                                        navigate('../FYPTopics');
                                      }
                                  })
                                  .then((data) => data.json()).catch(err => console.log(err))
