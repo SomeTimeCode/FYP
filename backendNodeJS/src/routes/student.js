@@ -11,5 +11,6 @@ router.get("/topic/view", StudentController.viewTopic)
 // joining or creating group
 router.get("/topic/:id" , StudentController.viewSpecificTopic)
 router.post("/topic/createGroup", StudentController.createGroup)
+router.post("/topic/joinGroup", StudentController.joinGroup)
 
 module.exports = router

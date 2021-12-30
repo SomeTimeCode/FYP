@@ -28,10 +28,24 @@ const main = async() => {
     var user = new User({
         username: 'Student',
         password: password,
+        contact: "student@student.com",
         role: 'Student'
     })
     await user.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
     var student = new Student({
+        user: user._id
+    })
+    await student.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
+    //create default student account
+    password = await bcrypt.hash('Student2', 10)
+    user = new User({
+        username: 'Student2',
+        password: password,
+        contact: "student2@student.com",
+        role: 'Student'
+    })
+    await user.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
+    student = new Student({
         user: user._id
     })
     await student.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
@@ -40,6 +54,7 @@ const main = async() => {
     user = new User({
         username: 'Admin',
         password: password,
+        contact: "admin@admin.com",
         role: 'Admin'
     })
     await user.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
@@ -52,10 +67,24 @@ const main = async() => {
     user = new User({
         username: 'Supervisor',
         password: password,
+        contact: "supervisor@supervisor.com",
         role: 'Supervisor'
     })
     await user.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
     var supervisor = new Supervisor({
+        user: user._id
+    })
+    await supervisor.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
+    //create supervisor account 
+    password = await bcrypt.hash('Supervisor2', 10)
+    user = new User({
+        username: 'Supervisor2',
+        password: password,
+        contact: "supervisor@supervisor.com",
+        role: 'Supervisor'
+    })
+    await user.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
+    supervisor = new Supervisor({
         user: user._id
     })
     await supervisor.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })

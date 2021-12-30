@@ -6,7 +6,8 @@ const groupSchema = new mongoose.Schema({
     topic: {type: mongoose.Schema.ObjectId, ref: "Topic"},
     group_members: [{type: mongoose.Schema.ObjectId, ref: "Student"}],
     supervisor: {type: mongoose.Schema.ObjectId, ref: "Supervisor"},
-    password: String
+    password: String,
+    public: {type: Boolean, required: true}
 })
 
 const Group = mongoose.model('Group', groupSchema)
