@@ -13,6 +13,11 @@ router.get("/topic/:id", supervisorController.viewSpecificTopic)
 router.post("/topic/create", supervisorController.createTopic);
 router.post("/topic/update", supervisorController.updateTopic);
 router.post("/topic/delete", supervisorController.deleteTopic)
+//group management
+router.get("/group/view", supervisorController.viewTopicGroup)
+router.get("/group/:id", supervisorController.viewSpecificTopicGroup)
+router.post("/group/approveGroup", supervisorController.approveGroup)
+router.post("/group/rejectGroup", supervisorController.rejectGroup)
 
 
 

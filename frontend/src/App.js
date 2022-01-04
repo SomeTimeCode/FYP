@@ -13,6 +13,7 @@ import SupervisorTopicDetail from "./pages/Supervisor/FYPTopics/SupervisorTopicD
 import SupervisorFYPTopics from "./pages/Supervisor/FYPTopics/SupervisorFYPTopics/SupervisorFYPTopics";
 import SupervisorIndex from "./pages/Supervisor/Index/SupervisorIndex";
 import SupervisorGroup from "./pages/Supervisor/GroupManagement/SupervisorGroup/SupervisorGroup";
+import SupervisorGroupManage from "./pages/Supervisor/GroupManagement/SupervisorGroupManage/SupervisorGroupManage";
 
 function App() {
   return (
@@ -35,7 +36,8 @@ function App() {
               <Route path="FYPTopics" element={<View role={ "supervisor" } element={ <SupervisorFYPTopics />}/>} />
               <Route path="FYPTopics/addTopic" element={<View role={ "supervisor" } element={ <SupervisorAddTopic />}/>} />
               <Route path="FYPTopics/:id" element={<View role={ "supervisor" } element={<SupervisorTopicDetail/>}/>} /> 
-              <Route path="Groups" element={<View role={ "supervisor" } element={<SupervisorGroup/>}/>} /> 
+              <Route path="Groups" element={<View role={ "supervisor" } element={<SupervisorGroup/>}/>} />
+              <Route path="Groups/:id" element={<View role={ "supervisor" } element={<SupervisorGroupManage/>}/>} /> 
             </Route>
           </Routes>
         </BrowserRouter>

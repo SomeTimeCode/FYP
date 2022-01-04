@@ -1,12 +1,222 @@
 const Group = require('../models/groupModel')
 const Topic = require('../models/topicModel')
 const Student = require('../models/studentModel')
-
+const User = require('../models/userModel')
 
 // FYP Group controller
 // pending group --> approve/merge
-// group merge/split/add member can override the restriction 
+// group merge/split/add member can override the restriction
+// get user only allow is under the same supervisor or no supervisor
+// when make change if is new user or from other topic need to make change for those student
+const viewTopicGroup = async (req, res) => {
+    try{
+        if(req.query.topic_name == ""){
+            var topic_name = { $ne: null }
+        }else{
+            var topic_name = { $regex: req.query.topic_name , $options: 'i' }
+        }
+        if(req.query.genre == ""){
+            var genre = { $ne: null }
+        }else{
+            var genre_list = req.query.genre.split(",")
+            var genre = {"$in" : genre_list.map((item) => {return item.replace("%20", " ")})}
+        }
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit
+        const total_topics = await Topic.countDocuments({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).catch((err) => {throw err})
+        const total_pages = Math.ceil(total_topics / limit)
+        var last = false
+        if(page > total_pages){
+            console.log("Out of pages")
+            res.status(404).json({message: "Out of pages"})
+            return
+        }else if(page == total_pages){
+            last = true
+        }
+        var topic_list = await Topic.find({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).populate("group").sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
+        //refine the data to response 
+        topic_list = topic_list.map((topic) => {
+            var {_id, topic_name, group, genre, short_description, ...rest} = topic
+            var pending = group.some((group) => group.status == 'pending')
+            return {_id: _id, topic_name: topic_name, genre: genre, short_description: short_description ,pending: pending}
+        })
+        console.log(topic_list)
+        res.status(200).json({topic_list: topic_list, last: last})
+        return
+    }catch(err){
+        console.log(err)
+        console.log("Error in viewing topics")
+        res.status(400).json({error: err, message: "Error in viewing topics"})
+        return
+    }
+}
 
+const viewSpecificTopicGroup = async (req, res) => {
+    try{
+        var topic = await Topic.findOne({_id: req.params.id}).populate("group").catch((err) => {throw err})
+        if(topic){
+            if(topic.supervisor != req.decoded._id){
+                res.status(400).json({message: "You have no right to view"})
+                return
+            }else{
+                var {_id, group, topic_name, ...rest} = topic
+                // Need to generate the details of the group list
+                var pending_groups = []
+                var approved_groups = []
+                var student_list = []
+                for(var i = 0; i < group.length; i++){
+                    var {_id, group_members, status, ...rest} = group[i]
+                    if(status == 'pending'){
+                        pending_groups.push({_id: _id, group_members: group_members})
+                    }else{
+                        approved_groups.push({_id: _id, group_members: group_members})
+                    }
+                    student_list.push(group_members)
+                }
+                // genreate a hashMap id to name 
+                var students = await User.find({_id: {$in: student_list.flat()}}).catch((err) => {throw err})
+                var student_hashMap = {}
+                for(var i = 0; i < students.length; i++){
+                    student_hashMap[students[i]._id] = students[i].username
+                }
+                res.status(200).json({_id: _id, topic_name: topic_name, pending_groups: pending_groups, approved_groups: approved_groups, student_hashMap: student_hashMap})
+                return
+            }
+        }else{
+            res.status(404).json({message: "Specific topic does not found"})
+            return
+        }
+    }catch(err){
+        console.log(err)
+        console.log("Error in viewing topics")
+        res.status(400).json({error: err, message: "Error in viewing topics"})
+    }
+}
+
+const approveGroup = async (req, res) => {
+    try{
+        if(req.body._id){
+            var group = await Group.findOne({_id: req.body._id}).catch((err) => {throw err})
+            if(group.supervisor != req.decoded._id){
+                console.log("group's supervisor not equal to supervisor id")
+                res.status(400).json({message: "You have no right to make change in this group"})
+                return
+            }
+            group.status = "approve"
+            group.save().catch((err)=>{throw err})
+            res.status(200).json({message: "Group Approved"})
+            return
+        }else{
+            console.log("Missing Group ID")
+            res.status(400).json({message: "Missing Group ID"})
+            return
+        }
+    }catch(err){
+        console.log(err)
+        console.log("Error in approving group")
+        res.status(400).json({error: err, message: "Error in approving group"})
+    }
+}
+
+const rejectGroup = async (req, res) => {
+    try{
+        if(req.body._id){
+            var group = await Group.findOne({_id: req.body._id}).catch((err) => {throw err})
+            if(group.supervisor != req.decoded._id){
+                console.log("group's supervisor not equal to supervisor id")
+                res.status(400).json({message: "You have no right to make change in this group"})
+                return
+            }
+            await Student.updateMany({user : {$in: group.group_members}}, {$unset: {group: 1}}).catch((err) => {throw err })
+            var topic = await Topic.findOne({_id: group.topic}).catch((err) => {throw err})
+            topic.group.pull({_id: group._id})
+            topic.number_group += 1
+            topic.save().catch((err) => {throw err})
+            await Group.deleteOne({ _id: req.body._id }).catch((err) => { throw err })
+            res.status(200).json({message: "Group Approved"})
+            return
+        }else{
+            console.log("Missing Group ID")
+            res.status(400).json({message: "Missing Group ID"})
+            return
+        }
+    }catch(err){
+        console.log(err)
+        console.log("Error in rejecting group")
+        res.status(400).json({error: err, message: "Error in rejecting group"})
+    }
+}
+
+
+// const viewTopicGroup = async (req, res) => {
+//     try{
+//         if(req.query.topic_name == ""){
+//             var topic_name = { $ne: null }
+//         }else{
+//             var topic_name = { $regex: req.query.topic_name , $options: 'i' }
+//         }
+//         if(req.query.genre == ""){
+//             var genre = { $ne: null }
+//         }else{
+//             var genre_list = req.query.genre.split(",")
+//             var genre = {"$in" : genre_list.map((item) => {return item.replace("%20", " ")})}
+//         }
+//         const page = parseInt(req.query.page) || 1;
+//         const limit = parseInt(req.query.limit) || 5;
+//         const skip = (page - 1) * limit
+//         const total_topics = await Topic.countDocuments({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).catch((err) => {throw err})
+//         const total_pages = Math.ceil(total_topics / limit)
+//         var last = false
+//         if(page > total_pages){
+//             console.log("Out of pages")
+//             res.status(404).json({message: "Out of pages"})
+//             return
+//         }else if(page == total_pages){
+//             last = true
+//         }
+//         var topic_list = await Topic.find({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).sort('topic_name').skip(skip).limit(limit).populate('group').catch((err) => {throw err})
+//         console.log(topic_list)
+//         var list = []
+//         if(topic_list.length > 0){
+//             //restructure the data
+//             //building student id to name hashmap
+//             var students = []
+//             var student_hashMap = {}
+//             for(var i = 0; i < topic_list.length; i++){
+//                 var {short_description, detail_description, number_group, number_group_member, supervisor, __v, group, ...rest} = topic_list[i]._doc
+//                 // console.log(rest)
+//                 var pending_groups = []
+//                 var approved_groups =[]
+//                 group.map((group) => {
+//                     if(group.status == 'pending'){
+//                         pending_groups.push({_id: group._id, group_members: group.group_members})
+//                     }else{
+//                         approved_groups.push({_id: group._id, group_members: group.group_members})
+//                     }
+//                     students.push(group.group_members)
+//                 })
+//                 rest["pending_groups"] = pending_groups
+//                 rest["approved_groups"] = approved_groups
+//                 list.push(rest)
+//             }
+//             console.log(students)
+//             if(students.length > 0){
+//                 students = await User.find({_id: {$in: students.flat()}}).catch((err) => {throw err})
+//                 students.map((item) => {
+//                     student_hashMap[item._id] = item.username
+//                 })
+//             }
+//         }
+//         res.status(200).json({topic_list: list, last: last, student_hashMap: student_hashMap})
+//         return
+//     }catch(err){
+//         console.log(err)
+//         console.log("Error in viewing topics")
+//         res.status(400).json({error: err, message: "Error in viewing topics"})
+//         return
+//     }
+// }
 
 
 
@@ -142,7 +352,6 @@ const createTopic = async (req, res) => {
     }
 }
 
-// update topic information 
 const updateTopic = async (req, res) => {
     try{
         if(req.body.topic_name != null && req.body.short_description != null && req.body.number_group != null && req.body.genre != null && req.body.genre != [] && req.body._id != null && req.body.number_group_member != null){
@@ -183,7 +392,6 @@ const updateTopic = async (req, res) => {
     }
 }
 
-
 const deleteTopic = async (req, res) => {
     try{
         if(req.body._id != null){
@@ -218,4 +426,7 @@ const deleteTopic = async (req, res) => {
     }
 }
 
-module.exports = { viewTopic, viewSpecificTopic, createTopic, updateTopic, deleteTopic }
+module.exports = { 
+                    viewSpecificTopicGroup, viewTopicGroup, approveGroup, rejectGroup,
+                    viewTopic, viewSpecificTopic, createTopic, updateTopic, deleteTopic 
+                }

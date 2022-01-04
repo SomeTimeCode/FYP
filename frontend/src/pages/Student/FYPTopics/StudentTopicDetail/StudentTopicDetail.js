@@ -138,12 +138,13 @@ function StudentTopicDetail() {
             inputPlaceholder: 'Set Group to Public',
             confirmButtonText: 'Continue <i class="fa fa-arrow-right"></i>',
         })
-        if(accept == 1){
-            //ask for pw
+        if(accept === 1){
+            //public group
+            var group_name = `${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${Object.keys(topic.topic.group).length + 1}` }`
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                body: JSON.stringify({id: `${params.id}`})
+                body: JSON.stringify({id: `${params.id}`, group_name: group_name})
             };
             await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/topic/createGroup`, requestOptions).then(async (response) =>{
                 let data = await response.json()
@@ -166,9 +167,10 @@ function StudentTopicDetail() {
                 }
             })
         }else{
-            //send direct
+            //ask for pw
+            var group_name = `${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${Object.keys(topic.topic.group).length + 1}` }`
             const {value: password} = await MySwal.fire({
-                title: `Create Group - ${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${topic.topic.group.length + 1}` }`,
+                title: `Create Group - ${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${Object.keys(topic.topic.group).length + 1}` }`,
                 showCancelButton: true,
                 input: 'password',
                 inputValue: '',
@@ -181,7 +183,7 @@ function StudentTopicDetail() {
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                body: JSON.stringify({id: `${params.id}`, password: password})
+                body: JSON.stringify({id: `${params.id}`, password: password, group_name: group_name})
             };
             await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/topic/createGroup`, requestOptions).then(async (response) =>{
                 let data = await response.json()

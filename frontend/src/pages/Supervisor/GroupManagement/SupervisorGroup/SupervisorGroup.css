@@ -1,37 +1,12 @@
-#FYPTopicsBase{
+#GroupsBase{
     min-width: inherit;
     min-height: inherit;
     width: 100%;
     height: 100%;
 }
 
-#FYPTopicsBase #AddTopicButton{
-    width: 90%;
+#GroupsBase #title{
     height: 8%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-#FYPTopicsBase #AddTopicButton{
-    height: 5%;
-    font-size: 40px;
-    color: red;
-}
-
-#FYPTopicsBase #AddTopicButton #iconTitle{
-    font-size: 20px;
-}
-
-#FYPTopicsBase #AddTopicButton #icon{
-    cursor: pointer;
-    font-size: 40px;
-    color: red;
-}
-
-#FYPTopicsBase #title{
-    height: 3%;
-    padding-bottom: 3%;
     display: flex;
     width: 100%;
     align-items: center;
@@ -39,12 +14,12 @@
     font-size: 3vh;
 }
 
-#FYPTopicsBase #search{
-    height: 8%;
+#GroupsBase #search{
+    height: 12%;
     width: 100%;
 }
 
-#FYPTopicsBase #search form{
+#GroupsBase #search form{
     height: 100%;
     width: 100%;
     display: flex;
@@ -53,17 +28,17 @@
     box-shadow: inset 0 2px 0 0 black;
 }
 
-#FYPTopicsBase #search form .input{
+#GroupsBase #search form .input{
     height: 35%;
     width: 25%;
 }
 
-#FYPTopicsBase #search form .input input{
+#GroupsBase #search form .input input{
     height: 80%;
     width: 100%;
 }
 
-#FYPTopicsBase #search form .inputGenre{
+#GroupsBase #search form .inputGenre{
     height: 45%;
     width: 65%;
     max-width: 50%;
@@ -73,18 +48,18 @@
     margin-left: 3%;
 }
 
-#FYPTopicsBase #search form .inputGenreSelect{
+#GroupsBase #search form .inputGenreSelect{
     max-height: 90%;
     width: 70%;
     max-width: 80%;
 }
 
-#FYPTopicsBase #search form #submit{
+#GroupsBase #search form #submit{
     height: 60%;
     width: 10%;
 }
 
-#FYPTopicsBase #search form #submit button{
+#GroupsBase #search form #submit button{
     margin-left: -10%;
     height: 90%;
     width: 100%;
@@ -93,33 +68,33 @@
     font-size: 2vh;
 }
 
-#FYPTopicsBase #topicList{
-    height: 75%;
+#GroupsBase #topicList{
+    height: 80%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-#FYPTopicsBase #topicList .topic{
+#GroupsBase #topicList .topic{
     cursor: pointer;
     border-radius: 1vw;
-    height: 20%;
+    height: 15%;
     width: 80%;
     border: 2px solid black;
     margin-bottom: auto;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
 }
 
-#FYPTopicsBase #topicList .topic .topicInfo{
+#GroupsBase #topicList .topic .topicInfo{
     font-size: 2vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 95%;
+    width: 85%;
 }
 
-#FYPTopicsBase #Controller{
+#GroupsBase #Controller{
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -127,7 +102,7 @@
     height: 10%;
 }
 
-#FYPTopicsBase #Controller button{
+#GroupsBase #Controller button{
     height: 30%;
     width: 10%;
     font-size: 2vh;
@@ -136,25 +111,25 @@
     color: white;
 }
 
-#FYPTopicsBase #Controller button:disabled{
+#GroupsBase #Controller button:disabled{
     opacity: 40%;
 }
 
-#FYPTopicsBase #Controller p{
+#GroupsBase #Controller p{
     font-size: 2.5vh;
 }
 
 @media only screen and (max-width: 600px) {
-    #FYPTopicsBase #AddTopicButton #iconTitle{
+    #GroupsBase #AddTopicButton #iconTitle{
         font-size: 16px;
     }
-    #FYPTopicsBase #AddTopicButton #icon{
+    #GroupsBase #AddTopicButton #icon{
         font-size: 36px;
     }
-    #FYPTopicsBase #search{
+    #GroupsBase #search{
         display: none;
     }
-    #FYPTopicsBase #topicList{
+    #GroupsBase #topicList{
         height: 90%;
     }
 }
