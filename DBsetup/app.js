@@ -49,6 +49,19 @@ const main = async() => {
         user: user._id
     })
     await student.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
+    //create default student account
+    password = await bcrypt.hash('Student3', 10)
+    user = new User({
+        username: 'Student3',
+        password: password,
+        contact: "student3@student.com",
+        role: 'Student'
+    })
+    await user.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
+    student = new Student({
+        user: user._id
+    })
+    await student.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })
     //create default admin account
     password = await bcrypt.hash('Admin', 10)
     user = new User({
@@ -80,7 +93,7 @@ const main = async() => {
     user = new User({
         username: 'Supervisor2',
         password: password,
-        contact: "supervisor@supervisor.com",
+        contact: "supervisor2@supervisor.com",
         role: 'Supervisor'
     })
     await user.save().then((obj) => {console.log(obj._id)}).catch( (err) => { throw err })

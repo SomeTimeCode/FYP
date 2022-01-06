@@ -22,7 +22,7 @@ function Card(props){
                         }
                     </p>
                 </div>
-                <div className='pending' style={{display: props.topic.pending, fontSize: "2vh", backgroundColor: "red", width: "5%"}}></div>
+                {props.topic.pending? <div className='pending' style={{display: props.topic.pending, fontSize: "2vh", backgroundColor: "red", width: "5%"}}></div> : null}
             </div>
         </>
     )

@@ -18,7 +18,8 @@ router.get("/group/view", supervisorController.viewTopicGroup)
 router.get("/group/:id", supervisorController.viewSpecificTopicGroup)
 router.post("/group/approveGroup", supervisorController.approveGroup)
 router.post("/group/rejectGroup", supervisorController.rejectGroup)
-
+router.post("/group/addStudent", supervisorController.addStudent)
+router.post("/group/adjustGroup", supervisorController.adjustGroup)
 
 
 module.exports = router

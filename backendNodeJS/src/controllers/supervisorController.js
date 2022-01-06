@@ -55,22 +55,24 @@ const viewTopicGroup = async (req, res) => {
 const viewSpecificTopicGroup = async (req, res) => {
     try{
         var topic = await Topic.findOne({_id: req.params.id}).populate("group").catch((err) => {throw err})
+        console.log(topic)
         if(topic){
             if(topic.supervisor != req.decoded._id){
                 res.status(400).json({message: "You have no right to view"})
                 return
             }else{
-                var {_id, group, topic_name, ...rest} = topic
+                let {_id, group, topic_name, ...rest} = topic
+                console.log(_id)
                 // Need to generate the details of the group list
                 var pending_groups = []
                 var approved_groups = []
                 var student_list = []
                 for(var i = 0; i < group.length; i++){
-                    var {_id, group_members, status, ...rest} = group[i]
+                    let {_id, group_members, group_name, status, ...rest} = group[i]
                     if(status == 'pending'){
                         pending_groups.push({_id: _id, group_members: group_members})
                     }else{
-                        approved_groups.push({_id: _id, group_members: group_members})
+                        approved_groups.push({_id: _id, group_name: group_name, group_members: group_members.map((member) => {return {_id: member._id, belongs: _id, orignalGroup: _id}})})
                     }
                     student_list.push(group_members)
                 }
@@ -148,75 +150,149 @@ const rejectGroup = async (req, res) => {
     }
 }
 
+const addStudent = async(req, res) => {
+    try{
+        if(req.body.input && req.body.topic_id){
+            if(req.body.input.includes("@")){
+                var query = {"contact": req.body.input}
+            }else{
+                var query = {"username": req.body.input}
+            }
+            var user = await User.findOne(query).catch((err) => {throw err})
+            if(user){
+                var student = await Student.findOne({user: user._id}).populate("group").catch((err) => {throw err})
+                if(student.group){
+                    //student with group
+                    // same topic already or not under the supervisor
+                    if(student.group.topic._id == req.body.topic_id){
+                        res.status(400).json({message: "Student already in topic"})
+                        return
+                    }else if(student.group.supervisor != req.decoded._id){
+                        res.status(400).json({message: "Student has another supervisor"})
+                        return
+                    }else{
+                        res.status(200).json({username: user.username, _id: user._id, belongs: "none", orignalGroup: student.group._id})
+                        return
+                    }
+                }else{
+                    res.status(200).json({username: user.username, _id: user._id, belongs: "none", orignalGroup: "none"})
+                    return
+                }
+            }else{
+                console.log("Student not found")
+                res.status(400).json({message: "Student not found"})
+                return
+            }
+        }else{
+            console.log("Missing Student name or contact")
+            res.status(400).json({message: "Missing Student name or contact"})
+            return
+        }
+    }catch(err){
+        console.log(err)
+        console.log("Error in Adding Student")
+        res.status(400).json({error: err, message: "Error in Adding Student"})
+    }
+}
 
-// const viewTopicGroup = async (req, res) => {
-//     try{
-//         if(req.query.topic_name == ""){
-//             var topic_name = { $ne: null }
-//         }else{
-//             var topic_name = { $regex: req.query.topic_name , $options: 'i' }
-//         }
-//         if(req.query.genre == ""){
-//             var genre = { $ne: null }
-//         }else{
-//             var genre_list = req.query.genre.split(",")
-//             var genre = {"$in" : genre_list.map((item) => {return item.replace("%20", " ")})}
-//         }
-//         const page = parseInt(req.query.page) || 1;
-//         const limit = parseInt(req.query.limit) || 5;
-//         const skip = (page - 1) * limit
-//         const total_topics = await Topic.countDocuments({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).catch((err) => {throw err})
-//         const total_pages = Math.ceil(total_topics / limit)
-//         var last = false
-//         if(page > total_pages){
-//             console.log("Out of pages")
-//             res.status(404).json({message: "Out of pages"})
-//             return
-//         }else if(page == total_pages){
-//             last = true
-//         }
-//         var topic_list = await Topic.find({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).sort('topic_name').skip(skip).limit(limit).populate('group').catch((err) => {throw err})
-//         console.log(topic_list)
-//         var list = []
-//         if(topic_list.length > 0){
-//             //restructure the data
-//             //building student id to name hashmap
-//             var students = []
-//             var student_hashMap = {}
-//             for(var i = 0; i < topic_list.length; i++){
-//                 var {short_description, detail_description, number_group, number_group_member, supervisor, __v, group, ...rest} = topic_list[i]._doc
-//                 // console.log(rest)
-//                 var pending_groups = []
-//                 var approved_groups =[]
-//                 group.map((group) => {
-//                     if(group.status == 'pending'){
-//                         pending_groups.push({_id: group._id, group_members: group.group_members})
-//                     }else{
-//                         approved_groups.push({_id: group._id, group_members: group.group_members})
-//                     }
-//                     students.push(group.group_members)
-//                 })
-//                 rest["pending_groups"] = pending_groups
-//                 rest["approved_groups"] = approved_groups
-//                 list.push(rest)
-//             }
-//             console.log(students)
-//             if(students.length > 0){
-//                 students = await User.find({_id: {$in: students.flat()}}).catch((err) => {throw err})
-//                 students.map((item) => {
-//                     student_hashMap[item._id] = item.username
-//                 })
-//             }
-//         }
-//         res.status(200).json({topic_list: list, last: last, student_hashMap: student_hashMap})
-//         return
-//     }catch(err){
-//         console.log(err)
-//         console.log("Error in viewing topics")
-//         res.status(400).json({error: err, message: "Error in viewing topics"})
-//         return
-//     }
-// }
+const adjustGroup = async(req, res) => {
+    try{
+        let topic = await Topic.findOne({_id: req.body.topic_id}).catch((err) => {throw err})
+        if(topic){
+            if(req.body.approvedGroups){
+                let approvedGroups = req.body.approvedGroups
+                console.log(approvedGroups)
+                //create new group or update group 
+                let student_list = []
+                let hashGroup_id = {}
+                let removeGroup = []
+                for(var i = 0; i < approvedGroups.length; i++){
+                    let group = approvedGroups[i]
+                    if(group.group_members.length == 0){
+                        // only delete exist group
+                        if(!group._id.includes("newGroup")){
+                            await Group.deleteOne({_id: group._id}).catch((err) => {throw err})
+                            removeGroup.push(group._id)
+                        }else{
+                            continue
+                        }
+                    }else if(group._id.includes("newGroup")){
+                        // create new group
+                        let newGroup = new Group({
+                            status: "approve",
+                            group_name: `${topic.topic_name}_${i + 1}`, 
+                            topic: topic._id,
+                            group_members: group.group_members.map((member) => member._id),
+                            supervisor: topic.supervisor,
+                            public: true
+                        })
+                        hashGroup_id[group._id] = newGroup._id
+                        await newGroup.save().catch((err) => {throw err})
+                    }else{
+                        // update exist group
+                        let existGroup = await Group.findOne({_id: group._id}).catch((err) => {throw err})
+                        existGroup.group_name = `${topic.topic_name}_${i + 1}`
+                        existGroup.group_members = group.group_members.map((member) => member._id)
+                        hashGroup_id[group._id] = existGroup._id
+                        await existGroup.save().catch((err) => {throw err})
+                    }
+                    student_list.push(group.group_members)
+                }
+                student_list = student_list.flat()
+                for(var i = 0; i < student_list.length; i++){
+                    let student = student_list[i]
+                    if(student.belongs == student.orignalGroup){
+                        continue
+                    }else if(hashGroup_id[student.orignalGroup] == undefined && student.orignalGroup != "none" && !removeGroup.includes(student.orignalGroup)){
+                        //student from other topic
+                        console.log(removeGroup.includes(student.orignalGroup))
+                        console.log(student.orignalGroup)
+                        console.log(removeGroup)
+                        var user = await Student.findOne({user: student._id}).catch((err) => {throw err})
+                        var orignalGroup = await Group.findOne({_id: user.orignalGroup}).catch((err) => {throw err})
+                        if(orignalGroup.group_members.length == 1 && orignalGroup.group_members[0] == user._id){
+                            // delete the group and remove from the topic
+                            var orignalTopic = await Topic.findOne({_id: orignalGroup.topic}).catch((err) => {throw err})
+                            orignalTopic.group = orignalTopic.group.filter((group) => group != orignalGroup._id)
+                            await orignalTopic.save().catch((err) => {throw err})
+                            await Group.deleteOne({_id: orignalGroup._id}).catch((err) => {throw err})
+                        }else if(orignalGroup.group_members.length > 2){
+                            orignalGroup.group_members = orignalGroup.group_members.filter(student => student != user._id)
+                            await orignalGroup.save().catch((err) => {throw err})
+                        }else{
+                            throw new Error(`something wrong with the orignalGroup`)
+                        }
+                        user.group = hashGroup_id[student.belongs]
+                        await user.save().catch((err)=>{throw err})
+                    }else{
+                        // normal update the student
+                        var user = await Student.findOne({user: student._id}).catch((err) => {throw err})
+                        user.group = hashGroup_id[student.belongs]
+                        await user.save().catch((err) => {throw err})
+                    }
+                }
+                topic.group = Object.values(hashGroup_id)
+                await topic.save().catch((err) => {throw err})
+                res.status(200).json({message: "Sucess update"})
+                console.log(student_list)
+                console.log(hashGroup_id)   
+            }else{
+                console.log("Adjust data is missing")
+                res.status(400).json({message: "Adjust data is missing"})
+                return
+            }
+        }else{
+            console.log("Topic not found")
+            res.status(400).json({message: "Topic not found"})
+            return
+        }
+    }catch(err){
+        console.log(err)
+        console.log("Error in Adjusting Group")
+        res.status(400).json({error: err, message: "Error in Adjusting Group"})
+    }
+}
+
 
 
 
@@ -427,6 +503,6 @@ const deleteTopic = async (req, res) => {
 }
 
 module.exports = { 
-                    viewSpecificTopicGroup, viewTopicGroup, approveGroup, rejectGroup,
+                    viewSpecificTopicGroup, viewTopicGroup, approveGroup, rejectGroup, addStudent, adjustGroup,
                     viewTopic, viewSpecificTopic, createTopic, updateTopic, deleteTopic 
                 }
