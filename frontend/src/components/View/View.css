@@ -4,8 +4,6 @@
 }
 
 #Page{
-    min-height: 640px;
-    min-width: 360px;
     width: 100vw;
     height: 100vh;
 }
@@ -16,13 +14,14 @@
 }
 
 #Body{
+    width: 100vw;
     display: flex;
     flex-direction: row;
 }
 
 
 #SideBar{
-    min-width: 20vw;
+    min-width: 20%;
     min-height: 90vh;
     max-height: 90vh;
     overflow-y: auto;
@@ -30,14 +29,19 @@
 }
 
 #Content{
-    min-width: 80vw;
+    min-width: 80%;
     min-height: 90vh;
     max-height: 90vh;
     overflow-y: auto;
     overflow-y: auto;
 }
 
-@media only screen and (max-width: 600px) {
-    #SideBar {min-width: 35vw;}
-    #Content {min-width: 65vw;}
+@media only screen and (max-width: 480px) {
+    #SideBar {min-width: 35%;}
+    #Content {min-width: 65%;}
+}
+
+@media only screen and (max-width: 768px) and (min-width: 481px){
+    #SideBar {min-width: 25%;}
+    #Content {min-width: 75%;}
 }

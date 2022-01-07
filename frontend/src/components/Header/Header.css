@@ -2,46 +2,41 @@
 
 #HeaderBase{
     min-width: inherit;
-    width: 100%;
     min-height: inherit;
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
     box-shadow: inset 0 -3px 0 0 black;
+    font-size: 14px;
 }
 
-#HeaderBase #Header{
-    width: 90%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#HeaderBase .Left h1{
+#HeaderBase .Left{
     font-family: 'Noto Serif', serif;
-    font-size: 2.5vh;
+    padding-left: 2vw;
+    font-size: 1em;
 }
 
 #HeaderBase .Right{
-    width: 30%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    margin-left: auto;
+    padding-right: 2vw;
+    font-size: 1.2em;
 }
 
 #HeaderBase .Right button{
+    margin-left: 2vw;
     padding: 1vh 2vw;
     background-color: black;
     cursor: pointer;
     display: flex;
     flex-direction: row;
     color: white;
-    font-size: 16px;
+    font-size: 1.2em;
     font-weight: 700;
-    transition: background-color 1s;
+    transition: background-color 0.5s linear, color 0.5s linear;
 }
 
 #HeaderBase .Right button:hover{
@@ -50,8 +45,26 @@
 }
 
 
-@media only screen and (max-width: 600px) {
-    #HeaderBase .Left{display: none;}
-    #HeaderBase .Right{width: 100%;}
+@media only screen and (max-width: 480px) {
+    #HeaderBase .Left{
+        display: none;
+    }
+    #HeaderBase .Right{
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 1.2em;
+    }
+    #HeaderBase .Right button{
+        font-size: 1em;
+        margin-left: 0;
+    }
 }
 
+@media only screen and (max-width: 768px) and (min-width: 481px){
+    #HeaderBase{
+        font-size: 12px;
+    }
+}

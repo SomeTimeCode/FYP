@@ -10,7 +10,7 @@ import './SupervisorAddTopic.css'
 function SupervisorAddTopic() {
     const MySwal = withReactContent(Swal)
     const navigate = useNavigate();
-    const [selectedValue, setSelectedValue] = useState(1)
+    const [selectedValue, setSelectedValue] = useState(-1)
 
     const formik = useFormik({
         initialValues: {
@@ -27,11 +27,11 @@ function SupervisorAddTopic() {
             .required('Topic name is required'),
             short_description: Yup.string()
             .max(100, 'Must be 100 characters or less')
-            .required('A short description is required'),
+            .required('Short Description about the topic is required'),
             detail_description: Yup.string(),
-            genre: Yup.array().min(1).required("At leasat 1 genre need to be selected"),
-            number_group: Yup.number().min(1).required('At least 1 Number of Group Opening is required'),
-            number_group_member: Yup.number().min(1).required('At least 1 member per Group is required')
+            genre: Yup.array().min(1).required("At leasat 1 genre is required to select"),
+            number_group: Yup.number().min(1).required('At least 1 open group is required for students to apply'),
+            number_group_member: Yup.number().min(1).required('At least 1 student per group is required')
         }),
         onSubmit: values => {
             const addTopic = async(values) =>{
@@ -48,7 +48,7 @@ function SupervisorAddTopic() {
                     if(response.status === 200){
                         console.log(data)
                         MySwal.fire({
-                            title: <p>Topic Create Success</p>,
+                            title: <p>Successfully Create New Topic</p>,
                             icon: 'success',
                             confirmButtonColor: '#3085d6',
                         })
@@ -100,8 +100,8 @@ function SupervisorAddTopic() {
             <div id='AddTopicTitle'>
                 <p>Topic Submission Form</p>
             </div>
-            <div id='AddTopicForm'>
-                <form onSubmit={formik.handleSubmit}>
+            <form onSubmit={formik.handleSubmit}>
+                <div className='inputBase'>
                     <div className='input'>
                         <label htmlFor="topic_name">Topic Name:</label>
                         <input
@@ -112,11 +112,13 @@ function SupervisorAddTopic() {
                             onBlur={formik.handleBlur}
                             value={formik.values.topic_name}
                         />
-                        {formik.touched.topic_name && formik.errors.topic_name ? (
-                            <div className='Warning'>{formik.errors.topic_name}</div>
-                        ) : null}
                     </div>
-                    
+                    {formik.touched.topic_name && formik.errors.topic_name ? (
+                        <div className='warning'>{formik.errors.topic_name}</div>
+                    ) : null}
+                </div>
+
+                <div className='inputBase'>
                     <div className='input'>
                         <label htmlFor="short_description">Short Description:</label>
                         <input
@@ -127,11 +129,13 @@ function SupervisorAddTopic() {
                             onBlur={formik.handleBlur}
                             value={formik.values.short_description}
                         />
-                        {formik.touched.short_description && formik.errors.short_description ? (
-                            <div className='Warning'>{formik.errors.short_description}</div>
-                        ) : null}
                     </div>
+                    {formik.touched.short_description && formik.errors.short_description ? (
+                        <div className='warning'>{formik.errors.short_description}</div>
+                    ) : null}
+                </div>
 
+                <div className='inputBase'>
                     <div className='input'>
                         <label htmlFor="detail_description">Detail Description:</label>
                         <input
@@ -142,13 +146,12 @@ function SupervisorAddTopic() {
                             onBlur={formik.handleBlur}
                             value={formik.values.detail_description}
                         />
-                        {formik.touched.detail_description && formik.errors.detail_description ? (
-                            <div className='Warning'>{formik.errors.detail_description}</div>
-                        ) : null}
                     </div>
-
+                </div>
+                
+                <div className='inputBase'>
                     <div className='input'>
-                        <label htmlFor="number_group">Number of Groups:</label>
+                        <label htmlFor="number_group">Number of Open Group(s):</label>
                         <input
                             id="number_group"
                             name="number_group"
@@ -157,13 +160,15 @@ function SupervisorAddTopic() {
                             onBlur={formik.handleBlur}
                             value={formik.values.number_group}
                         />
-                        {formik.touched.number_group && formik.errors.number_group ? (
-                            <div className='Warning'>{formik.errors.number_group}</div>
-                        ) : null}
                     </div>
-                    
+                    {formik.touched.number_group && formik.errors.number_group ? (
+                        <div className='warning'>{formik.errors.number_group}</div>
+                    ) : null}
+                </div>
+                
+                <div className='inputBase'>
                     <div className='input'>
-                        <label htmlFor="number_group_member">Max number of members in group:</label>
+                        <label htmlFor="number_group_member">Maximum student(s) per group:</label>
                         <input
                             id="number_group_member"
                             name="number_group_member"
@@ -172,11 +177,13 @@ function SupervisorAddTopic() {
                             onBlur={formik.handleBlur}
                             value={formik.values.number_group_member}
                         />
-                        {formik.touched.number_group_member && formik.errors.number_group_member ? (
-                            <div className='Warning'>{formik.errors.number_group_member}</div>
-                        ) : null}
                     </div>
-                    
+                    {formik.touched.number_group_member && formik.errors.number_group_member ? (
+                        <div className='warning'>{formik.errors.number_group_member}</div>
+                    ) : null}
+                </div>
+                
+                <div className='inputBase'>
                     <div className='input'>
                         <label htmlFor="genre">Genre(s):</label>
                         <Select
@@ -184,24 +191,29 @@ function SupervisorAddTopic() {
                             isMulti={true}
                             id="genre"
                             name="genre"
+                            styles={{width: "75%", fontSize: "0.6em"}}
                             placeholder="Select Genres"
                             onChange={(e) => {
                                 formik.values.genre = e
-                                console.log(e.length)
-                                console.log(selectedValue)
                                 setSelectedValue(e.length)
-                                console.log(formik.values.genre)
                             }}
                         />
-                        {selectedValue === 0? (
-                            <div className='Warning'>Required</div>
-                        ) : null}
                     </div>
-                    <div id='submit'>
-                        <button type="submit">Submit</button>
-                    </div>
-                </form>
-            </div>
+                    {/* formik.touched.genre && formik.errors.genre */}
+                    {formik.touched.genre && formik.errors.genre? (
+                        (selectedValue === -1 || selectedValue === 0? 
+                            <div className='warning'>At leasat 1 genre is required to select </div>
+                        :
+                        null
+                    )
+                    ) : (selectedValue === 0 ? 
+                            <div className='warning'>At leasat 1 genre is required to select </div>
+                        :
+                        null
+                    )}
+                </div>
+                <button type="submit">Submit</button>
+            </form>
         </div>
     )
 }

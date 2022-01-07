@@ -7,16 +7,14 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    font-size: 34px;
 }
 
-#LoginBase #title p{
-    font-size: 4vh;
+#LoginBase #title{
+    font-size: 1.2em;
     font-weight: 700;
     margin-bottom: 3vh;
-}
-
-#LoginBase #login p{
-    font-size: 3vh;
+    text-align: center;
 }
 
 #LoginBase form{
@@ -25,48 +23,107 @@
     align-items: center;
     flex-direction: column;
     border: 2px solid black;
-    height: 50%;
-    width: 60%;
+    height: 60%;
+    min-height: 50vh;
+    width: 70%;
 }
 
-#LoginBase form #input{
+#LoginBase form #login{
+    height: 20%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+#LoginBase form .inputBase{
+    height: 20%;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+#LoginBase form .inputBase .input{
+    height: 60%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#LoginBase form .inputBase .input label{
+    width: 20%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    height: 20%;
-    width: 80%;
-    margin-bottom: 2vh;
+    font-size: 0.6em;
 }
 
-#LoginBase form #input label{
-    margin-right: 3px;
-    font-size: 18px;
-    width: 20%;
-}
-
-#LoginBase  form #input input{
+#LoginBase form .inputBase .input input{
     width: 70%;
-    height: 60%;
+    height: 30%;
 }
 
-#LoginBase #warning p{
+#LoginBase form .inputBase .warning{
+    width: 100%;
+    height: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    font-size: 0.5em;
+    color: red;
+}
+
+#LoginBase #inCorrectLogin{
     color: red;
     margin-top: 5px;
-    font-size: 18px;
+    font-size: 0.5em;
+    text-align: center;
 }
 
 #LoginBase button{
-    font-size: 15px;
+    font-size: 0.5em;
     font-weight: 600;
     background-color: white;
     padding: 1.5vh 4vw;
     cursor: pointer;
-    transition: color 1s;
-    transition: background-color 1s;
+    transition: color 0.5s linear, background-color 0.5s linear;
 }
 
 #LoginBase button:hover{
     background-color: black;
     color: white;
+}
+
+@media only screen and (max-width: 480px) {
+    #LoginBase{
+        font-size: 24px;
+    }
+    #LoginBase form{
+        width: 90%;
+    }
+    #LoginBase form .inputBase .input label{
+        width: 30%;
+        font-size: 0.6em;
+    }
+    
+    #LoginBase form .inputBase .input input{
+        width: 70%;
+    }
+}
+
+@media only screen and (max-width: 768px) and (min-width: 481px){
+    #LoginBase{
+        font-size: 28px;
+    }
+    #LoginBase form{
+        width: 80%;
+    }
 }

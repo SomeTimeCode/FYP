@@ -130,7 +130,7 @@ function StudentTopicDetail() {
 
     const createGroup = async (event) => {
         const { value: accept } = await MySwal.fire({
-            title: `Create Group - ${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${topic.topic.group.length + 1}` }`,
+            title: `Create Group - ${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${Object.keys(topic.topic.group).length + 1}` }`,
             showCancelButton: true,
             // document.getElementsByClassName('form-input').style.display="block"
             input: 'checkbox',

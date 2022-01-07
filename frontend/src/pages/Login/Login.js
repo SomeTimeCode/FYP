@@ -29,28 +29,28 @@ function Login() {
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: `${values.username}`, password: `${values.password}` })
+                    body: JSON.stringify({ username: values.username, password: values.password })
                 };
                 await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/auth/login`, requestOptions)
                 .then(async (response) => {
                     let data = await response.json()
                     if(response.status === 200){
-                        console.log(data);
-                        setCorrectLogin(true)
                         ctx.onLogin(data.token ,data.role)
                         MySwal.fire({
                             title: <p>Login Success</p>,
                             icon: 'success',
                             confirmButtonColor: '#3085d6',
-                          })
-                          .then(() => {
+                        }).then(() => {
                             return navigate(`/${data.role.toLowerCase()}`);
-                          })
+                        })
                     }else{
-                        console.log(data.message)
-                        if(data.message === "Wrong username or password"){
+                        MySwal.fire({
+                            title: <p>Fail to Login</p>,
+                            text: data.message,
+                            icon: "error"
+                        }).then(() => {
                             setCorrectLogin(false)
-                        }
+                        })
                     }
                 })
                 .catch(err => console.log(err))
@@ -65,8 +65,8 @@ function Login() {
                 <div id='title'><p>FYP Management System</p></div>
                 <form onSubmit={formik.handleSubmit}>
                     <div id="login"><p>Login</p></div>
-                    <div id='input'>
-                        <div style={{width: "100%", height: "30%"}}>
+                    <div className='inputBase'>
+                        <div className='input'>
                             <label htmlFor="username">User Name:</label>
                             <input
                                 id="username"
@@ -77,10 +77,10 @@ function Login() {
                                 value={formik.values.username}
                             />
                         </div>
-                        {formik.touched.username && formik.errors.username ? ( <div id='warning'> <p>{formik.errors.username}</p> </div> ) : null}
+                        {formik.touched.username && formik.errors.username ? ( <div className='warning'> <p>{formik.errors.username}</p> </div> ) : null}
                     </div>
-                    <div id='input'>
-                        <div style={{width: "100%", height: "30%"}}>
+                    <div className='inputBase'>
+                        <div className='input'>
                             <label htmlFor="password">Password:</label>
                             <input
                                 id="password"
@@ -91,11 +91,9 @@ function Login() {
                                 value={formik.values.password}
                             />
                         </div>
-                        {formik.touched.password && formik.errors.password ? ( <div id='warning'> <p>{formik.errors.password}</p> </div> ) : null}
+                        {formik.touched.password && formik.errors.password ? ( <div className='warning'> <p>{formik.errors.password}</p> </div> ) : null}
                     </div>      
-                    <div>
-                        {!correctLogin? <div id="warning"><p>Incorrect Email/Password Input. Please Try Again.</p></div> : null}
-                    </div>
+                    {!correctLogin? <div id='inCorrectLogin'><p>Fail to Login the FYP Management System. Please Try Login Again.</p></div> : null}
                     <button type="submit">Submit</button>
                 </form>
             </div>

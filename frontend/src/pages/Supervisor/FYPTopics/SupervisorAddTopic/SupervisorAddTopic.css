@@ -4,85 +4,109 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    height: 100%;
+    height: auto;
     width: 100%;
+    font-size: 30px;
 }
 
 #AddTopicBase #AddTopicTitle{
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 10%;
+    min-height: 10vh;
     width: 100%;
+    font-size: 1.2em;
 }
 
-#AddTopicBase #AddTopicTitle p{
-    font-size: 3vh;
-    font-weight: 500;
-}
-
-#AddTopicBase #AddTopicForm{
-    min-height: 90%;
-    width: 90%;
-    height: 90%;
-}
-
-#AddTopicBase #AddTopicForm form{
-    height: 100%;
-    width: 100%;
+#AddTopicBase form{
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    min-height: 60vh;
+    height: auto;
+    width: 90%;
 }
 
-#AddTopicBase #AddTopicForm form .input{
-    width: 100%;
-    margin-top: 8%;
-}
-
-#AddTopicBase #AddTopicForm form .input label{
-    font-size: 2vh;
-    width: 30%;
-    margin-top: 8%;
-    margin-right: 1%;
-}
-
-#AddTopicBase #AddTopicForm form .input input{
-    width: 60%;
-    margin-top: 3%;
-    height: 2vh;
-}
-
-#AddTopicBase #AddTopicForm form .input .Warning{
-    font-size: 1.8vh;
-    margin-top: 1vh;
-    color: red;
-}
-
-#AddTopicBase #AddTopicForm form #submit{
-    margin-top: 8%;
-    width: 100%;
-    height: 5%;
+#AddTopicBase form .inputBase{
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: flex-start;
+    min-height: 8vh;
+    width: 100%;
+    margin-bottom: 2vh;
 }
 
-#AddTopicBase #AddTopicForm form #submit button{
+#AddTopicBase form .inputBase .input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    min-height: 3vh;
+}
+
+#AddTopicBase form .inputBase .input label{
+    width: 25%;
+    font-size: 0.7em;
+}
+
+#AddTopicBase form .inputBase .input input{
+    width: 75%;
+    font-size: 0.6em;
+}
+
+#AddTopicBase form .inputBase .input #genre{
+    width: 75%;
+    font-size: 0.6em;
+}
+
+
+#AddTopicBase form .inputBase .warning{
+    width: 70%;
+    font-size: 0.55em;
+    color: red;
+    margin-top: 1vh;
+}
+
+#AddTopicBase form button{
+    align-self: center;
     width: 20%;
-    height: 5vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2vh;
+    padding: 2vh 5vw;
     background-color: black;
     color: white;
+    margin-top: 2vh;
+    font-size: 0.8em;
     font-weight: 600;
-    transition: background-color 1s;
-    transition: color 1s;
+    transition: background-color 0.5s linear, color 0.5s linear;
     cursor: pointer;
 }
 
-#AddTopicBase #AddTopicForm form #submit button:hover{
+#AddTopicBase form button:hover{
     background-color: white;
     color: black;
+} 
+
+@media only screen and (max-width: 480px) {
+    #AddTopicBase{
+        font-size: 16px;
+    }
+    #AddTopicBase form .inputBase .input label{
+        width: 35%;
+    }
+    
+    #AddTopicBase form .inputBase .input input{
+        width: 65%;
+    }
+    
+    #AddTopicBase form .inputBase .input #genre{
+        width: 65%;
+    }
+    #AddTopicBase form button{
+        padding: 2vh 10vw;
+    }
 }

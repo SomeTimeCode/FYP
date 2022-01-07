@@ -9,14 +9,12 @@ function Header(props) {
 
     return (
         <div id='HeaderBase'>
-            <div id='Header'>
-                <div className="Left">
-                    <h1>FYP Management System</h1>
-                </div>
-                <div className="Right">
-                    <p><MdOutlinePerson size={18}/>&nbsp;{props.role.toUpperCase()}</p>
-                    <button onClick={(e) => {ctx.onLogout()}}><p><MdLogout size={18}/>&nbsp;&nbsp;</p><p>Logout</p></button>
-                </div>
+            <div className="Left">
+                <h1>FYP Management System</h1>
+            </div>
+            <div className="Right">
+                <p><MdOutlinePerson/>&nbsp;{props.role.toUpperCase()}</p>
+                <button onClick={(e) => {ctx.onLogout()}}><p><MdLogout size={18}/>&nbsp;&nbsp;</p><p>Logout</p></button>
             </div>
         </div>
     )
