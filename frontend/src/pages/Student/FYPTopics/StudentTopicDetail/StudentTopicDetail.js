@@ -34,8 +34,7 @@ function StudentTopicDetail() {
         fetchData()
     }, [])
 
-    const joinGroup = async (event, state) => {
-        var key = event.target.id
+    const joinGroup = async (key, state) => {
         if(topic.topic.group[key].member.length >= topic.topic.number_group_member){
             MySwal.fire({
                 title: `This group already full`,
@@ -228,7 +227,7 @@ function StudentTopicDetail() {
                     <p>{Object.keys(topic.topic.group).length === 0? 'Do not have any group now' : 'Click the above to join'} </p>
                     {Object.keys(topic.topic.group).map((key) => {
                         return (
-                            <div className='group' key={key} id={key} onClick={(e) => {joinGroup(e, topic.topic.group[key].public)}}>
+                            <div className='group' key={key} id={key} onClick={(e) => {joinGroup(key, topic.topic.group[key].public)}}>
                                 <div className='info'>
                                     <p>Group Leader: {topic.topic.group[key].member[0].username}</p>
                                     <p>Contact:{topic.topic.group[key].member[0].contact}</p>

@@ -1,118 +1,135 @@
 #FYPTopicsBase{
-    min-width: inherit;
     min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
     width: 100%;
-    height: 100%;
+    font-size: 30px;
 }
 
 #FYPTopicsBase #AddTopicButton{
     width: 90%;
-    height: 8%;
+    height: 2vh;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-}
-
-#FYPTopicsBase #AddTopicButton{
-    height: 5%;
-    font-size: 40px;
+    font-size: 0.9em;
     color: red;
-}
-
-#FYPTopicsBase #AddTopicButton #iconTitle{
-    font-size: 20px;
+    padding-top: 1vh;
 }
 
 #FYPTopicsBase #AddTopicButton #icon{
     cursor: pointer;
-    font-size: 40px;
     color: red;
+    font-size: 1.3em;
 }
 
 #FYPTopicsBase #title{
-    height: 3%;
-    padding-bottom: 3%;
+    height: 5vh;
     display: flex;
     width: 100%;
     align-items: center;
     justify-content: center;
-    font-size: 3vh;
+    font-size: 1em;
+    padding-bottom: 2vh;
 }
 
 #FYPTopicsBase #search{
-    height: 8%;
+    height: 5vh;
     width: 100%;
 }
 
 #FYPTopicsBase #search form{
     height: 100%;
     width: 100%;
+    box-shadow: inset 0 2px 0 0 black;
     display: flex;
     flex-direction: row;
     align-items: center;
-    box-shadow: inset 0 2px 0 0 black;
+    justify-content: space-evenly;
 }
 
 #FYPTopicsBase #search form .input{
-    height: 35%;
-    width: 25%;
-}
-
-#FYPTopicsBase #search form .input input{
-    height: 80%;
-    width: 100%;
-}
-
-#FYPTopicsBase #search form .inputGenre{
-    height: 45%;
-    width: 65%;
-    max-width: 50%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-left: 3%;
+    width: 30%;
+    height: 100%;
+    font-size: 0.6em;
 }
 
-#FYPTopicsBase #search form .inputGenreSelect{
-    max-height: 90%;
-    width: 70%;
-    max-width: 80%;
+#FYPTopicsBase #search form .input label{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    width: 20%;
+    height: 100%;
 }
 
-#FYPTopicsBase #search form #submit{
+#FYPTopicsBase #search form .input input{
+    width: 80%;
     height: 60%;
-    width: 10%;
 }
 
-#FYPTopicsBase #search form #submit button{
-    margin-left: -10%;
-    height: 90%;
-    width: 100%;
+#FYPTopicsBase #search form .inputGenre{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    font-size: 0.6em;
+}
+
+#FYPTopicsBase #search form .inputGenre label{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    width: 20%;
+    height: 100%;
+}
+
+#FYPTopicsBase #search form .inputGenre #genre{
+    margin-top: 0.5vh;
+    width: 80%;
+    height: 3vh;
+}
+
+#FYPTopicsBase #search form button{
+    height: 80%;
+    width: 10%;
     background-color: black;
     color: white;
-    font-size: 2vh;
+    font-size: 0.6em;
 }
 
 #FYPTopicsBase #topicList{
-    height: 75%;
+    min-height: 70vh;
+    height: auto;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 #FYPTopicsBase #topicList .topic{
+    margin-top: 3vh;
     cursor: pointer;
     border-radius: 1vw;
-    height: 20%;
-    width: 80%;
+    min-height: 20vh;
+    height: auto;
+    width: 85%;
     border: 2px solid black;
-    margin-bottom: auto;
     display: flex;
     justify-content: center;
 }
 
 #FYPTopicsBase #topicList .topic .topicInfo{
-    font-size: 2vh;
+    font-size: 0.7em;
+    line-height: 1.3em;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -123,14 +140,14 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    width: 100%;
-    height: 10%;
+    width: 90%;
+    height: 10vh;
 }
 
 #FYPTopicsBase #Controller button{
     height: 30%;
     width: 10%;
-    font-size: 2vh;
+    font-size: 0.7em;
     font-weight: 500;
     background-color: black;
     color: white;
@@ -141,20 +158,33 @@
 }
 
 #FYPTopicsBase #Controller p{
-    font-size: 2.5vh;
+    font-size: 1em;
 }
 
-@media only screen and (max-width: 600px) {
-    #FYPTopicsBase #AddTopicButton #iconTitle{
-        font-size: 16px;
+@media only screen and (max-width: 800px) {
+    #FYPTopicsBase{
+        font-size: 30px;
     }
-    #FYPTopicsBase #AddTopicButton #icon{
-        font-size: 36px;
-    }
+
     #FYPTopicsBase #search{
         display: none;
     }
-    #FYPTopicsBase #topicList{
-        height: 90%;
+
+    #FYPTopicsBase #topicList .topic{
+        min-height: 30vh;
+    }
+
+    #FYPTopicsBase #AddTopicButton{
+        font-size: 0.8em;
+        color: red;
+        padding-top: 2vh;
+    }
+    
+    #FYPTopicsBase #AddTopicButton #icon{
+        font-size: 1.1em;
+    }
+
+    #FYPTopicsBase #title{
+        padding-top: 3vh;
     }
 }

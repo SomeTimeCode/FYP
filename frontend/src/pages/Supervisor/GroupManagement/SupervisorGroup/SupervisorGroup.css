@@ -1,93 +1,120 @@
 #GroupsBase{
-    min-width: inherit;
     min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
     width: 100%;
-    height: 100%;
+    font-size: 30px;
 }
 
 #GroupsBase #title{
-    height: 8%;
+    height: 5vh;
     display: flex;
     width: 100%;
     align-items: center;
     justify-content: center;
-    font-size: 3vh;
+    font-size: 1em;
+    padding-bottom: 2vh;
 }
 
 #GroupsBase #search{
-    height: 12%;
+    height: 5vh;
     width: 100%;
 }
 
 #GroupsBase #search form{
     height: 100%;
     width: 100%;
+    box-shadow: inset 0 2px 0 0 black;
     display: flex;
     flex-direction: row;
     align-items: center;
-    box-shadow: inset 0 2px 0 0 black;
+    justify-content: space-evenly;
 }
 
 #GroupsBase #search form .input{
-    height: 35%;
-    width: 25%;
-}
-
-#GroupsBase #search form .input input{
-    height: 80%;
-    width: 100%;
-}
-
-#GroupsBase #search form .inputGenre{
-    height: 45%;
-    width: 65%;
-    max-width: 50%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-left: 3%;
+    width: 30%;
+    height: 100%;
+    font-size: 0.6em;
 }
 
-#GroupsBase #search form .inputGenreSelect{
-    max-height: 90%;
-    width: 70%;
-    max-width: 80%;
+#GroupsBase #search form .input label{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    width: 20%;
+    height: 100%;
 }
 
-#GroupsBase #search form #submit{
+#GroupsBase #search form .input input{
+    width: 80%;
     height: 60%;
-    width: 10%;
 }
 
-#GroupsBase #search form #submit button{
-    margin-left: -10%;
-    height: 90%;
-    width: 100%;
+#GroupsBase #search form .inputGenre{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    font-size: 0.6em;
+}
+
+#GroupsBase #search form .inputGenre label{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    width: 20%;
+    height: 100%;
+}
+
+#GroupsBase #search form .inputGenre #genre{
+    margin-top: 0.5vh;
+    width: 80%;
+    height: 3vh;
+}
+
+#GroupsBase #search form button{
+    height: 80%;
+    width: 10%;
     background-color: black;
     color: white;
-    font-size: 2vh;
+    font-size: 0.6em;
 }
 
+
+
 #GroupsBase #topicList{
-    height: 80%;
+    min-height: 70vh;
+    height: auto;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 #GroupsBase #topicList .topic{
+    margin-top: 3vh;
     cursor: pointer;
     border-radius: 1vw;
-    height: 15%;
-    width: 80%;
+    min-height: 10vh;
+    height: auto;
+    width: 85%;
     border: 2px solid black;
-    margin-bottom: auto;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
 }
 
 #GroupsBase #topicList .topic .topicInfo{
-    font-size: 2vh;
+    font-size: 0.7em;
+    line-height: 1.3em;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -98,14 +125,14 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    width: 100%;
-    height: 10%;
+    width: 90%;
+    height: 10vh;
 }
 
 #GroupsBase #Controller button{
     height: 30%;
     width: 10%;
-    font-size: 2vh;
+    font-size: 0.7em;
     font-weight: 500;
     background-color: black;
     color: white;
@@ -116,20 +143,23 @@
 }
 
 #GroupsBase #Controller p{
-    font-size: 2.5vh;
+    font-size: 1em;
 }
 
-@media only screen and (max-width: 600px) {
-    #GroupsBase #AddTopicButton #iconTitle{
-        font-size: 16px;
+@media only screen and (max-width: 800px) {
+    #GroupsBase{
+        font-size: 30px;
     }
-    #GroupsBase #AddTopicButton #icon{
-        font-size: 36px;
-    }
+
     #GroupsBase #search{
         display: none;
     }
-    #GroupsBase #topicList{
-        height: 90%;
+
+    #GroupsBase #topicList .topic{
+        min-height: 20vh;
+    }
+
+    #GroupsBase #title{
+        padding-top: 3vh;
     }
 }

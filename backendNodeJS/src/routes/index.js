@@ -6,6 +6,9 @@ const studentRouter = require('./student');
 const supervisorRouter = require('./supervisor');
 const authMiddlewares = require('../middlewares/auth')
 
+router.get("/", (req, res) => {
+    res.status(200).json({ message: "Welcome to RayRay /api." });
+});
 
 router.use('/auth', authRouter);
 
@@ -13,10 +16,5 @@ router.use('/auth', authRouter);
 router.use('/admin', authMiddlewares.verifyToken, authMiddlewares.verifyAdmin , adminRouter);
 router.use('/student', authMiddlewares.verifyToken, authMiddlewares.verifyStudent, studentRouter)
 router.use('/supervisor', authMiddlewares.verifyToken, authMiddlewares.verifySupervisor ,supervisorRouter);
-
-router.get("/", (req, res) => {
-    res.status(200).json({ message: "Welcome to RayRay /api." });
-});
-
 
 module.exports = router

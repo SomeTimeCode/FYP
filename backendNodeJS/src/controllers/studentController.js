@@ -6,9 +6,6 @@ const User = require("../models/userModel")
 const bcrypt = require('bcryptjs')
 
 
-
-
-
 // view fyp topic
 const viewTopic = async (req, res) => {
     // new to chagne the logic
@@ -38,15 +35,14 @@ const viewTopic = async (req, res) => {
 
 const viewSpecificTopic = async (req, res) =>{
     try{
-        console.log("here")
         var topic = await Topic.findOne({_id: req.params.id}).catch((err) => {throw err})
         if(topic){
             var {supervisor, __v, ...rest} = topic._doc
-            var supervisor = await User.findOne({_id: topic.supervisor}).catch((err) => {throw err})
+            var supervisor = await Supervisor.findOne({_id: topic.supervisor}).populate("user").catch((err) => {throw err})
             var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
             var group_list = await Group.find({_id: {$in: rest.group}}).catch((err) => {throw err})
-            //build the hashMap for group id to public
-            // build the hashMap for group id to members list
+            // public_list record the the group is public or not {group_id: public/private}
+            // group_list record the group's group member {group_id: group_member}
             var obj = {}
             var obj2= {}
             for(var i = 0; i < group_list.length; i++){
@@ -58,11 +54,11 @@ const viewSpecificTopic = async (req, res) =>{
             public_list = obj2
             // build the hashMap for student id to {username, contact}
             var member_list = Object.values(group_list).flat()
-            member_list = await User.find({_id: {$in: member_list}}).catch((err) => {throw err})
+            member_list = await Student.find({_id: {$in: member_list}}).populate("user").catch((err) => {throw err})
             obj = {}
             for(var i = 0; i < member_list.length; i++){
                 var key = member_list[i]._id
-                obj[key] = {username: member_list[i].username, contact: member_list[i].contact}
+                obj[key] = {username: member_list[i].user.username, contact: member_list[i].user.contact}
             }
             member_list = obj
             // build the hashMap for group id to list of {username, contact}
@@ -71,7 +67,7 @@ const viewSpecificTopic = async (req, res) =>{
             }
             rest.group = group_list
             // console.log(rest.group)
-            res.status(200).json({topic: rest, supervisor: {name: supervisor.username}, student: {group: student.group} })
+            res.status(200).json({topic: rest, supervisor: {name: supervisor.user.username, contact: supervisor.user.contact}, student: {group: student.group} })
             return
         }else{
             res.status(400).json({message: "Specifici topic does not found"})
@@ -90,8 +86,9 @@ const viewSpecificTopic = async (req, res) =>{
 const createGroup = async (req, res) => {
     try{
         var topic = await Topic.findOne({_id: req.body.id}).catch((err) => {throw err})
+        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
         if(topic.number_group == 0){
-            res.status(400).json({message: "All the group has been filled up"})
+            res.status(400).json({message: "No open group available now"})
         }
         var public = true
         var password = req.body.password
@@ -100,9 +97,9 @@ const createGroup = async (req, res) => {
             public = false
         }
         var group = new Group({
-            group_name: req.body.group_name, 
+            group_name: `${req.body.group_name}_Pending`, 
             topic: topic._id,
-            group_members: [req.decoded._id],
+            group_members: [student._id],
             supervisor: topic.supervisor,
             password: password,
             public: public 
@@ -111,7 +108,6 @@ const createGroup = async (req, res) => {
         topic.number_group = topic.number_group - 1
         topic.group.push(group._id)
         await topic.save().catch((err) => {throw err})
-        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
         student.group = group._id
         student.save().catch((err) => {throw err})
         res.status(200).json({message: "Group has been created"})
@@ -144,7 +140,7 @@ const joinGroup = async (req, res) =>{
             }
             var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
             if(group.public){
-                group.group_members.push(req.decoded._id)
+                group.group_members.push(student._id)
                 group.save().catch((err) => {throw err})
                 student.group = group._id
                 student.save().catch((err) => {throw err})
@@ -152,7 +148,7 @@ const joinGroup = async (req, res) =>{
                 return
             }else{
                 if(bcrypt.compareSync(req.body.password, group.password)){
-                    group.group_members.push(req.decoded._id)
+                    group.group_members.push(student._id)
                     group.save().catch((err) => {throw err})
                     student.group = group._id
                     student.save().catch((err) => {throw err})

@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { TouchBackend } from 'react-dnd-touch-backend'
 import { useParams } from 'react-router-dom';
 import { ImCross, ImCheckmark } from "react-icons/im";
 import Swal from 'sweetalert2'
@@ -420,7 +421,7 @@ function SupervisorGroupManage() {
                         }
                     </div>
                     <div id='approveSlot'>
-                        <DndProvider backend={HTML5Backend}>
+                        <DndProvider backend={ (window.innerWidth > 800 ? HTML5Backend : TouchBackend)}>
                             <AddStudent newStudent={newStudent} hashMap={hashMap} setHashMap={setHashMap} setNewStudent={setNewStudent} setApprovedGroups={setApprovedGroups} approvedGroups={approvedGroups}/>
                             <div id='ApproveAreaControl'>
                                 <button onClick={(e) => {createGroup()}}>Create Group</button>

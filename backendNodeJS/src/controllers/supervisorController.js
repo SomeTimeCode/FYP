@@ -2,6 +2,7 @@ const Group = require('../models/groupModel')
 const Topic = require('../models/topicModel')
 const Student = require('../models/studentModel')
 const User = require('../models/userModel')
+const Supervisor = require('../models/supervisorModel')
 
 // FYP Group controller
 // pending group --> approve/merge
@@ -10,6 +11,7 @@ const User = require('../models/userModel')
 // when make change if is new user or from other topic need to make change for those student
 const viewTopicGroup = async (req, res) => {
     try{
+        var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
         if(req.query.topic_name == ""){
             var topic_name = { $ne: null }
         }else{
@@ -24,7 +26,7 @@ const viewTopicGroup = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit
-        const total_topics = await Topic.countDocuments({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).catch((err) => {throw err})
+        const total_topics = await Topic.countDocuments({supervisor: supervisor._id, topic_name: topic_name, genre: genre}).catch((err) => {throw err})
         const total_pages = Math.ceil(total_topics / limit)
         var last = false
         if(page > total_pages){
@@ -34,7 +36,7 @@ const viewTopicGroup = async (req, res) => {
         }else if(page == total_pages){
             last = true
         }
-        var topic_list = await Topic.find({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).populate("group").sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
+        var topic_list = await Topic.find({supervisor:  supervisor._id, topic_name: topic_name, genre: genre}).populate("group").sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
         //refine the data to response 
         topic_list = topic_list.map((topic) => {
             var {_id, topic_name, group, genre, short_description, ...rest} = topic
@@ -57,7 +59,8 @@ const viewSpecificTopicGroup = async (req, res) => {
         var topic = await Topic.findOne({_id: req.params.id}).populate("group").catch((err) => {throw err})
         console.log(topic)
         if(topic){
-            if(topic.supervisor != req.decoded._id){
+            var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
+            if(!topic.supervisor._id.equals(supervisor._id)){
                 res.status(400).json({message: "You have no right to view"})
                 return
             }else{
@@ -77,10 +80,10 @@ const viewSpecificTopicGroup = async (req, res) => {
                     student_list.push(group_members)
                 }
                 // genreate a hashMap id to name 
-                var students = await User.find({_id: {$in: student_list.flat()}}).catch((err) => {throw err})
+                var students = await Student.find({_id: {$in: student_list.flat()}}).populate("user").catch((err) => {throw err})
                 var student_hashMap = {}
                 for(var i = 0; i < students.length; i++){
-                    student_hashMap[students[i]._id] = students[i].username
+                    student_hashMap[students[i]._id] = students[i].user.username
                 }
                 res.status(200).json({_id: _id, topic_name: topic_name, pending_groups: pending_groups, approved_groups: approved_groups, student_hashMap: student_hashMap})
                 return
@@ -99,12 +102,15 @@ const viewSpecificTopicGroup = async (req, res) => {
 const approveGroup = async (req, res) => {
     try{
         if(req.body._id){
-            var group = await Group.findOne({_id: req.body._id}).catch((err) => {throw err})
-            if(group.supervisor != req.decoded._id){
-                console.log("group's supervisor not equal to supervisor id")
+            var group = await Group.findOne({_id: req.body._id}).populate("topic").catch((err) => {throw err})
+            var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
+            console.log(group)
+            if(!group.supervisor._id.equals(supervisor._id)){
+                console.log("You have no right to make change in this group")
                 res.status(400).json({message: "You have no right to make change in this group"})
                 return
             }
+            group.group_name = `${group.topic.topic_name}_${group.topic.group.length}`
             group.status = "approve"
             group.save().catch((err)=>{throw err})
             res.status(200).json({message: "Group Approved"})
@@ -125,12 +131,13 @@ const rejectGroup = async (req, res) => {
     try{
         if(req.body._id){
             var group = await Group.findOne({_id: req.body._id}).catch((err) => {throw err})
-            if(group.supervisor != req.decoded._id){
+            var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
+            if(!group.supervisor._id.equals(supervisor._id)){
                 console.log("group's supervisor not equal to supervisor id")
                 res.status(400).json({message: "You have no right to make change in this group"})
                 return
             }
-            await Student.updateMany({user : {$in: group.group_members}}, {$unset: {group: 1}}).catch((err) => {throw err })
+            await Student.updateMany({_id : {$in: group.group_members}}, {$unset: {group: 1}}).catch((err) => {throw err })
             var topic = await Topic.findOne({_id: group.topic}).catch((err) => {throw err})
             topic.group.pull({_id: group._id})
             topic.number_group += 1
@@ -159,6 +166,8 @@ const addStudent = async(req, res) => {
                 var query = {"username": req.body.input}
             }
             var user = await User.findOne(query).catch((err) => {throw err})
+            var user_student_id = await Student.findOne({user: user._id}).catch((err) => {throw err})
+            var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
             if(user){
                 var student = await Student.findOne({user: user._id}).populate("group").catch((err) => {throw err})
                 if(student.group){
@@ -167,15 +176,15 @@ const addStudent = async(req, res) => {
                     if(student.group.topic._id == req.body.topic_id){
                         res.status(400).json({message: "Student already in topic"})
                         return
-                    }else if(student.group.supervisor != req.decoded._id){
+                    }else if(!student.group.supervisor._id.equals(supervisor._id)){
                         res.status(400).json({message: "Student has another supervisor"})
                         return
                     }else{
-                        res.status(200).json({username: user.username, _id: user._id, belongs: "none", orignalGroup: student.group._id})
+                        res.status(200).json({username: user.username, _id: user_student_id._id, belongs: "none", orignalGroup: student.group._id})
                         return
                     }
                 }else{
-                    res.status(200).json({username: user.username, _id: user._id, belongs: "none", orignalGroup: "none"})
+                    res.status(200).json({username: user.username, _id: user_student_id._id, belongs: "none", orignalGroup: "none"})
                     return
                 }
             }else{
@@ -195,13 +204,14 @@ const addStudent = async(req, res) => {
     }
 }
 
+
+// have bug
 const adjustGroup = async(req, res) => {
     try{
         let topic = await Topic.findOne({_id: req.body.topic_id}).catch((err) => {throw err})
         if(topic){
             if(req.body.approvedGroups){
                 let approvedGroups = req.body.approvedGroups
-                console.log(approvedGroups)
                 //create new group or update group 
                 let student_list = []
                 let hashGroup_id = {}
@@ -245,12 +255,9 @@ const adjustGroup = async(req, res) => {
                         continue
                     }else if(hashGroup_id[student.orignalGroup] == undefined && student.orignalGroup != "none" && !removeGroup.includes(student.orignalGroup)){
                         //student from other topic
-                        console.log(removeGroup.includes(student.orignalGroup))
-                        console.log(student.orignalGroup)
-                        console.log(removeGroup)
-                        var user = await Student.findOne({user: student._id}).catch((err) => {throw err})
-                        var orignalGroup = await Group.findOne({_id: user.orignalGroup}).catch((err) => {throw err})
-                        if(orignalGroup.group_members.length == 1 && orignalGroup.group_members[0] == user._id){
+                        var user = await Student.findOne({_id: student._id}).catch((err) => {throw err})
+                        var orignalGroup = await Group.findOne({_id: user.group}).catch((err) => {throw err})
+                        if(orignalGroup.group_members.length == 1 && orignalGroup.group_members[0]._id.equals(user._id)){
                             // delete the group and remove from the topic
                             var orignalTopic = await Topic.findOne({_id: orignalGroup.topic}).catch((err) => {throw err})
                             orignalTopic.group = orignalTopic.group.filter((group) => group != orignalGroup._id)
@@ -265,17 +272,16 @@ const adjustGroup = async(req, res) => {
                         user.group = hashGroup_id[student.belongs]
                         await user.save().catch((err)=>{throw err})
                     }else{
+                        console.log("ok")
                         // normal update the student
-                        var user = await Student.findOne({user: student._id}).catch((err) => {throw err})
+                        var user = await Student.findOne({_id: student._id}).catch((err) => {throw err})
                         user.group = hashGroup_id[student.belongs]
                         await user.save().catch((err) => {throw err})
                     }
                 }
                 topic.group = Object.values(hashGroup_id)
                 await topic.save().catch((err) => {throw err})
-                res.status(200).json({message: "Sucess update"})
-                console.log(student_list)
-                console.log(hashGroup_id)   
+                res.status(200).json({message: "Sucess update"}) 
             }else{
                 console.log("Adjust data is missing")
                 res.status(400).json({message: "Adjust data is missing"})
@@ -298,27 +304,6 @@ const adjustGroup = async(req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // FYP Topic controller
 // topic create/update/detele/view
 // need to do filtering may have bug
@@ -327,6 +312,7 @@ const adjustGroup = async(req, res) => {
 // *** delete need to change the group as well !
 const viewTopic = async (req, res) => {
     try{
+        var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
         if(req.query.topic_name == ""){
             var topic_name = { $ne: null }
         }else{
@@ -341,7 +327,7 @@ const viewTopic = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit
-        const total_topics = await Topic.countDocuments({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).catch((err) => {throw err})
+        const total_topics = await Topic.countDocuments({supervisor: supervisor._id, topic_name: topic_name, genre: genre}).catch((err) => {throw err})
         const total_pages = Math.ceil(total_topics / limit)
         var last = false
         if(page > total_pages){
@@ -351,7 +337,7 @@ const viewTopic = async (req, res) => {
         }else if(page == total_pages){
             last = true
         }
-        var topic_list = await Topic.find({supervisor: req.decoded._id, topic_name: topic_name, genre: genre}).sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
+        var topic_list = await Topic.find({supervisor: supervisor._id, topic_name: topic_name, genre: genre}).sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
         res.status(200).json({topic_list: topic_list, last: last})
         return
     }catch(err){
@@ -367,7 +353,10 @@ const viewSpecificTopic = async (req, res) => {
     try{
         var topic = await Topic.findOne({_id: req.params.id}).catch((err) => {throw err})
         if(topic){
-            if(topic.supervisor != req.decoded._id){
+            var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
+            if(!topic.supervisor._id.equals(supervisor._id)){
+                console.log(topic.supervisor)
+                console.log(supervisor)
                 res.status(400).json({message: "You have no right to view"})
                 return
             }else{
@@ -392,15 +381,17 @@ const viewSpecificTopic = async (req, res) => {
 const createTopic = async (req, res) => {
     try{
         if(req.body.topic_name != null && req.body.short_description != null && req.body.number_group != null && req.body.genre != null && req.body.genre != [] && req.body.number_group_member != null){
-            const detail_description = (req.body.detail_description == null ? req.body.short_description : req.body.detail_description )
-            // check the topic name has been used or not
+            const detail_description = (req.body.detail_description == '' ? req.body.short_description : req.body.detail_description )
+            // reject the creation if the topic name is duplicated
             var topic = await Topic.findOne({topic_name: req.body.topic_name}).catch(err => {throw err})
             if(topic){
                 console.log(topic)
-                res.status(400).json({message: "Topic Name has been used"})
+                res.status(400).json({message: "Topic Name is exist"})
                 return
             }
-            // new created Topic should allow at least on team to join
+            //find the supervisor id
+            var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
+            // create new topic for the supervisor
             var newTopic = new Topic({
                 topic_name: req.body.topic_name,
                 short_description: req.body.short_description,
@@ -408,12 +399,10 @@ const createTopic = async (req, res) => {
                 genre: req.body.genre,
                 number_group_member: req.body.number_group_member,
                 number_group: req.body.number_group,
-                supervisor: req.decoded._id,
+                supervisor: supervisor._id,
             })
-            await newTopic.save().catch((err => {
-                throw err
-            }));
-            res.status(200).json({message: "Topic is successful created"})
+            await newTopic.save().catch((err) => {throw err})
+            res.status(200).json({message: "Topic is successfully created"})
             return
         }else{
             console.log("Incomplete information for creating topic")
@@ -422,8 +411,8 @@ const createTopic = async (req, res) => {
         }
     }catch(err){
         console.log(err)
-        console.log("Error in creating topics")
-        res.status(400).json({error: err, message: "Error in creating topics"})
+        console.log("Unexpected Error in creating Topic")
+        res.status(400).json({error: err, message: "Unexpected Error in creating Topic"})
         return
     }
 }
@@ -431,14 +420,13 @@ const createTopic = async (req, res) => {
 const updateTopic = async (req, res) => {
     try{
         if(req.body.topic_name != null && req.body.short_description != null && req.body.number_group != null && req.body.genre != null && req.body.genre != [] && req.body._id != null && req.body.number_group_member != null){
-            const detail_description = (req.body.detail_description == null ? req.body.short_description : req.body.detail_description )
+            const detail_description = (req.body.detail_description == '' ? req.body.short_description : req.body.detail_description)
             var topic = await Topic.findOne({topic_name: req.body.topic_name}).catch(err => {throw err})
-            if(req.decoded._id != topic.supervisor){
-                res.status(400).json({message: "You have no right to delete the topic"})
+            var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
+            if(!topic.supervisor._id.equals(supervisor._id)){
+                res.status(400).json({message: "You have no right to adjust the topic"})
                 return
             }
-            console.log(topic)
-            console.log(req.body._id)
             if(topic && topic._id != req.body._id){
                 res.status(400).json({message: "topic exist"})
                 return
@@ -450,20 +438,21 @@ const updateTopic = async (req, res) => {
                 genre: req.body.genre,
                 number_group_member: req.body.number_group_member,
                 number_group: req.body.number_group,
-                supervisor: req.decoded._id,
+                supervisor: supervisor._id,
             }).catch((err) => {
                 throw err
             })
-            res.status(200).json({message: "Topic is successful updated"})
+            res.status(200).json({message: "Topic is successfully updated"})
+            return
         }else{
             console.log("Incomplete information for updating topic")
             res.status(400).json({message: "Incomplete information for updating topic"})
             return
         }
     }catch(err){
-        console.log("Error in updating topic")
+        console.log("Unexpected Error in updating topic")
         console.log(err)
-        res.status(400).json({error: err, message: "Error in updating topic"})
+        res.status(400).json({error: err, message: "Unexpected Error in updating topic"})
         return
     }
 }
@@ -471,8 +460,9 @@ const updateTopic = async (req, res) => {
 const deleteTopic = async (req, res) => {
     try{
         if(req.body._id != null){
+            var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
             var topic = await Topic.findOne({_id: req.body._id}).catch((err) => {throw err})
-            if(req.decoded._id != topic.supervisor){
+            if(!topic.supervisor._id.equals(supervisor._id)){
                 res.status(400).json({message: "You have no right to delete the topic"})
                 return
             }
@@ -480,9 +470,8 @@ const deleteTopic = async (req, res) => {
             var group_list = topic.group.map((item) => {return item._id})
             var groups = await Group.find({_id : {$in: group_list}}).catch((err) => {throw err })
             var student_list = groups.map((item) => {return item.group_members}).flat()
-            console.log(student_list)
             //clean the students' group
-            await Student.updateMany({user : {$in: student_list}}, {$unset: {group: 1}}).catch((err) => {throw err })
+            await Student.updateMany({_id : {$in: student_list}}, {$unset: {group: 1}}).catch((err) => {throw err })
             //clean the groups 
             await Group.deleteMany({_id : {$in: group_list}}).catch((err) => {throw err })
             //clean the topic

@@ -46,18 +46,16 @@ function SupervisorAddTopic() {
                 await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/topic/create`, requestOptions).then(async (response) =>{
                     let data = await response.json()
                     if(response.status === 200){
-                        console.log(data)
                         MySwal.fire({
                             title: <p>Successfully Create New Topic</p>,
                             icon: 'success',
                             confirmButtonColor: '#3085d6',
-                        })
-                        .then(() => {
+                        }).then(() => {
                             return navigate(`../FYPTopics`);
                         })
                     }else{
                         MySwal.fire({
-                            title: <p>{data.message}</p>,
+                            title: data.message,
                             icon: 'error',
                             confirmButtonColor: '#3085d6',
                         })
@@ -191,7 +189,6 @@ function SupervisorAddTopic() {
                             isMulti={true}
                             id="genre"
                             name="genre"
-                            styles={{width: "75%", fontSize: "0.6em"}}
                             placeholder="Select Genres"
                             onChange={(e) => {
                                 formik.values.genre = e
@@ -199,7 +196,6 @@ function SupervisorAddTopic() {
                             }}
                         />
                     </div>
-                    {/* formik.touched.genre && formik.errors.genre */}
                     {formik.touched.genre && formik.errors.genre? (
                         (selectedValue === -1 || selectedValue === 0? 
                             <div className='warning'>At leasat 1 genre is required to select </div>

@@ -15,7 +15,8 @@ const verifyToken = (req, res, next) => {
         }
         jwt.verify(token, process.env.jwt_secret, (err, decoded) => {
             if(err){
-                return res.status(401).json({message: "Unauthorized!"})
+                res.status(401).json({message: "Unauthorized!"})
+                return
             }
             req.decoded = decoded;
             next();

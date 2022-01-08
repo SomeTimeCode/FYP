@@ -12,7 +12,7 @@ function SupervisorTopicDetail() {
     const MySwal = withReactContent(Swal)
     const params = useParams();
     const navigate = useNavigate();
-    const [selectedValue, setSelectedValue] = useState(1)
+    const [selectedValue, setSelectedValue] = useState(-1)
     const [selectedOptions, setSelectedOptions] = useState(null)
     const [disabled, setDisabled] = useState(true)
     const [minOpening, setMinOpening] = useState(0)
@@ -33,11 +33,11 @@ function SupervisorTopicDetail() {
             .required('Topic name is required'),
             short_description: Yup.string()
             .max(100, 'Must be 100 characters or less')
-            .required('A short description is required'),
+            .required('Short Description about the topic is required'),
             detail_description: Yup.string(),
-            genre: Yup.array().min(1).required("At leasat 1 genre need to be selected"),
-            number_group: Yup.number().min(minOpening).required('Number of Group Openings cannot be negative'),
-            number_group_member: Yup.number().min(1).required('At least 1 member per Group is required')
+            genre: Yup.array().min(1).required("At leasat 1 genre is required to select"),
+            number_group: Yup.number().min(minOpening).required('At least 1 open group is required for students to apply'),
+            number_group_member: Yup.number().min(1).required('At least 1 student per group is required')
         }),
         onSubmit: values => {
             MySwal.fire({
@@ -61,23 +61,20 @@ function SupervisorTopicDetail() {
                         await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/topic/update`, requestOptions).then(async (response) =>{
                             let data = await response.json()
                             if(response.status === 200){
-                                return (
-                                    MySwal.fire({
-                                        title: <p>Successfully Updated</p>,
-                                        icon: 'success',
-                                        confirmButtonColor: '#3085d6',
-                                      })
-                                      .then(() => {
-                                        return navigate(`../FYPTopics`);
-                                      })
-                                )
+                                MySwal.fire({
+                                    title: <p>Successfully Updated</p>,
+                                    icon: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                }).then(() => {
+                                    return navigate(`../FYPTopics`);
+                                })
                             }else{
-                                throw new Error(data.message)
+                                MySwal.fire({
+                                    title: data.message,
+                                    icon: 'error',
+                                    confirmButtonColor: '#3085d6',
+                                })
                             }
-                        }).catch(error => {
-                            Swal.showValidationMessage(
-                                `Request failed: ${error}`
-                              )
                         })
                     }
             })
@@ -114,12 +111,12 @@ function SupervisorTopicDetail() {
                                 })
                             )
                         }else{
-                            throw new Error(data.message)
+                            MySwal.fire({
+                                title: data.message,
+                                icon: 'error',
+                                confirmButtonColor: '#3085d6',
+                            })
                         }
-                    }).catch(error => {
-                        Swal.showValidationMessage(
-                            `Request failed: ${error}`
-                        )
                     })
                 }
         })
@@ -167,10 +164,7 @@ function SupervisorTopicDetail() {
                                      }
                                  })
                                  .then((data) => data.json()).catch(err => console.log(err))
-            console.log(response)
-            console.log(response.genre)
             var genre_list = response.genre.map((item) => {return {label: item, value: item}})
-            console.log(genre_list)
             setSelectedOptions(genre_list)
             formik.setValues({"topic_name": response.topic_name, "short_description":response.short_description, "detail_description":response.detail_description,"genre":genre_list, "number_group":response.number_group, "number_group_member": response.number_group_member});
             if(response.group.length === 0){
@@ -198,103 +192,124 @@ function SupervisorTopicDetail() {
                         </>
                     }
                 </div>
-                <div id='AdjustTopicFrom'>
+                <div id='AdjustTopicForm'>
                     <form onSubmit={formik.handleSubmit}>
-                    <div className='input'>
-                        <label htmlFor="topic_name">Topic Name:</label>
-                        <input
-                            disabled={disabled}
-                            id="topic_name"
-                            name="topic_name"
-                            type="text"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.topic_name}
-                        />
-                        {formik.touched.topic_name && formik.errors.topic_name ? (
-                            <div className='warning'>{formik.errors.topic_name}</div>
-                        ) : null}
-                    </div>
-                    <div className='input'>
-                        <label htmlFor="short_description">Short Description:</label>
-                        <input
-                            disabled={disabled}
-                            id="short_description"
-                            name="short_description"
-                            type="text"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.short_description}
-                        />
-                        {formik.touched.short_description && formik.errors.short_description ? (
-                            <div className='warning'>{formik.errors.short_description}</div>
-                        ) : null}
-                    </div>
-                    <div className='input'>
-                        <label htmlFor="detail_description">Detail Description:</label>
-                        <input
-                            disabled={disabled}
-                            id="detail_description"
-                            name="detail_description"
-                            type="text"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.detail_description}
-                        />
-                        {formik.touched.detail_description && formik.errors.detail_description ? (
-                            <div className='warning'>{formik.errors.detail_description}</div>
-                        ) : null}
-                    </div>
-                    <div className='input'>
-                        <label htmlFor="number_group">Number of Groups Opening:</label>
-                        <input
-                            disabled={disabled}
-                            id="number_group"
-                            name="number_group"
-                            type="number"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.number_group}
-                        />
-                        {formik.touched.number_group && formik.errors.number_group ? (
-                            <div className='warning'>{formik.errors.number_group}</div>
-                        ) : null}
-                    </div>
-                    <div className='input'>
-                        <label htmlFor="number_group_member">Max number of members in group:</label>
-                        <input
-                            disabled={disabled}
-                            id="number_group_member"
-                            name="number_group_member"
-                            type="number"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.number_group_member}
-                        />
-                        {formik.touched.number_group_member && formik.errors.number_group_member ? (
-                            <div className='warning'>{formik.errors.number_group_member}</div>
-                        ) : null}
-                    </div>
-                    <div className='input'>
-                        <label htmlFor="genre">Genre(s):</label>
-                        <Select
-                            isDisabled={disabled}
-                            options={genreOptions}
-                            isMulti={true}
-                            id="genre"
-                            name="genre"
-                            placeholder="Select Genres"
-                            value={selectedOptions}
-                            onChange={(e) => {
-                                formik.values.genre = e
-                                setSelectedValue(e.length)
-                                setSelectedOptions(e)
-                            }}
-                        />
-                        {selectedValue === 0? (
-                            <div className='warning'>At least 1 genre is required.</div>
-                        ) : null}
-                    </div>
+                        <div className='inputBase'>
+                            <div className='input'>
+                                <label htmlFor="topic_name">Topic Name:</label>
+                                <input
+                                    disabled={disabled}
+                                    id="topic_name"
+                                    name="topic_name"
+                                    type="text"
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.topic_name}
+                                />
+                            </div>
+                            {formik.touched.topic_name && formik.errors.topic_name ? (
+                                <div className='warning'>{formik.errors.topic_name}</div>
+                            ) : null}
+                        </div>
+
+                        <div className='inputBase'>
+                            <div className='input'>
+                                <label htmlFor="short_description">Short Description:</label>
+                                <input
+                                    disabled={disabled}
+                                    id="short_description"
+                                    name="short_description"
+                                    type="text"
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.short_description}
+                                />
+                            </div>
+                            {formik.touched.short_description && formik.errors.short_description ? (
+                                <div className='warning'>{formik.errors.short_description}</div>
+                            ) : null}
+                        </div>
+
+                        <div className='inputBase'>
+                            <div className='input'>
+                                <label htmlFor="detail_description">Detail Description:</label>
+                                <input
+                                    disabled={disabled}
+                                    id="detail_description"
+                                    name="detail_description"
+                                    type="text"
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.detail_description}
+                                />
+                            </div>
+                        </div>
+
+                        <div className='inputBase'>
+                            <div className='input'>
+                                <label htmlFor="number_group">Number of Open Group(s):</label>
+                                <input
+                                    disabled={disabled}
+                                    id="number_group"
+                                    name="number_group"
+                                    type="number"
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.number_group}
+                                />
+                            </div>
+                            {formik.touched.number_group && formik.errors.number_group ? (
+                                <div className='warning'>{formik.errors.number_group}</div>
+                            ) : null}
+                        </div>
+                    
+                        <div className='inputBase'>
+                            <div className='input'>
+                                <label htmlFor="number_group_member">Maximum student(s) per group:</label>
+                                <input
+                                    disabled={disabled}
+                                    id="number_group_member"
+                                    name="number_group_member"
+                                    type="number"
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.number_group_member}
+                                />
+                            </div>
+                            {formik.touched.number_group_member && formik.errors.number_group_member ? (
+                                <div className='warning'>{formik.errors.number_group_member}</div>
+                            ) : null}
+                        </div>
+                        <div className='inputBase'>
+                            <div className='input'>
+                                <label htmlFor="genre">Genre(s):</label>
+                                <Select
+                                    isDisabled={disabled}
+                                    options={genreOptions}
+                                    isMulti={true}
+                                    id="genre"
+                                    name="genre"
+                                    placeholder="Select Genres"
+                                    value={selectedOptions}
+                                    onChange={(e) => {
+                                        formik.values.genre = e
+                                        setSelectedValue(e.length)
+                                        setSelectedOptions(e)
+                                    }}
+                                />
+                            </div>
+                            {formik.touched.genre && formik.errors.genre? (
+                                (selectedValue === -1 || selectedValue === 0? 
+                                    <div className='warning'>At leasat 1 genre is required to select </div>
+                                :
+                                null
+                            )
+                            ) : (selectedValue === 0 ? 
+                                    <div className='warning'>At leasat 1 genre is required to select </div>
+                                :
+                                null
+                            )}
+                        </div>
                     </form>
                 </div>
             </div>

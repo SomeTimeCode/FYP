@@ -6,6 +6,7 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
+    font-size: 30px;
 }
 
 #AdjustTopicBase #controller{
@@ -17,49 +18,97 @@
 }
 
 #AdjustTopicBase #controller button{
-    height: 50%;
-    width: 10%;
-    margin-right: 5%;
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1vh 2vw;
     color: white;
-    font-size: 2vh;
-    font-weight: 700;
+    margin-top: 2vh;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 5%;
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
-#AdjustTopicBase #AdjustTopicFrom{
-    width: 90%;
+#AdjustTopicBase #AdjustTopicForm{
+    width: 100%;
     height: 90%;
 }
 
-#AdjustTopicBase #AdjustTopicFrom form{
-    width: 100%;
-    height: 100%;
+#AdjustTopicBase #AdjustTopicForm form{
+    margin: auto;
     display: flex;
     flex-direction: column;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    min-height: 60vh;
+    height: auto;
+    width: 90%;
 }
 
 
-#AdjustTopicBase #AdjustTopicFrom .input{
-    margin-top: 2vh;
+#AdjustTopicBase #AdjustTopicForm form .inputBase{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 8vh;
     width: 100%;
-    height: 10%;
+    margin-bottom: 2vh;
 }
 
-#AdjustTopicBase #AdjustTopicFrom .input label{
-    margin-top: 2vh;
-    width: 20%;
-    height: 50%;
-    font-size: 2vh;
+#AdjustTopicBase #AdjustTopicForm form .inputBase .input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    min-height: 3vh;
 }
 
-#AdjustTopicBase #AdjustTopicFrom .input input{
-    margin-top: 2vh;
-    width: 50%;
-    height: 30%;
-    font-size: 1.5vh;
+#AdjustTopicBase #AdjustTopicForm form .inputBase .input label{
+    width: 25%;
+    font-size: 0.7em;
 }
 
-#AdjustTopicBase #AdjustTopicFrom .input .warning{
-    font-size: 2vh;
+#AdjustTopicBase #AdjustTopicForm form .inputBase .input input{
+    width: 75%;
+    font-size: 0.6em;
+}
+
+#AdjustTopicBase #AdjustTopicForm form .inputBase .input #genre{
+    width: 75%;
+    font-size: 0.6em;
+}
+
+#AdjustTopicBase #AdjustTopicForm form .inputBase .warning{
+    width: 70%;
+    font-size: 0.55em;
     color: red;
+    margin-top: 1vh;
+}
+
+@media only screen and (max-width: 480px) {
+    
+    #AdjustTopicBase #AdjustTopicForm{
+        font-size: 16px;
+    }
+    
+    #AdjustTopicBase #AdjustTopicForm form .inputBase .input label{
+        width: 35%;
+    }
+    
+    #AdjustTopicBase #AdjustTopicForm form .inputBase .input input{
+        width: 65%;
+    }
+    
+    #AdjustTopicBase #AdjustTopicForm form .inputBase .input #genre{
+        width: 65%;
+    }
+
+    #AdjustTopicBase #controller button{
+        padding: 1vh 8vw;
+        font-size: 0.5em;
+    }
 }

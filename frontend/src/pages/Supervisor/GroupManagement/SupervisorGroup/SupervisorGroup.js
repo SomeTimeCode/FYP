@@ -22,7 +22,7 @@ function Card(props){
                         }
                     </p>
                 </div>
-                {props.topic.pending? <div className='pending' style={{display: props.topic.pending, fontSize: "2vh", backgroundColor: "red", width: "5%"}}></div> : null}
+                {props.topic.pending ? <div className='pending' style={{display: props.topic.pending, backgroundColor: "red", width: "5%"}}></div> : null}
             </div>
         </>
     )
@@ -148,12 +148,12 @@ function SupervisorGroup() {
                         </div>
                         <div id='search'>
                             <form onSubmit={formik.handleSubmit}>
-                                <label>Topic Name: </label>
                                 <div className='input'>
+                                    <label>Topic:</label>
                                     <input
                                         id="topic_name"
                                         name="topic_name"
-                                        type="text"
+                                        type="search"
                                         placeholder='Topic Name'
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
@@ -166,8 +166,11 @@ function SupervisorGroup() {
                                         defaultValue={
                                             formik.values.genre
                                         }
-                                        styles={{ valueContainer: () => {return {width:"75%", maxHeight: "3vh",overflowY: "scroll"}}}}
-                                        className='inputGenreSelect'
+                                        styles={{ 
+                                            valueContainer: () => {return {display: "flex", flexDirection: "row", flexWrap: "wrap", maxHeight: "3vh",width:"80%",overflow: "auto"}}, 
+                                            indicatorsContainer: () => {return { width:"20%", display: "flex", flexDirection: "row" }},
+                                            multiValue: () => {return {minWidth: "4vw", display:"flex", flexDirection: "row", backgroundColor: "#D3D3D3", borderRadius: "3px", marginRight: "0.3vw"}}
+                                        }}
                                         options={genreOptions}
                                         isMulti={true}
                                         id="genre"
@@ -179,9 +182,7 @@ function SupervisorGroup() {
                                         }}
                                     />
                                 </div>
-                                <div id='submit'>
-                                    <button type="submit">Search</button>
-                                </div>
+                                <button type="submit">Search</button>
                             </form>
                         </div>
                         {topicList.length !== 0 ?

@@ -3,7 +3,7 @@ const router = express.Router();
 const supervisorController = require('../controllers/supervisorController')
 
 router.get("/", (req, res) => {
-    res.status(200).json({ message: "Welcome to RayRay /api/supervisor." });
+    res.status(200).json({ message: "Welcome to RayRay /api/supervisor" });
 });
 
 

@@ -93,7 +93,7 @@
 
 @media only screen and (max-width: 480px) {
     #AddTopicBase{
-        font-size: 16px;
+        font-size: 20px;
     }
     #AddTopicBase form .inputBase .input label{
         width: 35%;

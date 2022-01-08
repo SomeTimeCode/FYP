@@ -15,8 +15,9 @@ function Card(props){
                 <div className='topicInfo'>
                     <p>Topic Name: {props.topic.topic_name}</p>
                     <p>Description: {props.topic.short_description}</p>
-                    <p>Number of Groups Opening: {props.topic.number_group} &nbsp; &nbsp; &nbsp; Max Members per Groups: {props.topic.number_group_member}</p>
-                    <p>Current Number of Groups: {props.topic.group.length}</p>
+                    <p>Current Number of Open Group(s): {props.topic.number_group}</p>
+                    <p>Max Student(s) per Groups: {props.topic.number_group_member}</p>
+                    <p>Current Number of (Pending/Approved) Groups: {props.topic.group.length}</p>
                     <p>Genre(s):
                         {
                             props.topic.genre.map((item) => {
@@ -159,12 +160,12 @@ function SupervisorFYPTopics() {
                         </div>
                         <div id='search'>
                             <form onSubmit={formik.handleSubmit}>
-                                <label>Topic Name: </label>
                                 <div className='input'>
+                                    <label>Topic:</label>
                                     <input
                                         id="topic_name"
                                         name="topic_name"
-                                        type="text"
+                                        type="search"
                                         placeholder='Topic Name'
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
@@ -177,8 +178,11 @@ function SupervisorFYPTopics() {
                                         defaultValue={
                                             formik.values.genre
                                         }
-                                        styles={{ valueContainer: () => {return {width:"75%", maxHeight: "3vh",overflowY: "scroll"}}}}
-                                        className='inputGenreSelect'
+                                        styles={{ 
+                                            valueContainer: () => {return {display: "flex", flexDirection: "row", flexWrap: "wrap", maxHeight: "3vh",width:"80%",overflow: "auto"}}, 
+                                            indicatorsContainer: () => {return { width:"20%", display: "flex", flexDirection: "row" }},
+                                            multiValue: () => {return {minWidth: "4vw", display:"flex", flexDirection: "row", backgroundColor: "#D3D3D3", borderRadius: "3px", marginRight: "0.3vw"}}
+                                        }}
                                         options={genreOptions}
                                         isMulti={true}
                                         id="genre"
@@ -190,16 +194,14 @@ function SupervisorFYPTopics() {
                                         }}
                                     />
                                 </div>
-                                <div id='submit'>
-                                    <button type="submit">Search</button>
-                                </div>
+                                <button type="submit">Search</button>
                             </form>
                         </div>
                         {topicList.length !== 0 ?
                             <div id='topicList'>
                                 {
                                     topicList.map((topic) => {
-                                        return <Card key={topic.topic_name} topic={topic}/>
+                                        return <> <Card key={topic.topic_name} topic={topic}/> </> 
                                     })
                                 }
                             </div>
