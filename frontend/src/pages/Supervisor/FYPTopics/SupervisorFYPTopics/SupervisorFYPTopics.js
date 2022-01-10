@@ -1,5 +1,5 @@
 import React, {useState ,useEffect} from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { IoIosAddCircle } from "react-icons/io"
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -206,9 +206,9 @@ function SupervisorFYPTopics() {
                                 }
                             </div>
                             :
-                            <div style={{display: "flex", flexDirection: "column", justifyContent: "center", width: "100%", alignItems: "center", height: "70%"}}>
+                            <div style={{display: "flex", flexDirection: "column", justifyContent: "center", width: "100%", alignItems: "center", minHeight: "65vh"}}>
                                 <p style={{fontSize: "3vh", marginBottom: "2vh"}}>We haven't found any related Topics in this page</p>
-                                <p style={{fontSize: "2vh"}}>Please create new Topic</p>
+                                <p style={{fontSize: "2vh"}}>Please create new Topic <Link to="../FYPTopics/addTopic">here</Link></p>
                             </div>   
                         }
                         <div id='Controller'>

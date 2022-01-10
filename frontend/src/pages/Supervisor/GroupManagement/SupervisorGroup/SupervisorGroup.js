@@ -1,5 +1,5 @@
 import React, {useState ,useEffect} from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Select from "react-select";
@@ -144,7 +144,7 @@ function SupervisorGroup() {
                 <>
                     <div id='GroupsBase'>
                         <div id='title'>
-                            <p>FYP Topics</p>
+                            <p>Group Manage</p>
                         </div>
                         <div id='search'>
                             <form onSubmit={formik.handleSubmit}>
@@ -194,9 +194,9 @@ function SupervisorGroup() {
                                 }
                             </div>
                             :
-                            <div style={{display: "flex", flexDirection: "column", justifyContent: "center", width: "100%", alignItems: "center", height: "70%"}}>
+                            <div style={{display: "flex", flexDirection: "column", justifyContent: "center", width: "100%", alignItems: "center", minHeight: "70vh"}}>
                                 <p style={{fontSize: "3vh", marginBottom: "2vh"}}>We haven't found any related Topics in this page</p>
-                                <p style={{fontSize: "2vh"}}>Please create new Topic</p>
+                                <p style={{fontSize: "2vh"}}>Please create new Topic <Link to="../FYPTopics/addTopic">here</Link></p>
                             </div>   
                         }
                         <div id='Controller'>

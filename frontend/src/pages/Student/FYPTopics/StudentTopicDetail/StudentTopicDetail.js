@@ -88,6 +88,7 @@ function StudentTopicDetail() {
             }
         }else{
             const {value: password} = await MySwal.fire({
+                title: `Join Group`,
                 showCancelButton: true,
                 input: 'password',
                 inputValue: '',
@@ -128,7 +129,7 @@ function StudentTopicDetail() {
     }
 
     const createGroup = async (event) => {
-        const { value: accept } = await MySwal.fire({
+        const { value: accept, isConfirmed } = await MySwal.fire({
             title: `Create Group - ${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${Object.keys(topic.topic.group).length + 1}` }`,
             showCancelButton: true,
             // document.getElementsByClassName('form-input').style.display="block"
@@ -137,6 +138,10 @@ function StudentTopicDetail() {
             inputPlaceholder: 'Set Group to Public',
             confirmButtonText: 'Continue <i class="fa fa-arrow-right"></i>',
         })
+        console.log(isConfirmed)
+        if(!isConfirmed){
+            return
+        }
         if(accept === 1){
             //public group
             var group_name = `${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${Object.keys(topic.topic.group).length + 1}` }`
@@ -168,7 +173,7 @@ function StudentTopicDetail() {
         }else{
             //ask for pw
             var group_name = `${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${Object.keys(topic.topic.group).length + 1}` }`
-            const {value: password} = await MySwal.fire({
+            const {value: password, isConfirmed} = await MySwal.fire({
                 title: `Create Group - ${topic.topic.topic_name}_${Object.keys(topic.topic.group).length === 0 ? `1` : `${Object.keys(topic.topic.group).length + 1}` }`,
                 showCancelButton: true,
                 input: 'password',
@@ -179,6 +184,9 @@ function StudentTopicDetail() {
                     return !result && 'You need to input password to create private group'
                 }
             })
+            if(!isConfirmed){
+                return
+            }
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },

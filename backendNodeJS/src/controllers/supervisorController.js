@@ -216,6 +216,7 @@ const adjustGroup = async(req, res) => {
                 let student_list = []
                 let hashGroup_id = {}
                 let removeGroup = []
+                let count = 1
                 for(var i = 0; i < approvedGroups.length; i++){
                     let group = approvedGroups[i]
                     if(group.group_members.length == 0){
@@ -230,7 +231,7 @@ const adjustGroup = async(req, res) => {
                         // create new group
                         let newGroup = new Group({
                             status: "approve",
-                            group_name: `${topic.topic_name}_${i + 1}`, 
+                            group_name: `${topic.topic_name}_${count}`, 
                             topic: topic._id,
                             group_members: group.group_members.map((member) => member._id),
                             supervisor: topic.supervisor,
@@ -238,13 +239,15 @@ const adjustGroup = async(req, res) => {
                         })
                         hashGroup_id[group._id] = newGroup._id
                         await newGroup.save().catch((err) => {throw err})
+                        count += 1
                     }else{
                         // update exist group
                         let existGroup = await Group.findOne({_id: group._id}).catch((err) => {throw err})
-                        existGroup.group_name = `${topic.topic_name}_${i + 1}`
+                        existGroup.group_name = `${topic.topic_name}_${count}`
                         existGroup.group_members = group.group_members.map((member) => member._id)
                         hashGroup_id[group._id] = existGroup._id
                         await existGroup.save().catch((err) => {throw err})
+                        count+=1
                     }
                     student_list.push(group.group_members)
                 }
@@ -260,11 +263,11 @@ const adjustGroup = async(req, res) => {
                         if(orignalGroup.group_members.length == 1 && orignalGroup.group_members[0]._id.equals(user._id)){
                             // delete the group and remove from the topic
                             var orignalTopic = await Topic.findOne({_id: orignalGroup.topic}).catch((err) => {throw err})
-                            orignalTopic.group = orignalTopic.group.filter((group) => group != orignalGroup._id)
+                            orignalTopic.group = orignalTopic.group.filter((group) => (!group.equals(orignalGroup._id)))                            
                             await orignalTopic.save().catch((err) => {throw err})
                             await Group.deleteOne({_id: orignalGroup._id}).catch((err) => {throw err})
-                        }else if(orignalGroup.group_members.length > 2){
-                            orignalGroup.group_members = orignalGroup.group_members.filter(student => student != user._id)
+                        }else if(orignalGroup.group_members.length > 1){
+                            orignalGroup.group_members = orignalGroup.group_members.filter(student => !student.equals(user._id))
                             await orignalGroup.save().catch((err) => {throw err})
                         }else{
                             throw new Error(`something wrong with the orignalGroup`)

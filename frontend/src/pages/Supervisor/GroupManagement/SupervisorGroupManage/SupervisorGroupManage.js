@@ -72,7 +72,7 @@ function ApprovedGroup(props){
                 props.setApprovedGroups(approvedGroupList)
             }
         }
-    }), [props.approvedGroups])
+    }), [props.approvedGroups, props.newStudent])
 
     return (
         <div className="approvedGroup" ref={drop}>
@@ -410,15 +410,20 @@ function SupervisorGroupManage() {
                     <div id='title'>
                         {data.topic_name}
                     </div>
-                    <div id='pendingSlot'>
-                        {data.pending_groups .length > 0 ? 
-                            // [] --> data.pending_groups 
-                            data.pending_groups.map((group) => {
-                                return <PendingGroup key={group._id} _id={group._id} group_members={group.group_members} hashMap={hashMap}/> 
-                            })
-                            :
-                            <div style={{fontSize: "2vh"}}>No pending groups available</div>
-                        }
+                    <div id='pendingSlot' style={{display: `${data.pending_groups.length > 0 ? "block" : "none"}`}}>
+                        <div id='pendingTitle'>
+                            Pending Groups List
+                        </div>
+                        <div id='pendingGroupList'>
+                            {data.pending_groups.length > 0 ? 
+                                // [] --> data.pending_groups 
+                                data.pending_groups.map((group) => {
+                                    return <PendingGroup key={group._id} _id={group._id} group_members={group.group_members} hashMap={hashMap}/> 
+                                })
+                                :
+                                <div style={{fontSize: "2vh"}}>No pending groups available</div>
+                            }
+                        </div>
                     </div>
                     <div id='approveSlot'>
                         <DndProvider backend={ (window.innerWidth > 800 ? HTML5Backend : TouchBackend)}>
@@ -437,7 +442,9 @@ function SupervisorGroupManage() {
                                         }
                                     </>
                                     :
-                                    <div>no approve groups</div>
+                                    <div style={{width: "95%", height:"30vh", border: "1px solid black", fontSize: "2vh", display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                        Do not have any Approved Groups
+                                    </div>
                                 }
                             </div>
                         </DndProvider>

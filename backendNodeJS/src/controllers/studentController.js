@@ -8,12 +8,23 @@ const bcrypt = require('bcryptjs')
 
 // view fyp topic
 const viewTopic = async (req, res) => {
-    // new to chagne the logic
+    // need to chagne the logic
     try{
+        if(req.query.topic_name == ""){
+            var topic_name = { $ne: null }
+        }else{
+            var topic_name = { $regex: req.query.topic_name , $options: 'i' }
+        }
+        if(req.query.genre == ""){
+            var genre = { $ne: null }
+        }else{
+            var genre_list = req.query.genre.split(",")
+            var genre = {"$in" : genre_list.map((item) => {return item.replace("%20", " ")})}
+        }
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit
-        const total_topics = await Topic.countDocuments({}).catch((err) => {throw err})
+        const total_topics = await Topic.countDocuments({topic_name: topic_name, genre: genre}).catch((err) => {throw err})
         const total_pages = Math.ceil(total_topics / limit)
         var last = false
         if(page > total_pages){
@@ -22,7 +33,7 @@ const viewTopic = async (req, res) => {
         }else if(page == total_pages){
             last = true
         }
-        var topic_list = await Topic.find({}).sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
+        var topic_list = await Topic.find({topic_name: topic_name, genre: genre}).sort('topic_name').skip(skip).limit(limit).catch((err) => {throw err})
         res.status(200).json({topic_list: topic_list, last: last})
         return
     }catch(err){
