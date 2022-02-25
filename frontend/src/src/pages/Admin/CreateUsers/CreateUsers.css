@@ -1,0 +1,99 @@
+#CreateUsersBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    font-size: 40px;
+}
+
+#CreateUsersBase #title{
+    height: 5vh;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+#CreateUsersBase #Download{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 0.6em;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    text-align: center;
+    box-shadow: 0px -3px 0px 0px #000000, 0px 3px 0px 0px #000000;
+}
+
+#CreateUsersBase #Download p{
+    width: 90%;
+}
+
+#CreateUsersBase #Upload{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    padding-top: 2vh;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.6em;
+}
+
+#CreateUsersBase #Upload form{
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+}
+
+#CreateUsersBase #Upload form input{
+    padding: 0.5vh 0.5vw;
+    width: 70%;
+    font-size: 0.7em;
+}
+
+#CreateUsersBase #Upload form button{
+    padding: 0.5vh 0.5vw;
+    font-size: 0.7em;
+}
+
+#CreateUsersBase #Result{
+    width: 90%;
+    font-size: 0.6em;
+    margin-top: 3vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#CreateUsersBase #Result #log{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 2vh;
+}
+
+#CreateUsersBase #Result #log table{
+    width: 90%;
+}
+
+
+@media only screen and (max-width: 800px) {
+    #CreateUsersBase{
+        font-size: 30px;
+    }
+}

@@ -1,0 +1,112 @@
+#AddTopicBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    font-size: 30px;
+}
+
+#AddTopicBase #AddTopicTitle{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 10vh;
+    width: 100%;
+    font-size: 1.2em;
+}
+
+#AddTopicBase form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    min-height: 60vh;
+    height: auto;
+    width: 90%;
+}
+
+#AddTopicBase form .inputBase{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 8vh;
+    width: 100%;
+    margin-bottom: 2vh;
+}
+
+#AddTopicBase form .inputBase .input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    min-height: 3vh;
+}
+
+#AddTopicBase form .inputBase .input label{
+    width: 25%;
+    font-size: 0.7em;
+}
+
+#AddTopicBase form .inputBase .input input{
+    width: 75%;
+    font-size: 0.6em;
+}
+
+#AddTopicBase form .inputBase .input #genre{
+    width: 75%;
+    font-size: 0.6em;
+}
+
+
+#AddTopicBase form .inputBase .warning{
+    width: 70%;
+    font-size: 0.55em;
+    color: red;
+    margin-top: 1vh;
+}
+
+#AddTopicBase form button{
+    align-self: center;
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh 5vw;
+    background-color: black;
+    color: white;
+    margin-top: 2vh;
+    font-size: 0.8em;
+    font-weight: 600;
+    transition: background-color 0.5s linear, color 0.5s linear;
+    cursor: pointer;
+}
+
+#AddTopicBase form button:hover{
+    background-color: white;
+    color: black;
+} 
+
+@media only screen and (max-width: 480px) {
+    #AddTopicBase{
+        font-size: 20px;
+    }
+    #AddTopicBase form .inputBase .input label{
+        width: 35%;
+    }
+    
+    #AddTopicBase form .inputBase .input input{
+        width: 65%;
+    }
+    
+    #AddTopicBase form .inputBase .input #genre{
+        width: 65%;
+    }
+    #AddTopicBase form button{
+        padding: 2vh 10vw;
+    }
+}

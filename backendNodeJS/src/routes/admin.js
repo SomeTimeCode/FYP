@@ -10,9 +10,20 @@ router.get("/", (req, res) => {
 });
 
 // internal controller
+// create account
 router.post("/createAccounts", upload.single('avatar'), adminController.createAccounts)
 
+// peer review form
+router.post("/createPeerReview", adminController.createPeerReview)
+router.get("/viewPeerReview", adminController.viewPeerReview)
 
+
+// peer review question
+router.post("/createPeerReviewQuestion", adminController.createPeerReviewQuestion)
+router.get("/viewPeerReviewQuestion", adminController.viewPeerReviewQuestion)
+router.get("/viewSpecificPeerReview/:id", adminController.viewSpecificPeerReview)
+router.post("/editSpecificPeerReview", adminController.editSpecificPeerReview)
+router.post("/deleteSpecificPeerReviewForm", adminController.deleteSpecificPeerReviewForm)
 
 
 // redirect to flask server 

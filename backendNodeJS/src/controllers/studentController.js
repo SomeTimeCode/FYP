@@ -3,6 +3,9 @@ const Group = require("../models/groupModel")
 const Supervisor = require("../models/supervisorModel")
 const Student = require("../models/studentModel")
 const User = require("../models/userModel")
+const Question = require('../models/questionModel')
+const PeerReviewForm = require('../models/peerReviewFormModel')
+const StudentPeerReviewResponse = require('../models/studentPeerReviewResponseModel')
 const bcrypt = require('bcryptjs')
 
 
@@ -92,8 +95,6 @@ const viewSpecificTopic = async (req, res) =>{
     }
 }
 
-
-// More work need to be done
 const createGroup = async (req, res) => {
     try{
         var topic = await Topic.findOne({_id: req.body.id}).catch((err) => {throw err})
@@ -131,7 +132,6 @@ const createGroup = async (req, res) => {
     }
 }
 
-// need to check the group has reach the maximun number of people or not 
 const joinGroup = async (req, res) =>{
     try{
         if(req.body.group_name == null && req.body._id == null){
@@ -179,4 +179,128 @@ const joinGroup = async (req, res) =>{
     }
 }
 
-module.exports = { viewTopic, viewSpecificTopic, createGroup, joinGroup }
+// peer review form
+const viewPeerReviewForm = async (req, res) => {
+    try{
+        var date = new Date()
+        var query;
+        if(date.getMonth > 8){
+            query = { $gte: `${date.getFullYear()}-09-1`, $lte: `${date.getFullYear()+1}-06-1`}
+        }else{
+            query = { $gte: `${date.getFullYear()-1}-09-1`, $lte: `${date.getFullYear()}-06-1`}
+        }
+        var forms = await PeerReviewForm.find({ start_of_date: query }).catch((err) => {throw err})
+        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        // if student does not response then create new otherwise take old data
+        var data = []
+        console.log(forms.length)
+        for(var i = 0; i < forms.length; i++){
+            console.log(forms[i]._id)
+            var studentPeerReviewResponse = await StudentPeerReviewResponse.findOne({peerReviewForm: forms[i]._id}).catch((err) => {throw err})
+            console.log(!studentPeerReviewResponse)
+            if(!studentPeerReviewResponse){
+                studentPeerReviewResponse = new StudentPeerReviewResponse({
+                    student: student._id,
+                    peerReviewForm: forms[i]._id,
+                    complete: false,
+                    response: ''
+                })
+                await studentPeerReviewResponse.save().catch((err) => {throw err})
+            }
+            data.push({_id: studentPeerReviewResponse._id, start_of_date: forms[i].start_of_date, end_of_date: forms[i].end_of_date, term: forms[i].term, complete: studentPeerReviewResponse.complete})
+        }
+        res.status(200).json(data)
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing peer review forms", error: err})
+    }
+}
+
+// // genereate the warning 
+// var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+// var group = await Group.findOne({_id: student.group}).catch((err) => {throw err})
+// var others = await Student.find({_id: {$in: group.group_members.filter(member=> !student._id.equals(member))}}).populate("user").catch((err) => {throw err})
+// // memeber name list
+// others = others.map(member => member.user.username)
+// console.log(others)
+
+
+
+const viewSpecificPeerReviewForm = async(req, res) => {
+    try{
+        var studentPeerReviewResponse = await StudentPeerReviewResponse.findOne({_id: req.params.id}).catch((err) => {throw err})
+        var peerReviewForm = await PeerReviewForm.findOne({_id: studentPeerReviewResponse.peerReviewForm}).catch((err) => {throw err})
+        var questionlist = await Question.find({_id: {$in: peerReviewForm.questions}}).catch((err) => {throw err})
+        console.log(questionlist)
+        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        var group = await Group.findOne({_id: student.group}).catch((err) => {throw err})
+        var others = await Student.find({_id: {$in: group.group_members.filter(member=> !student._id.equals(member))}}).populate("user").catch((err) => {throw err})
+        var questions = []
+        for(var i = 0; i < questionlist.length; i++){
+            if(questionlist[i].question_to == 'Self'){
+                questions.push({_id: questionlist[i]._id, question: questionlist[i].question, question_type: questionlist[i].question_type, question_required: questionlist[i].question_required, question_to: questionlist[i].question_to})
+            }else{
+                for(var j = 0; j < others.length; j++){
+                    questions.push({_id: questionlist[i]._id.toString() + "-" + others[j].user.username, question: questionlist[i].question, question_type: questionlist[i].question_type, question_required: questionlist[i].question_required, question_to: others[j].user.username})    
+                }
+            }
+        }
+        console.log(questions)
+        if(studentPeerReviewResponse.response == ''){
+            var response = null
+        }else{
+            var response = JSON.parse(studentPeerReviewResponse.response)
+        }
+        console.log(response)
+        res.status(200).json({student_response: response, questions: questions, term: peerReviewForm.term, start_of_date: peerReviewForm.start_of_date, end_of_date: peerReviewForm.end_of_date, submitted_response: studentPeerReviewResponse.response})
+    }catch(err){
+        console.log(err)
+        res.status(400).json({message: "Unexpected Error in viewing peer review forms", error: err})
+    }
+}
+
+const editSpecificPeerReviewForm = async(req, res) => {
+    try{
+        if(req.body.id != null){
+            //generate the questions list to check the form complete or not
+            var studentPeerReviewResponse = await StudentPeerReviewResponse.findOne({_id: req.body.id}).catch((err) => {throw err})
+            console.log(studentPeerReviewResponse)
+            var peerReviewForm = await PeerReviewForm.findOne({_id: studentPeerReviewResponse.peerReviewForm}).catch((err) => {throw err})
+            var questionlist = await Question.find({_id: {$in: peerReviewForm.questions}}).catch((err) => {throw err})
+            var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+            var group = await Group.findOne({_id: student.group}).catch((err) => {throw err})
+            var others = await Student.find({_id: {$in: group.group_members.filter(member=> !student._id.equals(member))}}).populate("user").catch((err) => {throw err})
+            var questions = []
+            for(var i = 0; i < questionlist.length; i++){
+                if(questionlist[i].question_to == 'Self'){
+                    questions.push({_id: questionlist[i]._id, question: questionlist[i].question, question_type: questionlist[i].question_type, question_required: questionlist[i].question_required, question_to: questionlist[i].question_to})
+                }else{
+                    for(var j = 0; j < others.length; j++){
+                        questions.push({_id: questionlist[i]._id.toString() + "-" + others[j].user.username, question: questionlist[i].question, question_type: questionlist[i].question_type, question_required: questionlist[i].question_required, question_to: others[j].user.username})    
+                    }
+                }
+            }
+            var complete = true
+            for(var i = 0; i < questions.length; i++){
+                if(questions[i].question_required == true){
+                    if(req.body.response[questions[i]._id] == null || req.body.response[questions[i]._id] == undefined){
+                        complete = false
+                        break;
+                    }
+                }
+            }
+            studentPeerReviewResponse["complete"] = complete
+            studentPeerReviewResponse["response"] = JSON.stringify(req.body.response)
+            console.log(studentPeerReviewResponse)
+            await studentPeerReviewResponse.save().catch((err) => {throw err})
+            res.status(200).json({complete: complete})
+        }else{
+            res.status(400).json({message: "Missing Student Review Form Number"})
+        }        
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing peer review forms", error: err})
+    }
+}
+
+module.exports = { viewTopic, viewSpecificTopic, createGroup, joinGroup,
+                   viewPeerReviewForm, viewSpecificPeerReviewForm, editSpecificPeerReviewForm
+                 }

@@ -1,0 +1,141 @@
+#AdminEditPeerReviewBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    font-size: 40px;
+}
+
+#AdminEditPeerReviewBase #title{
+    height: 5vh;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+#AdminEditPeerReviewBase #createQuestion{
+    border: 2px black solid;
+    align-self: flex-end;
+    margin-right: 2vw;
+    padding: 1vh 2vw;
+    cursor: pointer;
+    font-size: 0.7em;
+    transition: 1s;
+}
+
+#AdminEditPeerReviewBase #createQuestion:hover{
+    background-color: black;
+    color: white;
+}
+
+#AdminEditPeerReviewBase #controller{
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#AdminEditPeerReviewBase #controller .controlButton{
+    font-size: 0.7em;
+    width: 20%;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    padding: 1vh 1vw;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    transition: 1s;
+    cursor: pointer;
+}
+
+#AdminEditPeerReviewBase #controller .controlButton:hover{
+    color: white;
+    background-color: black;
+}
+
+#AdminEditPeerReviewBase #form{
+    width: 90%;
+    font-size: 0.6em;
+}
+
+#AdminEditPeerReviewBase #form input{
+    margin-top: 2vh;
+    width: 40%;
+    margin-left: 1vw;
+    font-size: 0.7em
+}
+
+#AdminEditPeerReviewBase #form #questionBoxes{
+    margin-top: 4vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#AdminEditPeerReviewBase #form #questionBoxes .questionBox{
+    width: 45%;
+    min-height: 50vh;
+    overflow: auto;
+    border: 1px solid black;
+}
+
+#AdminEditPeerReviewBase #form #questionBoxes .questionBox .title{
+    width: 100%;
+    height: 5vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#AdminEditPeerReviewBase #form #questionBoxes .questionBox .questionList{
+    width: 100%;
+    height: 45vh;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    align-items: center;
+}
+
+#AdminEditPeerReviewBase #form #questionBoxes .questionBox input{
+    width: 80%;
+    margin-bottom: 1vh;
+}
+
+#AdminEditPeerReviewBase #form #questionBoxes .questionBox .questionList .question{
+    width: 90%;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    min-height: 9vh;
+    overflow: auto;
+    border: 1px solid black;
+    margin-bottom: 1vh;
+}
+
+#AdminEditPeerReviewBase #form #submit{
+    margin-top: 2vh;
+    margin-bottom: 4vh;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1vh 1vw;
+    border: 1px solid black;
+    cursor: pointer;
+    transition: 1s;
+}
+
+#AdminEditPeerReviewBase #form #submit:hover{
+    background-color: black;
+    color: white;
+}

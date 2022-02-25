@@ -1,0 +1,190 @@
+#FYPTopicsBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    font-size: 30px;
+}
+
+#FYPTopicsBase #AddTopicButton{
+    width: 90%;
+    height: 2vh;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 0.9em;
+    color: red;
+    padding-top: 1vh;
+}
+
+#FYPTopicsBase #AddTopicButton #icon{
+    cursor: pointer;
+    color: red;
+    font-size: 1.3em;
+}
+
+#FYPTopicsBase #title{
+    height: 5vh;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    padding-bottom: 2vh;
+}
+
+#FYPTopicsBase #search{
+    height: 5vh;
+    width: 100%;
+}
+
+#FYPTopicsBase #search form{
+    height: 100%;
+    width: 100%;
+    box-shadow: inset 0 2px 0 0 black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#FYPTopicsBase #search form .input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 30%;
+    height: 100%;
+    font-size: 0.6em;
+}
+
+#FYPTopicsBase #search form .input label{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    width: 20%;
+    height: 100%;
+}
+
+#FYPTopicsBase #search form .input input{
+    width: 80%;
+    height: 60%;
+}
+
+#FYPTopicsBase #search form .inputGenre{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    font-size: 0.6em;
+}
+
+#FYPTopicsBase #search form .inputGenre label{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    width: 20%;
+    height: 100%;
+}
+
+#FYPTopicsBase #search form .inputGenre #genre{
+    margin-top: 0.5vh;
+    width: 80%;
+    height: 3vh;
+}
+
+#FYPTopicsBase #search form button{
+    height: 80%;
+    width: 10%;
+    background-color: black;
+    color: white;
+    font-size: 0.6em;
+}
+
+#FYPTopicsBase #topicList{
+    min-height: 70vh;
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#FYPTopicsBase #topicList .topic{
+    margin-top: 3vh;
+    cursor: pointer;
+    border-radius: 1vw;
+    min-height: 20vh;
+    height: auto;
+    width: 85%;
+    border: 2px solid black;
+    display: flex;
+    justify-content: center;
+}
+
+#FYPTopicsBase #topicList .topic .topicInfo{
+    font-size: 0.7em;
+    line-height: 1.3em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 95%;
+}
+
+#FYPTopicsBase #Controller{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 90%;
+    height: 10vh;
+}
+
+#FYPTopicsBase #Controller button{
+    height: 30%;
+    width: 10%;
+    font-size: 0.7em;
+    font-weight: 500;
+    background-color: black;
+    color: white;
+}
+
+#FYPTopicsBase #Controller button:disabled{
+    opacity: 40%;
+}
+
+#FYPTopicsBase #Controller p{
+    font-size: 1em;
+}
+
+@media only screen and (max-width: 800px) {
+    #FYPTopicsBase{
+        font-size: 30px;
+    }
+
+    #FYPTopicsBase #search{
+        display: none;
+    }
+
+    #FYPTopicsBase #topicList .topic{
+        min-height: 30vh;
+    }
+
+    #FYPTopicsBase #AddTopicButton{
+        font-size: 0.8em;
+        color: red;
+        padding-top: 2vh;
+    }
+    
+    #FYPTopicsBase #AddTopicButton #icon{
+        font-size: 1.1em;
+    }
+
+    #FYPTopicsBase #title{
+        padding-top: 3vh;
+    }
+}

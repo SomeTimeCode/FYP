@@ -2,16 +2,11 @@ const XLSX = require('xlsx')
 const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const Supervisor = require('../models/supervisorModel');
-const Student = require('../models/studentModel')
+const Student = require('../models/studentModel');
+const Question = require('../models/questionModel')
+const PeerReviewForm = require('../models/peerReviewFormModel')
 
 
-// const createAccounts = async(req, res)=>{
-//     console.log("testing")
-//     console.log(req.file.buffer)
-//     res.status(200).json({message: "testing"})
-// }
-
-// assume the username does not duplicate in the excel file
 const createAccounts = async(req, res) =>{
     try{
         console.log(req.file.buffer)
@@ -125,11 +120,164 @@ const createAccounts = async(req, res) =>{
         })
         res.status(200).json({fileName: req.file.originalname, data})
     }catch(err){
+        console.log("check")
         res.status(400).json({message: err})
     }
 }
 
+const viewSpecificPeerReview = async(req, res) =>{
+    try{
+        var peerReviewForm = await PeerReviewForm.findOne({_id: req.params.id}).catch((err) => {throw err})
+        var question_list = await Question.find({}).catch((err) => {throw err})
+        var questionSubmit = []
+        var questionBank = []
+        question_list.forEach((question) => {
+            if(peerReviewForm.questions.includes((question._id))){
+                questionSubmit.push(question)
+            }else{
+                questionBank.push(question)
+            }
+        })
+        console.log(peerReviewForm.start_of_date)
+        console.log(new Date(peerReviewForm.start_of_date).toISOString().slice(0,10))
+        res.status(200).json({questionSubmit: questionSubmit, questionBank: questionBank, term: peerReviewForm.term, start_of_date: new Date(peerReviewForm.start_of_date).toISOString().slice(0,10), end_of_date: new Date(peerReviewForm.end_of_date).toISOString().slice(0,10)})
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing specific peer review", error: err})
+    }
+}
 
+const editSpecificPeerReview = async(req, res) =>{
+    try{
+        if(req.body.startDate != null && req.body.endDate != null && req.body.term && req.body.questionSubmit != null && req.body.questionSubmit.length != 0 && req.body._id != null){
+            let peerReviewForm = await PeerReviewForm.findOne({_id: req.body._id}).catch((err)=>{throw err})
+            if(!peerReviewForm){
+                res.status(400).json({message: "Peer Review Form can't find"})
+                return
+            }
+            var question_list = req.body.questionSubmit.map((question) => {
+                return question._id
+            })
+            let temp_peerReviewForm = await PeerReviewForm.findOne({term: req.body.term, questions: question_list, start_of_date: req.body.startDate, end_of_date: req.body.endDate}).catch((err)=>{throw err})
+            if(temp_peerReviewForm){
+                res.status(400).json({message: "Peer Review Form exists"})
+                return
+            }
+            console.log(temp_peerReviewForm)
+            peerReviewForm.start_of_date = req.body.startDate
+            peerReviewForm.end_of_date = req.body.endDate
+            peerReviewForm.term = req.body.term
+            peerReviewForm.questions = question_list
+            peerReviewForm.save().catch((err)=>{throw err})
+            res.status(200).json({message: "Complete update the Peer Review Form"})
+        }else{
+            res.status(400).json({message: "Required infromtation does not completeted"})
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in editing specific peer review", error: err})
+    }
+}
 
+const viewPeerReview = async(req, res) => {
+    try{
+        let peerReviewForm = await PeerReviewForm.find({}).catch((err) => {throw err})
+        if(!peerReviewForm){
+            res.status(200).json({})
+        }else{
+            peerReviewForm = peerReviewForm.map((form) => {
+                return {_id: form._id, term: form.term, questions: form.questions.length, start_of_date: form.start_of_date, end_of_date: form.end_of_date}
+            })
+            res.status(200).json(peerReviewForm)
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpeected Error in viewing Peer Reviews", error: err})
+    }
+}
 
-module.exports = { createAccounts }
+const createPeerReview = async(req, res) => {
+    try{
+        console.log(req.body)
+        if(req.body.startDate != null && req.body.endDate != null && req.body.term && req.body.questionSubmit != null && req.body.questionSubmit.length != 0){
+            console.log("check")
+            var question_list = req.body.questionSubmit.map((question) => {
+                                    return question._id
+                                })
+            var peerReviewForm = new PeerReviewForm({
+                term: req.body.term,
+                questions: question_list,
+                start_of_date: req.body.startDate,
+                end_of_date: req.body.endDate
+            })
+            await peerReviewForm.save().then((obj) => {console.log(obj._id)}).catch((err) => {throw err})
+            res.status(200).json({"_id": peerReviewForm._doc._id})
+        }else{
+            res.status(400).json({message: "Incomplete information provided"})
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in creating Peer Review Form"})
+    }
+}
+
+// need to delete the student who refering to the form
+const deleteSpecificPeerReviewForm = async(req, res) => {
+    try{
+        if(req.body._id != null){
+            await PeerReviewForm.deleteOne({ _id: req.body._id }).catch((err) => { throw err })
+            res.status(200).json({message: "Peer Review Form is successful deleted"})
+        }else{
+            res.status(400).json({message: "Incomplete Information provided"})
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in deleting Peer Review Form", error: err})
+    }
+}
+
+const createPeerReviewQuestion = async(req, res) => {
+    try{
+        console.log(req.body)
+        if(req.body.question != null && req.body.question_type != null && req.body.question_to != null && req.body.question_required != null){
+            if(req.body.question_required == 'True'){
+                req.body.question_required = true
+            }else if(req.body.question_required == 'False'){
+                req.body.question_required = false
+            }else{
+                res.status(400).json({messgae: 'Unexpected question required restriction'})
+                return
+            }
+            var question = await Question.findOne({question: req.body.question, question_to: req.body.question_to, question_type: req.body.question_type, question_required: req.body.question_required}).catch((err) => {throw err})
+            if(question){
+               res.status(409).json({message: "Question already exist"}) 
+               return
+            }
+            question = new Question({
+                question: req.body.question,
+                question_to: req.body.question_to,
+                question_type: req.body.question_type, 
+                question_required: req.body.question_required
+            })
+            await question.save().then((obj) => {console.log(obj._id)}).catch((err) => {throw err})
+            res.status(200).json({"_id": question._id, "question": req.body.question, "question_to": req.body.question_to, "question_type": req.body.question_type, "question_required": req.body.question_required})
+        }else{
+            res.status(400).json({message: "Required infromtation does not completeted"})
+        }
+    }catch(err){
+        console.log(err)
+        res.status(400).json({message: "Error in creating Peer Review Question", error: err})
+    }
+}
+
+const viewPeerReviewQuestion = async(req, res) => {
+    try{
+        var questions_list = await Question.find({}).catch((err) => {throw err})
+        questions_list = questions_list.map((data) => {
+                            return {"_id": data._doc._id, "question_to": data._doc.question_to, "question": data._doc.question, "question_type": data._doc.question_type, "question_required": data._doc.question_required}
+                        })
+        res.status(200).json(questions_list)
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing peer review questions", error: err})
+    }
+}
+
+module.exports = { createAccounts, 
+                   viewPeerReview, createPeerReview, viewSpecificPeerReview, editSpecificPeerReview, deleteSpecificPeerReviewForm,
+                   createPeerReviewQuestion, viewPeerReviewQuestion
+                 }

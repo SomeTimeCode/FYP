@@ -1,0 +1,64 @@
+#StudentEditPeerReviewBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    font-size: 30px;
+}
+
+
+#StudentEditPeerReviewBase #title{
+    height: 5vh;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+#StudentEditPeerReviewBase #peerReviewInfo{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    font-size: 0.7em;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+#StudentEditPeerReviewBase #questions{
+    width: 90%;
+    margin-top: 2vh;
+    font-size: 0.8em;
+    min-height: 50vh;
+
+}
+
+#StudentEditPeerReviewBase #questions .questionBase{
+    margin-bottom: 2vh;
+}
+
+#StudentEditPeerReviewBase #questions .questionBase .inputText{
+    width: 70%;
+    font-size: 0.7em;
+}
+
+#StudentEditPeerReviewBase #questions .questionBase .inputNumber{
+    font-size: 0.7em;
+}
+
+#StudentEditPeerReviewBase #submit{
+    border: 1px solid black;
+    padding: 1vh 2vw;
+    cursor: pointer;
+    transition: 1s;
+}
+
+#StudentEditPeerReviewBase #submit:hover{
+    background-color: black;
+    color: white;
+}

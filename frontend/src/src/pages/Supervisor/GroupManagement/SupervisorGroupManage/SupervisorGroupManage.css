@@ -1,0 +1,273 @@
+#SupervisorGroupManageBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    font-size: 30px;
+}
+
+#SupervisorGroupManageBase #title{
+    height: 10vh;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    box-shadow: 0px 3px 0px 0px #000000;
+}
+
+#SupervisorGroupManageBase #pendingSlot{
+    width: 100%;
+    min-height: 20vh;
+    height: auto;
+    box-shadow: 0px 3px 0px 0px #000000;
+}
+
+#SupervisorGroupManageBase #pendingSlot #pendingTitle{
+    width: 100%;
+    height: 8vh;
+    font-size: 0.8em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#SupervisorGroupManageBase #pendingSlot #pendingGroupList{
+    width: 100%;
+    font-size: 2vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#SupervisorGroupManageBase #pendingSlot .pendingGroup{
+    width: 90%;
+    height: 10vh;
+    font-size: 2vh;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 2vh;
+    box-shadow: 0 0 0 2px black;
+}
+
+#SupervisorGroupManageBase #pendingSlot .pendingGroup .group{
+    height: auto;
+    width: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px 0 0 0 black;
+}
+
+#SupervisorGroupManageBase #pendingSlot .pendingGroup .members{
+    padding-left: 2vw;
+    width: 70%;
+    max-width: 70%;
+    height: auto;
+    font-size: 1em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#SupervisorGroupManageBase #pendingSlot .pendingGroup .members p{
+    padding-right: 1vw;
+}
+
+#SupervisorGroupManageBase #pendingSlot .pendingGroup .buttons{
+    height: 100%;
+    width: 20%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: column;
+}
+
+#SupervisorGroupManageBase #pendingSlot .pendingGroup .buttons button{
+    cursor: pointer;
+    height: 40%;
+    width: 60%;
+    font-size: 1.5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#SupervisorGroupManageBase #approveSlot{
+    width: 100%;
+    min-height: 30vh;
+    height: auto;
+    margin-top: 2vh;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 3vh;
+}
+
+
+#SupervisorGroupManageBase #approveSlot #addStudentSlot{
+    width: 100%;
+    min-height: 10vh;
+    height: auto;
+    margin-top: 2vh;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 3vh;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveAreaControl{
+    margin-left: 5%;
+    width: 90%;
+    min-height: 5vh;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 3vh;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveAreaControl button{
+    width: 30%;
+    min-height: 5vh;
+    margin-top: auto;
+    margin-right: auto;
+    background-color: black;
+    color: white;
+    font-size: 1.8vh;
+    cursor: pointer;
+    transition: color 1s; 
+    transition: background-color 1s;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveAreaControl button:hover{
+    background-color: white;
+    color: black;
+}
+
+
+#SupervisorGroupManageBase #approveSlot #addStudentSlot button{
+    margin-left: 5%;
+    width: 40%;
+    min-height: 4vh;
+    font-size: 2vh;
+    background-color: black;
+    color: white;
+    height: auto;
+    cursor: pointer;
+    transition: backgroud-color 1s;
+    transition: color 1s;
+}
+
+#SupervisorGroupManageBase #approveSlot #addStudentSlot button:hover{
+    background-color: white;
+    color: black;
+}
+
+#SupervisorGroupManageBase #approveSlot #addStudentSlot #addStudentSlotDrop{
+    margin-top: 1vh;
+    margin-left: 5%;
+    width: 90%;
+    min-height: 5vh;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border: 1px solid black;
+}
+
+#SupervisorGroupManageBase #approveSlot #addStudentSlot #addStudentSlotDrop .newStudent{
+    width: 23%;
+    min-height: 5vh;
+    font-size: 2vh;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 1vw;
+    margin-right: auto;
+    margin-bottom: 2vh;
+    margin-top: 1vh;
+    border: 3px solid black;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveArea{
+    margin-left: 5%;
+    width: 90%;
+    min-height: 35vh;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveArea .approvedGroup{
+    margin-top: 2vh;
+    width: 40%;
+    min-height: 35vh;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+    border: 1px solid black;
+    margin-right: auto;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveArea .approvedGroup .groupName{
+    width: 100%;
+    min-height: 5vh;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    font-size: 2vh;
+    background-color: black;
+    color:white;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveArea .approvedGroup .groupName p{
+    margin: auto;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveArea .approvedGroup .approveDrop{
+    width: 100%;
+    min-height: 5vh;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveArea .approvedGroup .approveDrop .student{
+    width: 80%;
+    min-height: 5vh;
+    height: auto;
+    margin-top: 1vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    border: 1px solid black;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveArea .approvedGroup .approveDrop .student p{
+    font-size: 0.8em;
+}
+
+#SupervisorGroupManageBase #approveSlot #ApproveArea .approvedGroup .approveDrop .none{
+    width: 80%;
+    min-height: 5vh;
+    height: auto;
+    margin-top: 1vh;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    border: 3px solid black;
+}

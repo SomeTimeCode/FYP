@@ -1,0 +1,47 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+#Page{
+    width: 100vw;
+    height: 100vh;
+}
+
+#Header{
+    width: 100vw;
+    min-height: 10vh;
+}
+
+#Body{
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+}
+
+
+#SideBar{
+    min-width: 20%;
+    min-height: 90vh;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-y: auto;
+}
+
+#Content{
+    min-width: 80%;
+    min-height: 90vh;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-y: auto;
+}
+
+@media only screen and (max-width: 480px) {
+    #SideBar {min-width: 35%;}
+    #Content {min-width: 65%;}
+}
+
+@media only screen and (max-width: 768px) and (min-width: 481px){
+    #SideBar {min-width: 25%;}
+    #Content {min-width: 75%;}
+}
