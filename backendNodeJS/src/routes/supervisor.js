@@ -20,6 +20,8 @@ router.post("/group/approveGroup", supervisorController.approveGroup)
 router.post("/group/rejectGroup", supervisorController.rejectGroup)
 router.post("/group/addStudent", supervisorController.addStudent)
 router.post("/group/adjustGroup", supervisorController.adjustGroup)
-
+//peer review
+router.get("/viewPeerReviewForm", supervisorController.viewPeerReviewForm)
+router.get("/viewSpecificPeerReviewForm/:id", supervisorController.viewSpecificPeerReviewForm)
 
 module.exports = router

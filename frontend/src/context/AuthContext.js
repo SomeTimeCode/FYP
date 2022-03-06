@@ -38,7 +38,7 @@ export const AuthContextProvider = (props) => {
 
     const adminLink = ["", "/CreateUsers","/PeerReview"]
     const studentLink = ["", "/FYPTopics", "/PeerReview"]
-    const supervisorLink = ["", "/FYPTopics", "/Groups"]
+    const supervisorLink = ["", "/FYPTopics", "/Groups", "/PeerReview"]
 
     return (
         <AuthContext.Provider

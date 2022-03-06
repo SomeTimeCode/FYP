@@ -31,6 +31,7 @@ function StudentEditPeerReview() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [response, setResponse] = useState({})
+  const [noGroup, setNoGroup] = useState(false)
 
   useEffect(() => {
     const fetchData = async() => {
@@ -40,18 +41,21 @@ function StudentEditPeerReview() {
       };
       let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/viewSpecificPeerReviewForm/${params.id}`, requestOptions)
       let data = await response.json()
-      console.log(data)
       var obj = {}
-      data.questions.forEach((question) => {
-        if(data.student_response[question._id] === undefined){
-          obj[question._id] = null
-        }else{
-          obj[question._id] = data.student_response[question._id]
-        }
-      })
-      console.log(obj)
-      setResponse(obj)
-      setData(data)
+      if(response.status === 200){
+        data.questions.forEach((question) => {
+          if(data.student_response[question._id] === undefined){
+            obj[question._id] = null
+          }else{
+            obj[question._id] = data.student_response[question._id]
+          }
+        })
+        console.log(obj)
+        setResponse(obj)
+        setData(data)
+      }else if(data.message === "You don't have a approved group yet"){
+        setNoGroup(true)
+      }
       setLoading(false)
     }
     fetchData()
@@ -74,7 +78,13 @@ function StudentEditPeerReview() {
         <>fetching Data</>
       : 
         <>
-        {(data === null)?
+        {noGroup === true?
+        <>
+          You don't have an approved group yet
+        </>
+        :
+        <>
+          {(data === null)?
           <>No Data can be found. Please load the page again</>
           :
           <>
@@ -96,6 +106,8 @@ function StudentEditPeerReview() {
               submit
             </div>
           </>
+          }
+        </>
         }
         </>
       }

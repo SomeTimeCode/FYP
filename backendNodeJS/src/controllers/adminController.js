@@ -4,7 +4,8 @@ const User = require('../models/userModel');
 const Supervisor = require('../models/supervisorModel');
 const Student = require('../models/studentModel');
 const Question = require('../models/questionModel')
-const PeerReviewForm = require('../models/peerReviewFormModel')
+const PeerReviewForm = require('../models/peerReviewFormModel');
+const studentPeerReviewResponse = require('../models/studentPeerReviewResponseModel');
 
 
 const createAccounts = async(req, res) =>{
@@ -222,6 +223,7 @@ const deleteSpecificPeerReviewForm = async(req, res) => {
     try{
         if(req.body._id != null){
             await PeerReviewForm.deleteOne({ _id: req.body._id }).catch((err) => { throw err })
+            await studentPeerReviewResponse.deleteMany({peerReviewForm: req.body._id}).catch((err) => { throw err })
             res.status(200).json({message: "Peer Review Form is successful deleted"})
         }else{
             res.status(400).json({message: "Incomplete Information provided"})

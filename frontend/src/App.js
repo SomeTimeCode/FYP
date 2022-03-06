@@ -20,6 +20,8 @@ import AdminEditPeerReview from "./pages/Admin/AdminPeerReview/AdminEditPeerRevi
 import AdminViewPeerReview from "./pages/Admin/AdminPeerReview/AdminViewPeerReview/AdminViewPeerReview";
 import StudentViewPeerReview from "./pages/Student/StudentPeerReview/StudentViewPeerReview/StudentViewPeerReview";
 import StudentEditPeerReview from "./pages/Student/StudentPeerReview/StudentEditPeerReview/StudentEditPeerReview";
+import SupervisorViewSpecificPeerReview from "./pages/Supervisor/SupervisorPeerReview/SupervisorViewSpecificPeerReview/SupervisorViewSpecificPeerReview";
+import SupervisorViewPeerReview from "./pages/Supervisor/SupervisorPeerReview/SupervisorViewPeerReview/SupervisorViewPeerReview";
 
 function App() {
   return (
@@ -50,6 +52,8 @@ function App() {
               <Route path="FYPTopics/:id" element={<View role={ "supervisor" } element={<SupervisorTopicDetail/>}/>} /> 
               <Route path="Groups" element={<View role={ "supervisor" } element={<SupervisorGroup/>}/>} />
               <Route path="Groups/:id" element={<View role={ "supervisor" } element={<SupervisorGroupManage/>}/>} /> 
+              <Route path="PeerReview" element={<View role={ "supervisor" } element={<SupervisorViewPeerReview/>}/>} /> 
+              <Route path="PeerReview/:id" element={<View role={ "supervisor" } element={<SupervisorViewSpecificPeerReview/>}/>} /> 
             </Route>
           </Routes>
         </BrowserRouter>

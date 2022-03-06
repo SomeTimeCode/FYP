@@ -230,9 +230,16 @@ const viewSpecificPeerReviewForm = async(req, res) => {
         var studentPeerReviewResponse = await StudentPeerReviewResponse.findOne({_id: req.params.id}).catch((err) => {throw err})
         var peerReviewForm = await PeerReviewForm.findOne({_id: studentPeerReviewResponse.peerReviewForm}).catch((err) => {throw err})
         var questionlist = await Question.find({_id: {$in: peerReviewForm.questions}}).catch((err) => {throw err})
-        console.log(questionlist)
         var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        if(!student.group){
+            res.status(400).json({message: "You don't have a approved group yet"})
+            return
+        }
         var group = await Group.findOne({_id: student.group}).catch((err) => {throw err})
+        if(group.status === 'pending'){
+            res.status(400).json({message: "You don't have a approved group yet"})
+            return
+        }
         var others = await Student.find({_id: {$in: group.group_members.filter(member=> !student._id.equals(member))}}).populate("user").catch((err) => {throw err})
         var questions = []
         for(var i = 0; i < questionlist.length; i++){
