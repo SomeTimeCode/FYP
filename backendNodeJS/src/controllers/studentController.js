@@ -6,7 +6,10 @@ const User = require("../models/userModel")
 const Question = require('../models/questionModel')
 const PeerReviewForm = require('../models/peerReviewFormModel')
 const StudentPeerReviewResponse = require('../models/studentPeerReviewResponseModel')
+const Recommendation = require('../models/recommendationModel')
 const bcrypt = require('bcryptjs')
+const fetch = require('node-fetch');
+const {Headers} = require('node-fetch')
 
 
 // view fyp topic
@@ -308,6 +311,180 @@ const editSpecificPeerReviewForm = async(req, res) => {
     }
 }
 
+
+const viewGenrePreferences = async(req, res) => {
+    try{
+        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        if(!student.preferences){
+            res.status(200).json({message: "No student's preferences found"})
+            return
+        }else{
+            res.status(200).json({message: "Student's preferences found", preferences: JSON.parse(student.preferences)})
+            return
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing student's genre preferences"})
+    }
+}
+
+const updateGenrePreferences = async(req, res) => {
+    try{
+        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        if(req.body.AI < 0 && req.body.Blockchains < 0 && req.body.Fintech < 0 && req.body['Web/Mobile Application'] < 0 && req.body['Game Development'] < 0){
+            res.status(400).json({message: "Unexpected Value in the ratings"})
+            return
+        }
+        student.preferences = JSON.stringify(req.body)
+        await student.save().catch((err) => {throw err})
+        res.status(200).json({message: "Update success"})
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing student's genre preferences"})
+    }
+}
+
+const getFYPTopicRecommendation = async(req, res) => {
+    try{
+        var recommendation = await Recommendation.find().limit(1).sort({$natural:-1}).catch((err) => {throw err})
+        if(!recommendation){
+            res.status(400).json({message: "Please ask admin to prepare the recommendation system"})
+            return
+        }else{
+            recommendation = recommendation[0]
+            if(!recommendation.data || !recommendation.courselist || !recommendation.ratingData || !recommendation.genrelist){
+                res.status(400).json({message: "Please ask admin to prepare the recommendation system"})
+                return
+            }
+        }
+        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        if(!student.preferences){
+            res.status(400).json({message: "Please submit your preferences first"})
+            return
+        }
+        var preferences = JSON.parse(student.preferences)
+        var genrelist = JSON.parse(recommendation.genrelist)
+        var student_rating_list = genrelist.map((genre) => {return parseInt(preferences[genre])})
+        // console.log(student_rating_list)
+        var courselist = JSON.parse(recommendation.courselist).slice(0, JSON.parse(recommendation.courselist).length - 2)
+        var student_course_list = courselist.map((course) => {return (req.body[course] == undefined)? 0 : parseFloat(req.body[course])})
+        // console.log(student_course_list)
+
+        var data = JSON.parse(recommendation.data)
+        var ratingData = JSON.parse(recommendation.ratingData)
+        var pastStudentList = []
+        var pastStudentData = []
+        var pastStudentRatingData = []
+        // console.log(data)
+        // console.log(ratingData)
+        Object.keys(data).forEach((user) => {
+            if(ratingData[user] != undefined && data[user] != undefined){
+                // console.log(ratingData[user].map((input) => {return parseInt(input)}))
+                pastStudentList.push(user)
+                pastStudentData.push(data[user].slice(0, data[user].length - 2).map((input) => {return parseFloat(input)}))
+                pastStudentRatingData.push(ratingData[user].map((input) => {return parseInt(input)}))
+            }
+        })
+        // console.log(pastStudentList)
+        console.log("Sending data....")
+        const requestOptions = {
+            method: "POST",
+            body: JSON.stringify({pastStudentList: pastStudentList, pastStudentData: pastStudentData, pastStudentRatingData: pastStudentRatingData, student_course_list: student_course_list, student_rating_list: student_rating_list}),
+            headers: new Headers({
+                "content-type": "application/json"
+            })
+        }
+        const response = await fetch("http://localhost:5001/recommend", requestOptions).catch((err) => {throw err})
+        var output = await response.json()
+        output = output.similar_students.map((student) => {
+            return [data[student][data[student].length - 2], data[student][data[student].length - 1]]
+        })
+        console.log(output)
+        topic_list = {}
+        //same supervisor same genre => same sueprvisor partialy same genre => same genre => partialy genre => same supervisor 
+        for(var i = 0; i < output.length; i++){
+            var user = await User.findOne({username: output[i][0]}).catch((err) => {throw err})
+            if(user == null){
+                continue
+            }
+            var supervisor = await Supervisor.findOne({user: user._id}).catch((err) => {throw err})
+            if(supervisor == null){
+                continue
+            }
+            var topic = await Topic.find({supervisor: supervisor._id, genre: output[i][1].split(",")}).catch((err) => {throw err})
+            if(topic.length == 0){
+                continue
+            }
+            topic.forEach((topic) => {
+                topic_list[topic._id] = {topic_name: topic.topic_name, genre: topic.genre, supervisor: output[i][0]}
+            })
+        }
+        // same supervisor partialy match genre
+        if(Object.keys(topic_list).length < 5){
+            var obj = {}
+            for(var i = 0; i < output.length; i++){
+                if(obj[output[i][0]] != undefined){
+                    var genres = obj[output[i][0]]
+                    genres = Array.from(new Set(genres.concat(output[i][1].split(","))))
+                    obj[output[i][0]] = genres
+                }else{
+                    obj[output[i][0]] = output[i][1].split(",")
+                }
+            }
+            var supervisor_list = Object.keys(obj)
+            for(var i = 0; i < supervisor_list.length; i++){
+                var user = await User.findOne({username: supervisor_list[i]}).catch((err) => {throw err})
+                if(user == null){
+                    continue
+                }
+                var supervisor = await Supervisor.findOne({user: user._id}).catch((err) => {throw err})
+                if(supervisor == null){
+                    continue
+                }
+                console.log(obj[supervisor_list[i]])
+                var topic = await Topic.find({supervisor: supervisor._id, genre: {$in: obj[supervisor_list[i]]}}).populate({path: 'supervisor', populate:{path: 'user'}}).catch((err) => {throw err})
+                if(topic.length == 0){
+                    continue
+                }
+                topic.forEach((topic) => {
+                    console.log(topic)
+                    topic_list[topic._id] = {topic_name: topic.topic_name, genre: topic.genre, supervisor: topic.supervisor.user.username}
+                })
+            }
+        }
+        // same genre any supervisor
+        if(Object.keys(topic_list).length < 5){
+            for(var i = 0; i < output.length; i++){
+                var topic = await Topic.find({supervisor: supervisor._id, genre: output[i][1].split(",")}).populate({path: 'supervisor', populate:{path: 'user'}}).catch((err) => {throw err})
+                if(topic.length == 0){
+                    continue
+                }
+                topic.forEach((topic) => {
+                    topic_list[topic._id] = {topic_name: topic.topic_name, genre: topic.genre, supervisor: topic.supervisor.user.username}
+                })
+            }
+        }
+        if(Object.keys(topic_list).length < 5){
+            for(var i = 0; i < output.length; i++){
+                
+                var topic = await Topic.findOne({$sortByCount: {"$match" : {"genre": {$in: output[i][1].split(",")}}}}).populate({path: 'supervisor', populate:{path: 'user'}}).catch((err) => {throw err})
+
+                if(!topic){
+                    continue
+                }else{
+                    topic_list[topic._id] = {topic_name: topic.topic_name, genre: topic.genre, supervisor: topic.supervisor.user.username}
+                }
+            }
+        }
+        //most common genre
+        console.log(topic_list)
+        res.status(200).json({topic_list})
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing student's genre preferences"})
+    }
+}
+
+
+
 module.exports = { viewTopic, viewSpecificTopic, createGroup, joinGroup,
-                   viewPeerReviewForm, viewSpecificPeerReviewForm, editSpecificPeerReviewForm
+                   viewPeerReviewForm, viewSpecificPeerReviewForm, editSpecificPeerReviewForm,
+                   viewGenrePreferences, updateGenrePreferences, getFYPTopicRecommendation
                  }

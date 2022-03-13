@@ -14,7 +14,7 @@
     justify-content: center;
     align-items: center;
     margin-top: 2vh;
-    width: 60%;
+    width: 70%;
     height: 4vh;
     cursor: pointer;
     border: 1px solid black;
@@ -35,9 +35,13 @@
     }
 }
 
-@media only screen and (max-width: 768px) and (min-width: 481px){
+@media only screen and (max-width: 1080px) and (min-width: 481px){
     #SiderBase{
         font-size: 18px;
+    }
+    #SiderBase .SiderCard{
+        height: 5vh;
+        width: 90%;
     }
 }
 

@@ -356,7 +356,7 @@ function AdminEditPeerReview() {
   return (
     <div id='AdminEditPeerReviewBase'>
       <div id='title'>
-        Create Peer Review Form
+        Edit Peer Review Form
       </div>
       <div id='createQuestion' style={{display: `${allowEdit ? 'block' : 'none'}`}} onClick={() => createQuestion()}>
         Add Question

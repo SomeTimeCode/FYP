@@ -6,11 +6,11 @@ const Student = require('../models/studentModel');
 const Question = require('../models/questionModel')
 const PeerReviewForm = require('../models/peerReviewFormModel');
 const studentPeerReviewResponse = require('../models/studentPeerReviewResponseModel');
-
+const Recommendation = require('../models/recommendationModel');
 
 const createAccounts = async(req, res) =>{
     try{
-        console.log(req.file.buffer)
+        console.log(req.file)
         var workbook = XLSX.read(req.file.buffer, {type: 'buffer'})
         let hashMap = {}
         let data = {}
@@ -279,7 +279,108 @@ const viewPeerReviewQuestion = async(req, res) => {
     }
 }
 
+const viewRecommendation = async(req, res) => {
+    try{
+        //grap the lastest verstion of recommendation
+        var recommendation = await Recommendation.find().limit(1).sort({$natural:-1}).catch((err) => {throw err})
+        if(recommendation.length == 0){
+            res.status(200).json({message: "No data"})
+            return
+        }
+        if(!recommendation[0].ratingData){
+            res.status(200).json({message: "Missing Rating", data: JSON.parse(recommendation[0].data), courselist: JSON.parse(recommendation[0].courselist)})
+            return
+        }
+        if(!recommendation[0].data){
+            res.status(200).json({message: "Missing Data", ratingData: JSON.parse(recommendation[0].ratingData), genrelist: JSON.parse(recommendation[0].genrelist)})
+            return
+        }
+        res.status(200).json({message: "Have data", data: JSON.parse(recommendation[0].data), courselist: JSON.parse(recommendation[0].courselist), ratingData: JSON.parse(recommendation[0].ratingData), genrelist: JSON.parse(recommendation[0].genrelist)})
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing past students choices"})
+    } 
+}
+
+const updateRecommendation = async(req, res) => {
+    try{
+        if(req.file.buffer){
+            var workbook = XLSX.read(req.file.buffer, {type: 'buffer'})
+            let data = {}
+            let courselist = []
+            const temp = XLSX.utils.sheet_to_json(workbook.Sheets["Data"] , {raw: false})
+            console.log(temp)
+            // "check all keys is correct or not"
+            courselist = Object.keys(temp[0]).slice(1)
+            if(courselist[courselist.length - 2] != "Supervisor" && courselist[courselist.length - 1] != "FYP Genre"){
+                res.status(400).json({message: "Missing supervisor or FYP Genre in the excel file"})
+                return
+            }
+            temp.forEach((user) => {
+                var input = Object.values(user)
+                data[input[0]] = input.slice(1)
+            })
+            var recommendation = await Recommendation.find().limit(1).sort({$natural:-1}).catch((err) => {throw err})
+            if(recommendation.length == 0){
+                recommendation = new Recommendation({
+                    data: JSON.stringify(data),
+                    courselist: JSON.stringify(courselist)
+                })
+                await recommendation.save().then((obj) => {console.log(obj._id)}).catch((err) => {throw err})
+                res.status(200).json({courselist: courselist, data: data})
+                return
+            }else{
+                recommendation[0].data = JSON.stringify(data)
+                recommendation[0].courselist = JSON.stringify(courselist)
+                await recommendation[0].save().then((obj) => {console.log(obj._id)}).catch((err) => {throw err})
+                res.status(200).json({courselist: courselist, data: data})
+            }
+        }else{
+            res.status(400).json({message: "Missing input data to update."})
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in updating past students choices"})
+    }
+}
+
+const updateRatingRecommendation = async(req, res) => {
+    try{
+        if(req.file.buffer){
+            var workbook = XLSX.read(req.file.buffer, {type: 'buffer'})
+            let ratingData = {}
+            let genrelist = []
+            const temp = XLSX.utils.sheet_to_json(workbook.Sheets["Ratings"] , {raw: false})
+            console.log(temp)
+            // "check all keys is correct or not"
+            genrelist = Object.keys(temp[0]).slice(1)
+            temp.forEach((user) => {
+                var input = Object.values(user)
+                ratingData[input[0]] = input.slice(1)
+            })
+            var recommendation = await Recommendation.find().limit(1).sort({$natural:-1}).catch((err) => {throw err})
+            if(recommendation.length == 0){
+                recommendation = new Recommendation({
+                    ratingData: JSON.stringify(ratingData),
+                    genrelist: JSON.stringify(genrelist)
+                })
+                await recommendation.save().then((obj) => {console.log(obj._id)}).catch((err) => {throw err})
+                res.status(200).json({genrelist: genrelist, ratingData: ratingData})
+                return
+            }else{
+                recommendation[0].ratingData = JSON.stringify(ratingData)
+                recommendation[0].genrelist = JSON.stringify(genrelist)
+                await recommendation[0].save().then((obj) => {console.log(obj._id)}).catch((err) => {throw err})
+                res.status(200).json({genrelist: genrelist, ratingData: ratingData})
+            }
+        }else{
+            res.status(400).json({message: "Missing input data to update."})
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in updating past students choices"})
+    }
+}
+
 module.exports = { createAccounts, 
                    viewPeerReview, createPeerReview, viewSpecificPeerReview, editSpecificPeerReview, deleteSpecificPeerReviewForm,
-                   createPeerReviewQuestion, viewPeerReviewQuestion
+                   createPeerReviewQuestion, viewPeerReviewQuestion,
+                   viewRecommendation, updateRecommendation, updateRatingRecommendation
                  }

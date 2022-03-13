@@ -1,0 +1,182 @@
+#StudentRecommendationBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    font-size: 30px;
+}
+
+
+#StudentRecommendationBase #title{
+    height: 5vh;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+#StudentRecommendationBase form{
+    margin-top: 1vh;
+    width: 90%;
+    height: 5vh;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 0.8em;
+}
+
+#StudentRecommendationBase form input{
+    font-size: 0.7em;
+}
+
+#StudentRecommendationBase form #submit{
+    background-color: black;
+    color: white;
+    padding: 0.5vh 1vw;
+    cursor: pointer;
+    transition: 1s;
+}
+
+#StudentRecommendationBase form #submit:hover{
+    background-color: white;
+    color: black;
+}
+
+#StudentRecommendationBase #inputCourses{
+    margin-top: 2vh;
+    width: 90%;
+}
+
+#StudentRecommendationBase #inputCourses #info{
+    text-align: center;
+    font-size: 0.9em;
+    margin-bottom: 1vh;
+}
+
+#StudentRecommendationBase #inputCourses #AddCourse{
+    margin-top: 2vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 15%;
+    max-width: 20%;
+    font-size: 0.9em;
+    padding: 1vh 1vw;
+    background-color: red;
+    font-weight: 700;
+    color: white;
+    transition: 1s;
+}
+
+#StudentRecommendationBase #inputCourses #AddCourse:hover{
+    color: red;
+    background-color: white;
+    border: 2px solid black;
+}
+
+#StudentRecommendationBase #inputCourses .GradeInput{
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    font-size: 0.9em;
+    padding: 1vh 2vw;
+    border: 1px solid black;
+}
+
+#StudentRecommendationBase #inputCourses .GradeInput .GradeInfo{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#StudentRecommendationBase #inputCourses .GradeInput .GradeInfo label{
+    margin-right: 3vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#StudentRecommendationBase #inputCourses .GradeInput .GradeInfo label input{
+    font-size: 0.7em;
+}
+
+#StudentRecommendationBase #inputCourses .GradeController{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 2vh;
+}
+
+#StudentRecommendationBase #inputCourses .GradeController .GradeSave{
+    border: 1px solid black;
+    padding: 0.5vh 2vw;
+    cursor: pointer;
+    transition: 1s;
+}
+
+#StudentRecommendationBase #inputCourses .GradeController .GradeRemove{
+    border: 1px solid black;
+    padding: 0.5vh 2vw;
+    margin-left: 2vw;
+    cursor: pointer;
+    transition: 1s;
+}
+
+#StudentRecommendationBase #inputCourses .GradeController .GradeSave:hover, .GradeRemove:hover{
+    background-color: black;
+    color: white;
+}
+
+#StudentRecommendationBase #inputCourses #GradeSubmit{
+    margin-top: 2vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 15%;
+    max-width: 20%;
+    font-size: 0.9em;
+    padding: 1vh 1vw;
+    background-color: red;
+    font-weight: 700;
+    color: white;
+    transition: 1s;
+}
+
+#StudentRecommendationBase #inputCourses #GradeSubmit:hover{
+    color: red;
+    background-color: white;
+    border: 2px solid black;
+}
+
+#StudentRecommendationBase #Recommendation{
+    width: 90%;
+    margin-top: 5vh;
+    margin-bottom: 10vh;
+}
+
+#StudentRecommendationBase #Recommendation .TopicCard{
+    padding: 1vh 2vw;
+    overflow: auto;
+    margin-bottom: 2vh;
+    border: 1px solid black;
+    font-size: 0.85em;
+    cursor: pointer;
+}
+
+#StudentRecommendationBase #Recommendation .TopicCard .genreList{
+    display: flex;
+    flex-direction: row;
+}
+
+#StudentRecommendationBase #Recommendation .TopicCard .genreList .genre{
+    margin-left: 1vw;
+}

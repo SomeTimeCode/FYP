@@ -22,6 +22,8 @@ import StudentViewPeerReview from "./pages/Student/StudentPeerReview/StudentView
 import StudentEditPeerReview from "./pages/Student/StudentPeerReview/StudentEditPeerReview/StudentEditPeerReview";
 import SupervisorViewSpecificPeerReview from "./pages/Supervisor/SupervisorPeerReview/SupervisorViewSpecificPeerReview/SupervisorViewSpecificPeerReview";
 import SupervisorViewPeerReview from "./pages/Supervisor/SupervisorPeerReview/SupervisorViewPeerReview/SupervisorViewPeerReview";
+import CreateRecommendation from "./pages/Admin/CreateRecommendation/CreateRecommendation";
+import StudentRecommendation from "./pages/Student/StudentRecommendation/StudentRecommendation";
 
 function App() {
   return (
@@ -37,6 +39,7 @@ function App() {
               <Route path="EditPeerReview" element={<View role={ "admin" } element={ <AdminEditPeerReview />}/>} />
               <Route path="CreatePeerReview" element={<View role={ "admin" } element={ <AdminCreatePeerReview />}/>} />
               <Route path="EditPeerReview/:id" element={<View role={ "admin" } element={ <AdminEditPeerReview />}/>} />
+              <Route path="Recommendation" element={<View role={ "admin" } element={ <CreateRecommendation />}/>} />
             </Route>
             <Route path="/student" element={<ProtectedRoute role={"student"}/>}>
               <Route path="" element={<View role={ "student" } element={ <StudentIndex />}/>} />
@@ -44,6 +47,7 @@ function App() {
               <Route path="FYPTopics/:id" element={<View role={ "student" } element={<StudentTopicDetail/>}/>} /> 
               <Route path="PeerReview" element={<View role={ "student" } element={<StudentViewPeerReview/>}/>} /> 
               <Route path="EditPeerReview/:id" element={<View role={ "student" } element={<StudentEditPeerReview/>}/>} /> 
+              <Route path="Recommendation" element={<View role={ "student" } element={<StudentRecommendation/>}/>} /> 
             </Route>
             <Route path="/supervisor" element={<ProtectedRoute role={"supervisor"}/>}>
               <Route path="" element={<View role={ "supervisor" } element={ <SupervisorIndex />}/>} />

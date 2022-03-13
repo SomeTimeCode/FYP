@@ -1,13 +1,27 @@
 import React, {useEffect ,useState} from 'react'
 import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import "./StudentViewPeerReview.css"
 
 function Card(props){
 
   const navigate = useNavigate()
+  const MySwal = withReactContent(Swal)
 
   return (
-    <div className='form' key={props.form._id} onClick={(e) => {navigate(`../EditPeerReview/${props.form._id}`)}}>
+    <div className='form' key={props.form._id} onClick={(e) => {
+        var start = new Date(props.form.start_of_date)
+        var tdy = new Date()
+        if(tdy > start){
+          navigate(`../EditPeerReview/${props.form._id}`)
+        }else{
+          MySwal.fire({
+            icon: "warning",
+            title: "Not yet available now"
+          })
+        }
+      }}>
       <div className='info'>
         <p>Term: {props.form.term}</p>
         <p>Start of Date: {props.form.start_of_date.slice(0,10)}</p>

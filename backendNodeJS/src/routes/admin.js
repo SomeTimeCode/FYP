@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router();
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
+const {Headers} = require('node-fetch')
 const multer = require("multer");
 const upload = multer();
 const adminController = require('../controllers/adminController')
@@ -25,12 +26,24 @@ router.get("/viewSpecificPeerReview/:id", adminController.viewSpecificPeerReview
 router.post("/editSpecificPeerReview", adminController.editSpecificPeerReview)
 router.post("/deleteSpecificPeerReviewForm", adminController.deleteSpecificPeerReviewForm)
 
+//recommendation
+router.get("/viewRecommendation", adminController.viewRecommendation)
+router.post("/updateRecommendation", upload.single('avatar'), adminController.updateRecommendation)
+router.post("/updateRatingRecommendation", upload.single('avatar'), adminController.updateRatingRecommendation)
 
 // redirect to flask server 
 router.get("/test", async (req, res) => {
-    const response = await fetch("http://localhost:5001").then(res => res.json())
-    console.log(response)
-    res.status(200).json(response)
+    const requestOptions = {
+        method: "POST",
+        body: JSON.stringify({TEST: "test"}),
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    }
+    const response = await fetch("http://localhost:5001/test", requestOptions).catch((err) => {throw err})
+    var data = await response.json()
+    console.log(data)
+    res.status(200).json(data)
 })
 
 

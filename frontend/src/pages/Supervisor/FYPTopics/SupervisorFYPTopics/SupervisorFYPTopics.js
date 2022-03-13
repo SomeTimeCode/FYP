@@ -93,8 +93,8 @@ function SupervisorFYPTopics() {
             value: "AI"
         },
         {
-            label: "BlockChains",
-            value: "BlockChains"
+            label: "Blockchains",
+            value: "Blockchains"
         },
         {
             label: "Fintech",

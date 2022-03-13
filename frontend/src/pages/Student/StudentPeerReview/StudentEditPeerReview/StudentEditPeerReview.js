@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { useParams } from 'react-router-dom'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import "./StudentEditPeerReview.css"
 
 function Question(props){
@@ -16,10 +18,10 @@ function Question(props){
       {props.question.question_type === "Text"?
       <>
         <br/>
-        <input type="text" value={props.response[props.question._id]} className='inputText' required={true} placeholder="Input Your Answer Here" onChange={(e) => updateResponse(e)}/>
+        <input type="text" value={props.response[props.question._id]} className='inputText' required={true} placeholder="Input Your Answer Here" disabled={props.disabled} onChange={(e) => updateResponse(e)}/>
       </>
       :
-        <input type="number" value={props.response[props.question._id]} className='inputNumber' min="0" max="5" required={true} onChange={(e) => updateResponse(e)}/>
+        <input type="number" value={props.response[props.question._id]} className='inputNumber' min="0" max="5" required={true} disabled={props.disabled} onChange={(e) => updateResponse(e)}/>
       }
     </div>
   )
@@ -27,11 +29,13 @@ function Question(props){
 
 function StudentEditPeerReview() {
 
+  const MySwal = withReactContent(Swal)
   const params = useParams()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [response, setResponse] = useState({})
   const [noGroup, setNoGroup] = useState(false)
+  const [disabled, setDisabled] = useState(false)
 
   useEffect(() => {
     const fetchData = async() => {
@@ -50,7 +54,9 @@ function StudentEditPeerReview() {
             obj[question._id] = data.student_response[question._id]
           }
         })
-        console.log(obj)
+        var tdy = new Date()
+        var end = new Date(data.end_of_date)
+        setDisabled(tdy > end)
         setResponse(obj)
         setData(data)
       }else if(data.message === "You don't have a approved group yet"){
@@ -62,14 +68,30 @@ function StudentEditPeerReview() {
   }, [])
   
   const submit = async () => {
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-      body: JSON.stringify({response: response, id: params.id})
-    };
-    let result = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/editSpecificPeerReviewForm`, requestOptions)
-    let data = await result.json()
-    console.log(data)
+    if(disabled){
+      MySwal.fire({
+        icon: "warning",
+        title: "The peer review form is already over the submission period",
+        showCloseButton: true
+      })
+    }else{
+      MySwal.fire({
+        icon: "warning",
+        title: "Are you sure to submit?",
+        showCloseButton: true
+      }).then(async (result) => {
+        if(result.isConfirmed){
+          const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+            body: JSON.stringify({response: response, id: params.id})
+          };
+          let result = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/editSpecificPeerReviewForm`, requestOptions)
+          let data = await result.json()
+          console.log(data)
+        }
+      })
+    }
   }
 
   return (
@@ -98,7 +120,7 @@ function StudentEditPeerReview() {
             <div id='questions'>
               {
                 data.questions.map((question) => {
-                  return <Question key={question._id} question={question} response={response} setResponse={setResponse}/>
+                  return <Question key={question._id} question={question} disabled={disabled} response={response} setResponse={setResponse}/>
                 })
               }
             </div>

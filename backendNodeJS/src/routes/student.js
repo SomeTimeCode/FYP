@@ -18,4 +18,11 @@ router.get("/viewPeerReviewForm", StudentController.viewPeerReviewForm)
 router.get("/viewSpecificPeerReviewForm/:id", StudentController.viewSpecificPeerReviewForm)
 router.post("/editSpecificPeerReviewForm", StudentController.editSpecificPeerReviewForm)
 
+//recommendation 
+router.get("/viewGenrePreferences", StudentController.viewGenrePreferences)
+router.post("/updateGenrePreferences", StudentController.updateGenrePreferences)
+router.post("/getFYPTopicRecommendation", StudentController.getFYPTopicRecommendation)
+
+
+
 module.exports = router
