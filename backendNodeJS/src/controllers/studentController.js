@@ -199,8 +199,7 @@ const viewPeerReviewForm = async (req, res) => {
         console.log(forms.length)
         for(var i = 0; i < forms.length; i++){
             console.log(forms[i]._id)
-            var studentPeerReviewResponse = await StudentPeerReviewResponse.findOne({peerReviewForm: forms[i]._id}).catch((err) => {throw err})
-            console.log(!studentPeerReviewResponse)
+            var studentPeerReviewResponse = await StudentPeerReviewResponse.findOne({peerReviewForm: forms[i]._id, student: student._id}).catch((err) => {throw err})
             if(!studentPeerReviewResponse){
                 studentPeerReviewResponse = new StudentPeerReviewResponse({
                     student: student._id,
@@ -231,9 +230,13 @@ const viewPeerReviewForm = async (req, res) => {
 const viewSpecificPeerReviewForm = async(req, res) => {
     try{
         var studentPeerReviewResponse = await StudentPeerReviewResponse.findOne({_id: req.params.id}).catch((err) => {throw err})
+        console.log(studentPeerReviewResponse)
         var peerReviewForm = await PeerReviewForm.findOne({_id: studentPeerReviewResponse.peerReviewForm}).catch((err) => {throw err})
         var questionlist = await Question.find({_id: {$in: peerReviewForm.questions}}).catch((err) => {throw err})
-        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        var student = await Student.findOne({user: req.decoded._id}).populate("user").catch((err) => {throw err})
+
+        console.log(student)
+
         if(!student.group){
             res.status(400).json({message: "You don't have a approved group yet"})
             return
@@ -249,18 +252,17 @@ const viewSpecificPeerReviewForm = async(req, res) => {
             if(questionlist[i].question_to == 'Self'){
                 questions.push({_id: questionlist[i]._id, question: questionlist[i].question, question_type: questionlist[i].question_type, question_required: questionlist[i].question_required, question_to: questionlist[i].question_to})
             }else{
+                questions.push({_id: questionlist[i]._id.toString() + "-" + student.user.username, question: questionlist[i].question, question_type: questionlist[i].question_type, question_required: questionlist[i].question_required, question_to: student.user.username})    
                 for(var j = 0; j < others.length; j++){
                     questions.push({_id: questionlist[i]._id.toString() + "-" + others[j].user.username, question: questionlist[i].question, question_type: questionlist[i].question_type, question_required: questionlist[i].question_required, question_to: others[j].user.username})    
                 }
             }
         }
-        console.log(questions)
         if(studentPeerReviewResponse.response == ''){
-            var response = null
+            var response = {}
         }else{
             var response = JSON.parse(studentPeerReviewResponse.response)
         }
-        console.log(response)
         res.status(200).json({student_response: response, questions: questions, term: peerReviewForm.term, start_of_date: peerReviewForm.start_of_date, end_of_date: peerReviewForm.end_of_date, submitted_response: studentPeerReviewResponse.response})
     }catch(err){
         console.log(err)

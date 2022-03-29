@@ -12,16 +12,29 @@ function Question(props){
     props.setResponse(obj)
   }
 
+  const updateResponseNumber = (e) => {
+    var obj = {...props.response}
+    if(e.target.value > 5){
+      obj[props.question._id] = 5
+    }else if(e.target.value < 0){
+      obj[props.question._id] = 0
+    }else{
+      obj[props.question._id] = e.target.value
+    }
+    props.setResponse(obj)
+  }
+
+
   return(
     <div className="questionBase">
       <label>{props.question.question}{" "}{props.question.question_to === "Self"? "":`To: ${props.question.question_to}`}{" "}{props.question.question_required? "(Required)": ""}</label>
       {props.question.question_type === "Text"?
       <>
         <br/>
-        <input type="text" value={props.response[props.question._id]} className='inputText' required={true} placeholder="Input Your Answer Here" disabled={props.disabled} onChange={(e) => updateResponse(e)}/>
+        <input type="text" value={props.response[props.question._id] === null? "" : props.response[props.question._id]} className='inputText' required={true} placeholder="Input Your Answer Here" disabled={props.disabled} onChange={(e) => updateResponse(e)}/>
       </>
       :
-        <input type="number" value={props.response[props.question._id]} className='inputNumber' min="0" max="5" required={true} disabled={props.disabled} onChange={(e) => updateResponse(e)}/>
+        <input type="number" value={props.response[props.question._id] === null? 0 : props.response[props.question._id]} className='inputNumber' min="0" max="5" required={true} disabled={props.disabled} onChange={(e) => updateResponseNumber(e)}/>
       }
     </div>
   )
@@ -88,7 +101,6 @@ function StudentEditPeerReview() {
           };
           let result = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/editSpecificPeerReviewForm`, requestOptions)
           let data = await result.json()
-          console.log(data)
         }
       })
     }

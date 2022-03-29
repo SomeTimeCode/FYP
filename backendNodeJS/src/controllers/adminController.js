@@ -7,6 +7,10 @@ const Question = require('../models/questionModel')
 const PeerReviewForm = require('../models/peerReviewFormModel');
 const studentPeerReviewResponse = require('../models/studentPeerReviewResponseModel');
 const Recommendation = require('../models/recommendationModel');
+const SchedulePeriod = require("../models/schedulePeriodModel");
+const GroupSchedule = require("../models/groupScheduleModel");
+const SupervisorSchedule = require("../models/supervisorModel");
+const AdminScheduler = require("../models/adminScheduleModel")
 
 const createAccounts = async(req, res) =>{
     try{
@@ -218,7 +222,6 @@ const createPeerReview = async(req, res) => {
     }
 }
 
-// need to delete the student who refering to the form
 const deleteSpecificPeerReviewForm = async(req, res) => {
     try{
         if(req.body._id != null){
@@ -379,8 +382,59 @@ const updateRatingRecommendation = async(req, res) => {
     }
 }
 
+const viewSchedulePeriod = async(req, res) => {
+    try{
+        var schedulePeriod = await SchedulePeriod.find().catch((err) => {throw err})
+        res.status(200).json(schedulePeriod)
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing schedule period", error: err})
+    }
+}
+
+const deleteSchedulePeriod = async(req, res) => {
+    try{
+        if(req.body._id == null){
+            res.status(400).json({message: "Unexpected Error in deleting schedule period", error: "Missing delete schedule period's id"})
+            return
+        }else{
+            await SchedulePeriod.deleteOne({_id: req.body._id}).catch((err) => {throw err})
+            var schedulePeriod = await SchedulePeriod.find().catch((err) => {throw err})
+            res.status(200).json(schedulePeriod)
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in deleting schedule period", error: err})
+    }
+}
+
+const createSchedulePeriod = async(req, res) => {
+    try{
+        if(req.body.endOfChanging == null && req.body.startDate == null && req.body.endDate == null && req.body.term == null){
+            console.log("test")
+            res.status(400).json({message: "Unexpected Error in deleting schedule period", error: "Missing delete schedule period's id"})
+            return
+        }else{
+            var schedulePeriod = await SchedulePeriod.findOne({term: req.body.term}).catch((err) => {throw err})
+            if(schedulePeriod){
+                res.status(400).json({message: "Term name existed. Please use another term name"})
+                return
+            }
+            schedulePeriod = new SchedulePeriod({
+                endOfChanging: req.body.endOfChanging,
+                startDate: req.body.startDate,
+                endDate: req.body.endDate,
+                term: req.body.term
+            })
+            await schedulePeriod.save().then((obj) => {console.log(obj._id)}).catch((err) => {throw err})
+            res.status(200).json({message: "Success delete requiredd schedule period"})
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in creating schedule period", error: err})
+    }
+}
+
 module.exports = { createAccounts, 
                    viewPeerReview, createPeerReview, viewSpecificPeerReview, editSpecificPeerReview, deleteSpecificPeerReviewForm,
                    createPeerReviewQuestion, viewPeerReviewQuestion,
-                   viewRecommendation, updateRecommendation, updateRatingRecommendation
+                   viewRecommendation, updateRecommendation, updateRatingRecommendation,
+                   viewSchedulePeriod, createSchedulePeriod, deleteSchedulePeriod
                  }

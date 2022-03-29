@@ -18,7 +18,6 @@ function CreateRecommendation() {
 
   const submit = async(event) => {
     event.preventDefault()
-    console.log(selectedFile)
     let formData = new FormData()
     formData.append('avatar', selectedFile)
     const requestOptions = {
@@ -41,7 +40,6 @@ function CreateRecommendation() {
 
   const submitRating = async(event) => {
     event.preventDefault()
-    console.log(selectedRatingFile)
     let formData = new FormData()
     formData.append('avatar', selectedRatingFile)
     const requestOptions = {
@@ -74,7 +72,6 @@ function CreateRecommendation() {
         })
         let data = await response.json()
         if(response.status === 200){
-          console.log(data.message)
           if(data.message === "Have data"){
             setResponse({data: data.data, courselist: data.courselist})
             setRating({data: data.ratingData, genrelist: data.genrelist})
@@ -86,7 +83,6 @@ function CreateRecommendation() {
             setResponse({data: data.data, courselist: data.courselist})
             setNoData(false)
           }else{
-            console.log({data: data.ratingData, genrelist: data.genrelist})
             setRating({data: data.ratingData, genrelist: data.genrelist})
             setNoRatingData(false)
           }

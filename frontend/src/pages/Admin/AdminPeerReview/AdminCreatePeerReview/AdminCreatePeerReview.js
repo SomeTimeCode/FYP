@@ -44,7 +44,6 @@ function QuestionBank(props){
       var temp_questionBank = [...props.questionBank]
       temp_questionBank.push(item)
       var temp_questionSubmit = props.questionSubmit.filter(question => {
-        console.log(question._id)
         if(question._id !== item._id){
           return true
         }else{
@@ -62,7 +61,6 @@ function QuestionBank(props){
         Questions Bank
       </div>
       <input type="text" placeholder='Search question here' onChange={(e) => {
-        console.log(questionsList[0].question.includes(""))
         var temp_quesitonsList = props.questionBank.filter(question => question.question.includes(e.target.value))
         setQuestionsList(temp_quesitonsList)
       }}/>
@@ -102,7 +100,6 @@ function AddQuestion(props){
     drop: (item, monitor) => {
       var temp_questionSubmit = [...props.questionSubmit]
       temp_questionSubmit.push(item)
-      console.log(temp_questionSubmit)
       var temp_questionBank = props.questionBank.filter(question => question._id !== item._id)
       props.setQuestionSubmit(temp_questionSubmit)
       props.setQuestionBank(temp_questionBank)
@@ -161,7 +158,6 @@ function AdminCreatePeerReview() {
           text: data.message
         })
       }else{
-        console.log(data)
         setQuestionBank(data)
         setLoading(false)
       }
@@ -251,13 +247,10 @@ function AdminCreatePeerReview() {
         body: JSON.stringify({question: question.value, question_required: question_required.value, question_type: question_type.value, question_to: question_to.value})
       };
       let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/admin/createPeerReviewQuestion`, requestOptions).catch((err) => {throw err})
-      console.log(response)
       var data = await response.json()
       if(response.status === 200){
-        console.log(question)
         let temp_quesiton = [...questionSubmit]
         temp_quesiton.push(data)
-        console.log(temp_quesiton)
         setQuestionSubmit(temp_quesiton)
         MySwal.fire({
           title: 'Success',
@@ -293,7 +286,6 @@ function AdminCreatePeerReview() {
     };
     let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/admin/createPeerReview`, requestOptions)
     let data = await response.json()
-    console.log(data)
     if(response.status !== 200){
       MySwal.fire({
         icon: "warning",

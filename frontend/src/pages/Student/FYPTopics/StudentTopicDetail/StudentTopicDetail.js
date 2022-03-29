@@ -27,7 +27,6 @@ function StudentTopicDetail() {
                                      }
                                  })
                                  .then((data) => data.json()).catch(err => console.log(err))
-            console.log(response)
             setTopic(response)
             setLoading(false)
         }
@@ -68,7 +67,6 @@ function StudentTopicDetail() {
                 await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/topic/joinGroup`, requestOptions).then(async (response) =>{
                     let data = await response.json()
                     if(response.status === 200){
-                        console.log(data)
                         MySwal.fire({
                             title: <p>Join Group Success</p>,
                             icon: 'success',
@@ -106,7 +104,6 @@ function StudentTopicDetail() {
             await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/topic/joinGroup`, requestOptions).then(async (response) =>{
                 let data = await response.json()
                 if(response.status === 200){
-                    console.log(data)
                     MySwal.fire({
                         title: <p>Join Group Success</p>,
                         icon: 'success',
@@ -124,8 +121,6 @@ function StudentTopicDetail() {
                 }
             })
         }
-        // console.log(state)
-        // console.log('hi')
     }
 
     const createGroup = async (event) => {
@@ -138,7 +133,6 @@ function StudentTopicDetail() {
             inputPlaceholder: 'Set Group to Public',
             confirmButtonText: 'Continue <i class="fa fa-arrow-right"></i>',
         })
-        console.log(isConfirmed)
         if(!isConfirmed){
             return
         }
@@ -153,7 +147,6 @@ function StudentTopicDetail() {
             await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/topic/createGroup`, requestOptions).then(async (response) =>{
                 let data = await response.json()
                 if(response.status === 200){
-                    console.log(data)
                     MySwal.fire({
                         title: <p>Group Create Success</p>,
                         icon: 'success',
@@ -195,7 +188,6 @@ function StudentTopicDetail() {
             await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/topic/createGroup`, requestOptions).then(async (response) =>{
                 let data = await response.json()
                 if(response.status === 200){
-                    console.log(data)
                     MySwal.fire({
                         title: <p>Group Create Success</p>,
                         icon: 'success',

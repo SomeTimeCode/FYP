@@ -58,23 +58,22 @@ function SupervisorFYPTopics() {
                         method: 'GET',
                         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
                     };
-                        let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/topic/view?page=${page}&limit=4&topic_name=${values.topic_name}&genre=${genre}`, requestOptions)
-                        .then((response) => {
-                            if(response.status === 200){
-                                return response.json()
-                            }else{
-                                return []
-                            }
-                        }).then((data) => {
-                            if(data.length !== 0){
-                                return data
-                            }else{
-                                return {topic_list: [], last: true}
-                            }
-                        })
-                        console.log(response)
-                        setLastPage(response.last)
-                        setTopicList(response.topic_list)
+                    let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/topic/view?page=${page}&limit=4&topic_name=${values.topic_name}&genre=${genre}`, requestOptions)
+                    .then((response) => {
+                        if(response.status === 200){
+                            return response.json()
+                        }else{
+                            return []
+                        }
+                    }).then((data) => {
+                        if(data.length !== 0){
+                            return data
+                        }else{
+                            return {topic_list: [], last: true}
+                        }
+                    })
+                    setLastPage(response.last)
+                    setTopicList(response.topic_list)
                 }else{
                     setPage(1)
                 }
@@ -111,8 +110,6 @@ function SupervisorFYPTopics() {
     ]
 
 
-
-
     useEffect(() => {
         const fetchData = async () => {
             var genre = formik.values.genre.map((item) => {
@@ -136,7 +133,6 @@ function SupervisorFYPTopics() {
                     return {topic_list: [], last: true}
                 }
             })
-            console.log(response)
             setLastPage(response.last)
             setTopicList(response.topic_list)
             setLoading(false)
@@ -190,7 +186,6 @@ function SupervisorFYPTopics() {
                                         placeholder="Select Genres"
                                         onChange={(e) => {
                                             formik.values.genre = e
-                                            console.log(formik.values.genre)
                                         }}
                                     />
                                 </div>
@@ -201,7 +196,7 @@ function SupervisorFYPTopics() {
                             <div id='topicList'>
                                 {
                                     topicList.map((topic) => {
-                                        return <> <Card key={topic.topic_name} topic={topic}/> </> 
+                                        return <Card key={topic._id} topic={topic}/>
                                     })
                                 }
                             </div>

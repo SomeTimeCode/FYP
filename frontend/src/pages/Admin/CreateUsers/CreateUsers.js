@@ -12,7 +12,6 @@ function CreateUsers() {
 
   const submit = async(event) => {
     event.preventDefault()
-    console.log(selectedFile)
     let formData = new FormData()
     formData.append('avatar', selectedFile)
     const requestOptions = {
@@ -22,9 +21,7 @@ function CreateUsers() {
     };
     let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/admin/createAccounts`, requestOptions).catch((err) => {console.log(err)})
     let data = await response.json()
-    console.log(data)
     setResult(data)
-    console.log(data)
   }
 
   return(

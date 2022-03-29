@@ -149,7 +149,6 @@ function AddStudent(props){
         await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/group/addStudent`, requestOptions).then(async (response) =>{
             let data = await response.json()
             if(response.status === 200){
-                console.log(data)
                 if(props.hashMap[data._id]){
                     MySwal.fire({
                         title: <p>Already Added</p>,
@@ -343,9 +342,6 @@ function SupervisorGroupManage() {
             setHashMap(student_hashMap)
             setData(rest)
             setApprovedGroups(approved_groups)
-            console.log(student_hashMap)
-            console.log(approved_groups)
-            console.log(rest)
             setLoading(false)
         }
         fetchData()

@@ -71,7 +71,6 @@ function StudentFYPTopics() {
                                 return {topic_list: [], last: true}
                             }
                         })
-                        console.log(response)
                         setLastPage(response.last)
                         setTopicList(response.topic_list)
                 }else{
@@ -123,21 +122,18 @@ function StudentFYPTopics() {
 
             let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/topic/view?page=${page}&limit=5&topic_name=${formik.values.topic_name}&genre=${genre}`, requestOptions)
             .then((response) => {
-                console.log('check')
                 if(response.status === 200){
                     return response.json()
                 }else{
                     return []
                 }
             }).then((data) => {
-                console.log(data)
                 if(data.length !== 0){
                     return data
                 }else{
                     return {topic_list: [], last: true}
                 }
             })
-            console.log(response)
             setLastPage(response.last)
             setTopicList(response.topic_list)
             setLoading(false)
@@ -187,7 +183,6 @@ function StudentFYPTopics() {
                                         placeholder="Select Genres"
                                         onChange={(e) => {
                                             formik.values.genre = e
-                                            console.log(formik.values.genre)
                                         }}
                                     />
                                 </div>

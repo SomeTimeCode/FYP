@@ -22,6 +22,7 @@ router.post("/group/addStudent", supervisorController.addStudent)
 router.post("/group/adjustGroup", supervisorController.adjustGroup)
 //peer review
 router.get("/viewPeerReviewForm", supervisorController.viewPeerReviewForm)
+router.get("/viewOverallPeerReviewForm/:id", supervisorController.viewOverallPeerReviewForm)
 router.get("/viewSpecificPeerReviewForm/:id", supervisorController.viewSpecificPeerReviewForm)
 
 module.exports = router

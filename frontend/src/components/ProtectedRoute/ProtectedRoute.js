@@ -15,13 +15,12 @@ function ProtectedRoute({role}) {
             };
             await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/auth/checkToken/${localStorage.getItem('role')}`, requestOptions)
             .then(async (response) => {
-                console.log(response)
                 if(response.status === 200){
                     setRender({isAuth: true, isLoading: false})
                 }else{
                     setRender({isAuth: false, isLoading: false})
                 }
-            }).catch((err) => {console.log(err); setRender({isAuth: false, isLoading: false})})
+            }).catch((err) => {setRender({isAuth: false, isLoading: false})})
         }
         fetchData()
     }, [])

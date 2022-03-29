@@ -67,7 +67,6 @@ function SupervisorGroup() {
                                 return {topic_list: [], last: true}
                             }
                         })
-                        console.log(response)
                         setLastPage(response.last)
                         setTopicList(response.topic_list)
                 }else{
@@ -128,7 +127,6 @@ function SupervisorGroup() {
                     return {topic_list: [], last: true}
                 }
             })
-            console.log(response)
             setLastPage(response.last)
             setTopicList(response.topic_list)
             setLoading(false)
@@ -178,7 +176,6 @@ function SupervisorGroup() {
                                         placeholder="Select Genres"
                                         onChange={(e) => {
                                             formik.values.genre = e
-                                            console.log(formik.values.genre)
                                         }}
                                     />
                                 </div>

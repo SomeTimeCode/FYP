@@ -22,14 +22,15 @@ function Card(props){
                 }
             </div>
             <div style={{display: show}} className='memberList'>
+                <div className="member" key={props.group_id} onClick={(e) => {navigate(`./group/${props.group_id}`)}}>
+                  Group's Overall Performance
+                </div>
                 {   
                     Object.keys(props.members).map((member) => {
                         return (
-                            <>
                             <div className="member" key={member} onClick={(e) => {navigate(`./${member}`)}}>
                                 {props.members[member]}
                             </div>
-                            </>
                         )
                     })
                 }
@@ -43,6 +44,7 @@ function Card(props){
 function SupervisorViewPeerReview() {
 
     const [data, setData] = useState(null)
+    const [groupHash, setGroupHash] = useState(null)
     const [noGroup, setNoGroup] = useState(false)
     const [loading, setLoading] = useState(true)
 
@@ -55,7 +57,8 @@ function SupervisorViewPeerReview() {
           let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/supervisor/viewPeerReviewForm`, requestOptions)
           let data = await response.json()
           if(response.status === 200){
-            setData(data)
+            setData(data.obj)
+            setGroupHash(data.groupHash)
           }else if(data.message === "You don't have any approved group"){
             setNoGroup(true)
           }
@@ -77,7 +80,7 @@ function SupervisorViewPeerReview() {
             </>
             :
             <>
-              {(data === null)?
+              {(data === null || groupHash === null)?
               <>No Data can be found. Please load the page again</>
               :
               <>
@@ -87,7 +90,7 @@ function SupervisorViewPeerReview() {
                 <div id='GroupList'>
                     {
                         Object.keys(data).map((group) => {
-                            return <Card key={group} members={data[group]} group={group}/>
+                            return <Card key={groupHash[group]} group_id={groupHash[group]} members={data[group]} group={group}/>
                         })
                     }
                 </div>

@@ -124,7 +124,6 @@ function StudentRecommendation() {
     
     const submitPreferences = async(e) => {
         e.preventDefault()
-        console.log("test")
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
@@ -161,7 +160,6 @@ function StudentRecommendation() {
             };
             var response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/getFYPTopicRecommendation`, requestOptions).catch((err) => {throw err})
             var data = await response.json()
-            console.log(data)
             if(response.status === 200){
                 setRecommendTopic(data.topic_list)
                 setRecommendReady(true)

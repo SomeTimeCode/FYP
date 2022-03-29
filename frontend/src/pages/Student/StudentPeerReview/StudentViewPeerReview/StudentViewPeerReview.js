@@ -47,7 +47,6 @@ function StudentViewPeerReview() {
         };
         let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/viewPeerReviewForm `, requestOptions)
         let data = await response.json()
-        console.log(data)
         setPeerReviews(data)
         setLoading(false)
     }
@@ -72,7 +71,7 @@ function StudentViewPeerReview() {
             :
               <>
               {peerReviews.map((form) => {
-                return <Card form={form}/>
+                return <Card key={form._id} form={form}/>
               })
               }
               </>

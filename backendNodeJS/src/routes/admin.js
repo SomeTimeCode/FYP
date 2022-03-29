@@ -31,6 +31,13 @@ router.get("/viewRecommendation", adminController.viewRecommendation)
 router.post("/updateRecommendation", upload.single('avatar'), adminController.updateRecommendation)
 router.post("/updateRatingRecommendation", upload.single('avatar'), adminController.updateRatingRecommendation)
 
+//scheduler
+router.get("/viewSchedulePeriod", adminController.viewSchedulePeriod)
+router.post("/createSchedulePeriod", adminController.createSchedulePeriod)
+router.post("/deleteSchedulePeriod", adminController.deleteSchedulePeriod)
+
+
+
 // redirect to flask server 
 router.get("/test", async (req, res) => {
     const requestOptions = {

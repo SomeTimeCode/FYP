@@ -47,7 +47,6 @@ function AdminViewPeerReview() {
                     return navigate(`../`);
                 })
             }
-            console.log(data)
             setResult(data)
             setLoading(false)
         }

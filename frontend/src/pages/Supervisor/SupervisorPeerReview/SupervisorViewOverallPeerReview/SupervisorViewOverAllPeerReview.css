@@ -1,0 +1,61 @@
+#SupervisorViewOverAllPeerReviewBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    font-size: 30px;
+}
+
+
+#SupervisorViewOverAllPeerReviewBase #title{
+    height: 5vh;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+#SupervisorViewOverAllPeerReviewBase #PeerReviewFormList{
+    min-height: 5vh;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+}
+
+#SupervisorViewOverAllPeerReviewBase #PeerReviewFormList .form{
+    min-height: 5vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+#SupervisorViewOverAllPeerReviewBase #PeerReviewFormList .form .top{
+    min-height: 5vh;
+    display: flex;
+    flex-direction: row;
+    padding-left: 3vw;
+    padding-right: 3vw;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid black;
+}
+
+#SupervisorViewOverAllPeerReviewBase #PeerReviewFormList .form .bottom{
+    min-height: 5vh;
+    display: flex;
+    flex-direction: column;
+    padding-left: 3vw;
+    padding-right: 3vw;
+    border: 1px solid black;
+}
+
+#SupervisorViewOverAllPeerReviewBase #PeerReviewFormList .form .bottom .question{
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+}

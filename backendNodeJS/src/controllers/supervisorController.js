@@ -6,6 +6,7 @@ const Supervisor = require('../models/supervisorModel')
 const Question = require('../models/questionModel')
 const PeerReviewForm = require('../models/peerReviewFormModel')
 const StudentPeerReviewResponse = require('../models/studentPeerReviewResponseModel')
+const supervisorServices = require("../services/supervisorServices")
 
 // FYP Group controller
 // pending group --> approve/merge
@@ -506,20 +507,112 @@ const viewPeerReviewForm = async(req, res) => {
             return
         }
         var obj = {}
+        var groupHash = {}
         group_list.forEach((group) => {
             var list = {}
             group.group_members.forEach((member) => {
                 list[member._id] = member.user.username
             })
             obj[group.group_name] = list
+            groupHash[group.group_name] = group._id
         })
-        res.status(200).json(obj)
+        res.status(200).json({obj: obj, groupHash: groupHash})
     }catch(err){
         console.log({message: "Unexpected Error in viewing group peerReviewForm"})
     }
 }
 
-const viewSpecificPeerReviewForm = async (req, res) => {
+// .populate({path: 'group_members', populate: 'user'})
+
+const viewOverallPeerReviewForm = async(req, res) => {
+    try{
+        var group = await Group.findOne({_id: req.params.id}).populate({path: 'group_members', populate: 'user'}).catch((err) => {throw err})
+        var student_list = group.group_members.map((student) => {
+            return student.user.username
+        })
+        if(!group){
+            res.status(400).json({message: "Group does not exist"})
+            return
+        }
+        var date = new Date()
+        var query;
+        if(date.getMonth > 8){
+            query = { $gte: `${date.getFullYear()}-09-1`, $lte: `${date.getFullYear()+1}-06-1`}
+        }else{
+            query = { $gte: `${date.getFullYear()-1}-09-1`, $lte: `${date.getFullYear()}-06-1`}
+        }
+        var forms = await PeerReviewForm.find({ start_of_date: query }).catch((err) => {throw err})
+        var student_response = await StudentPeerReviewResponse.find({peerReviewForm: {$in: forms}, student: {$in: group.group_members}}).populate('peerReviewForm').populate({path: 'student', populate: 'user'}).catch((err) => {throw err})
+        // console.log(student_response)
+        // console.log(forms)
+        var output = []
+        for(var i = 0; i < forms.length; i++){
+            // collect all student response of particular form
+            var obj = {}
+            obj["term"] = forms[i].term
+            obj["start_of_date"] = forms[i].start_of_date
+            obj["end_of_date"] = forms[i].end_of_date
+            var temp = student_response.filter(response => forms[i]._id.equals(response.peerReviewForm._id))
+            if(temp.length == 0){
+                obj["performance"] = "No response has collected"
+            }else{
+                var input = {}
+                var total_question = 0
+                temp.forEach((response) => {
+                    if(response.response != ""){
+                        input[response.student.user.username] = JSON.parse(response.response)
+                    }
+                })
+                // particular question webpa
+                var answer = forms[i].questions.map(async(question) => {
+                    var checker = await Question.findOne({_id : question}).catch((err)=>{throw err})
+                    if(checker.question_type != "Rating" && checker.question_to != "Others"){
+                        return null
+                    }
+                    total_question += 1
+                    // filter the obj
+                    var webpa_input = {}
+                    Object.keys(input).forEach((student) => {
+                        var webpa_data_input = {}
+                        Object.keys(input[student]).forEach((response)=>{
+                            var checker = response.split("-")
+                            if(checker[0] == question._id){
+                                webpa_data_input[checker[1]] = input[student][response]
+                            }
+                        })
+                        webpa_input[student] = webpa_data_input
+                    })
+                    // console.log("#####")
+                    // console.log(webpa_input)
+                    // console.log("#####")
+                    var result = supervisorServices.WebPA(webpa_input, student_list)
+                    console.log(result)
+                    return result
+                })
+                answer = await Promise.all(answer)
+                answer = answer.filter((e) => {return e})
+                var student_scorce = {}
+                student_list.forEach((student) => {
+                    student_scorce[student] = 0
+                })
+                answer.forEach((data) => {
+                    Object.keys(data).forEach((student)=>{
+                        student_scorce[student] += (data[student]/total_question)
+                    })
+                })
+                obj["performance"] = student_scorce     
+            }
+            output.push(obj)  
+        }
+        res.status(200).json({output: output, group_name: group.group_name})
+    }catch(err){
+        console.log({message: "Unexpected Error in viewing Overall Group peerReviewForm"})
+        res.status(400).json({message: "Unexpected Error in viewing Overall Group peerReviewForm", error: err})
+    }
+}
+
+
+const viewSpecificPeerReviewForm = async(req, res) => {
     try{
         var student = await Student.findOne({_id: req.params.id}).populate("user").catch((err) => {throw err})
         if(!student){
@@ -538,15 +631,17 @@ const viewSpecificPeerReviewForm = async (req, res) => {
         var question_list = []
         student_response.forEach((form) => {
             var list = []
-            var questions = JSON.parse(form.response)
-            Object.keys(questions).forEach((question) => {
-                if(question.includes('-')){
-                    list.push(question.substring(0, question.lastIndexOf('-')))
-                }else{
-                    list.push(question)
-                }
-            })
-            question_list = question_list.concat(list)
+            if(form.response != ""){
+                var questions = JSON.parse(form.response)
+                Object.keys(questions).forEach((question) => {
+                    if(question.includes('-')){
+                        list.push(question.substring(0, question.lastIndexOf('-')))
+                    }else{
+                        list.push(question)
+                    }
+                })
+                question_list = question_list.concat(list)
+            }
         })
         question_list = await Question.find({_id: {$in: question_list}}).catch((err) => {throw err})
         var question_map = {}
@@ -561,20 +656,21 @@ const viewSpecificPeerReviewForm = async (req, res) => {
             obj.start_of_date = form.peerReviewForm.start_of_date
             obj.end_of_date = form.peerReviewForm.end_of_date
             var response = []
-            var form_response = JSON.parse(form.response)
-            Object.keys(form_response).forEach((question) => {
-                if(question.includes('-')){
-                    var text = `${question_map[question.substring(0, question.lastIndexOf('-'))]}${question.substring(question.indexOf('-'))}: ${form_response[question]}`
-                    response.push(text)
-                }else{
-                    var text = `${question_map[question]}: ${form_response[question]}`
-                    response.push(text)
-                }
-            })
+            if(form.response != ""){
+                var form_response = JSON.parse(form.response)
+                Object.keys(form_response).forEach((question) => {
+                    if(question.includes('-')){
+                        var text = `${question_map[question.substring(0, question.lastIndexOf('-'))]}${question.substring(question.indexOf('-'))}: ${form_response[question]}`
+                        response.push(text)
+                    }else{
+                        var text = `${question_map[question]}: ${form_response[question]}`
+                        response.push(text)
+                    }
+                })
+            }
             obj.response = response
             output.push(obj)
         })
-        console.log({output: output, student: student.username})
         res.status(200).json({output: output, student: student.user.username})
     }catch(err){
         console.log({message: "Unexpected Error in viewing specific student peerReviewForm"})
@@ -582,8 +678,10 @@ const viewSpecificPeerReviewForm = async (req, res) => {
 }
 
 
+
+
 module.exports = { 
                     viewSpecificTopicGroup, viewTopicGroup, approveGroup, rejectGroup, addStudent, adjustGroup,
                     viewTopic, viewSpecificTopic, createTopic, updateTopic, deleteTopic,
-                    viewPeerReviewForm, viewSpecificPeerReviewForm,
+                    viewPeerReviewForm, viewOverallPeerReviewForm, viewSpecificPeerReviewForm,
                 }
