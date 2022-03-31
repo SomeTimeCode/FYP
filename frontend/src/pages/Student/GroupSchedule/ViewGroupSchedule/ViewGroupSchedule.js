@@ -43,9 +43,10 @@ function ViewGroupSchedule() {
           if(response.status === 200){
             setSchedules(data)
           }else{
+            console.log(data)
             MySwal.fire({
-              title: "Unexpected Error in getting to this page",
-              text: data.message,
+              title: data.message,
+              text: data.error,
               confirmButtonText: "Back to Home Page"
             }).then((result) => {
                 if(result.isConfirmed){

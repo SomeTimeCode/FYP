@@ -64,7 +64,7 @@ function ViewSupervisorSchedule() {
     return (
         <div id='ViewSupervisorScheduleBase'>
             <div id='title'>
-                Group's Presentation Schedules
+                My Presentation Schedules
             </div>
             <div id='Schedules'>
             {loading?

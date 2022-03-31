@@ -9,8 +9,8 @@ const studentPeerReviewResponse = require('../models/studentPeerReviewResponseMo
 const Recommendation = require('../models/recommendationModel');
 const SchedulePeriod = require("../models/schedulePeriodModel");
 const GroupSchedule = require("../models/groupScheduleModel");
-const SupervisorSchedule = require("../models/supervisorModel");
-const AdminScheduler = require("../models/adminScheduleModel")
+const SupervisorSchedule = require("../models/supervisorScheduleModel")
+const AdminSchedule = require("../models/adminScheduleModel")
 
 const createAccounts = async(req, res) =>{
     try{
@@ -398,6 +398,9 @@ const deleteSchedulePeriod = async(req, res) => {
             return
         }else{
             await SchedulePeriod.deleteOne({_id: req.body._id}).catch((err) => {throw err})
+            await SupervisorSchedule.deleteMany({schedulePeriod: req.body._id}).catch((err) => {throw err})
+            await GroupSchedule.deleteMany({schedulePeriod: req.body._id}).catch((err) => {throw err})
+            await AdminSchedule.deleteMany({schedulePeriod: req.body._id}).catch((err) => {throw err})
             var schedulePeriod = await SchedulePeriod.find().catch((err) => {throw err})
             res.status(200).json(schedulePeriod)
         }

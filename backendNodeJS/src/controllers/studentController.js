@@ -486,7 +486,13 @@ const viewSchedule = async(req, res) =>{
             query = { $gte: `${date.getFullYear()-1}-09-1`, $lte: `${date.getFullYear()}-06-1`}
         }
         var schedules = await SchedulePeriod.find({ endDate: query }).catch((err) => {throw err})
-        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        var student = await Student.findOne({user: req.decoded._id}).populate('group').catch((err) => {throw err})
+        console.log(student.group.status != "approve")
+        if(student.group == undefined || student.group.status != "approve"){
+            res.status(400).json({message: "Unexpected Error in viewing schedules", error: "Without an approved Group"})
+            return
+        }
+        console.log(student)
         // if group does not response then create new otherwise take old data
         var data = []
         console.log(schedules)
