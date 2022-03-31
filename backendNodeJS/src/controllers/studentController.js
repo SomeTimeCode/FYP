@@ -7,6 +7,8 @@ const Question = require('../models/questionModel')
 const PeerReviewForm = require('../models/peerReviewFormModel')
 const StudentPeerReviewResponse = require('../models/studentPeerReviewResponseModel')
 const Recommendation = require('../models/recommendationModel')
+const SchedulePeriod = require('../models/schedulePeriodModel')
+const GroupSchedule = require('../models/groupScheduleModel')
 const bcrypt = require('bcryptjs')
 const fetch = require('node-fetch');
 const {Headers} = require('node-fetch')
@@ -216,16 +218,6 @@ const viewPeerReviewForm = async (req, res) => {
         res.status(400).json({message: "Unexpected Error in viewing peer review forms", error: err})
     }
 }
-
-// // genereate the warning 
-// var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
-// var group = await Group.findOne({_id: student.group}).catch((err) => {throw err})
-// var others = await Student.find({_id: {$in: group.group_members.filter(member=> !student._id.equals(member))}}).populate("user").catch((err) => {throw err})
-// // memeber name list
-// others = others.map(member => member.user.username)
-// console.log(others)
-
-
 
 const viewSpecificPeerReviewForm = async(req, res) => {
     try{
@@ -484,9 +476,117 @@ const getFYPTopicRecommendation = async(req, res) => {
     }
 }
 
+const viewSchedule = async(req, res) =>{
+    try{
+        var date = new Date()
+        var query;
+        if(date.getMonth > 8){
+            query = { $gte: `${date.getFullYear()}-09-1`, $lte: `${date.getFullYear()+1}-06-1`}
+        }else{
+            query = { $gte: `${date.getFullYear()-1}-09-1`, $lte: `${date.getFullYear()}-06-1`}
+        }
+        var schedules = await SchedulePeriod.find({ endDate: query }).catch((err) => {throw err})
+        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        // if group does not response then create new otherwise take old data
+        var data = []
+        console.log(schedules)
+        for(var i = 0; i < schedules.length; i++){
+            var group_schedule = await GroupSchedule.findOne({schedulePeriod: schedules[i]._id, group: student.group}).catch((err) => {throw err})
+            if(!group_schedule){
+                group_schedule = new GroupSchedule({
+                    schedulePeriod: schedules[i]._id,
+                    group: student.group,
+                    data: ''
+                })
+                await group_schedule.save().catch((err) => {throw err})
+            }
+            data.push({_id: group_schedule._id, endOfChanging: schedules[i].endOfChanging, startDate: schedules[i].startDate, endDate: schedules[i].endDate, term: schedules[i].term})
+        }
+        res.status(200).json(data)
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing schedules", error: err})
+    }
+}
+
+const viewSpecificSchedule = async(req, res) => {
+    try{
+        var group_schedule = await GroupSchedule.findOne({_id: req.params.id}).populate("schedulePeriod").catch((err) => {throw err})
+        var student = await Student.findOne({user: req.decoded._id}).populate("user").catch((err) => {throw err})
+        if(group_schedule){
+            if(student.group.equals(group_schedule.group)){
+                res.status(200).json({student: student.user.username, endOfChanging: group_schedule.schedulePeriod.endOfChanging , startDate: group_schedule.schedulePeriod.startDate , endDate: group_schedule.schedulePeriod.endDate, term: group_schedule.schedulePeriod.term, data: group_schedule.data})
+                return
+            }else{
+                res.status(400).json({message: "Unexpected Error in viewing group's specific schedules", error: "student does not have prviliage to access to this schedule"})
+                return
+            }
+        }else{
+            res.status(400).json({message: "Unexpected Error in viewing group's specific schedules", error: "Group Schedule does not find"})
+            return
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing group's specific schedules", error: err})
+    }
+}
+
+const updateSpecificSchedule = async(req, res) => {
+    try{
+        var student = await Student.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        var group_schedule = await GroupSchedule.findOne({_id: req.body.id, group: student.group}).populate("schedulePeriod").catch((err) => {throw err})
+        if(!group_schedule){
+            res.status(400).json({message: "Missing required Group's Schedule"})
+            return
+        }
+        //check update time 
+        var endOfChanging = new Date(group_schedule.schedulePeriod.endOfChanging)
+        endOfChanging.setDate(endOfChanging.getDate() + 1)
+        var tdy = new Date()
+        if(tdy > endOfChanging){
+            res.status(400).json({message: "Unexpected Error in updating specific supervisor's schedules.", error: "No longer allow updating schedule"})
+            return
+        }
+        //all date check
+        const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+        const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        date = []
+        var startDate = new Date(group_schedule.schedulePeriod.startDate)
+        var endDate = new Date(group_schedule.schedulePeriod.endDate)
+        endDate.setDate(endDate.getDate() + 1)
+        var countDate = startDate
+        while(countDate < endDate){
+            if(countDate.getDay() !== 0 && countDate.getDay() !== 6){
+                var key = `${months[countDate.getMonth()]}${countDate.getDate()}-${days[countDate.getDay()]}`
+                date.push(key)
+            }
+            countDate.setDate(countDate.getDate() + 1)
+        }
+        if(!date.every(item => req.body.data.hasOwnProperty(item))){
+            res.status(400).json({message: "Wrong data received"})
+            return
+        }
+        //all timeslot check 
+        const timeslot = ["9:00", "9:20", "9:40", "10:00", "10:20", "10:40", "11:00", "11:20", "11:40", "12:00", "12:20", "12:40", "13:00", "13:20", "13:40", "14:00", "14:20", "14:40", "15:00", "15:20", "15:40", "16:00", "16:20", "16:40","17:00", "17:20", "17:40"] 
+        Object.keys(req.body.data).forEach((date) => {
+            if(!timeslot.every(item => req.body.data[date].hasOwnProperty(item))){
+                res.status(400).json({message: "Wrong data received"})
+                return
+            }
+        })
+        // update data
+        group_schedule.data = JSON.stringify(req.body.data)
+        await group_schedule.save().catch((err) => {throw err})
+        res.status(200).json({message: "Successfully Updated Group's Schedule"})
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in updating specific groups's schedules", error: err})
+    }
+}
+
+
+
 
 
 module.exports = { viewTopic, viewSpecificTopic, createGroup, joinGroup,
                    viewPeerReviewForm, viewSpecificPeerReviewForm, editSpecificPeerReviewForm,
-                   viewGenrePreferences, updateGenrePreferences, getFYPTopicRecommendation
+                   viewGenrePreferences, updateGenrePreferences, getFYPTopicRecommendation,
+                   viewSchedule, viewSpecificSchedule, updateSpecificSchedule
                  }

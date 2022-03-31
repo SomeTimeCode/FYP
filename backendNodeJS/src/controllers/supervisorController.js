@@ -6,6 +6,8 @@ const Supervisor = require('../models/supervisorModel')
 const Question = require('../models/questionModel')
 const PeerReviewForm = require('../models/peerReviewFormModel')
 const StudentPeerReviewResponse = require('../models/studentPeerReviewResponseModel')
+const SchedulePeriod = require('../models/schedulePeriodModel')
+const SupervisorSchedule = require('../models/supervisorScheduleModel')
 const supervisorServices = require("../services/supervisorServices")
 
 // FYP Group controller
@@ -680,8 +682,121 @@ const viewSpecificPeerReviewForm = async(req, res) => {
 
 
 
+const viewSchedule = async(req, res) =>{
+    try{
+        var date = new Date()
+        var query;
+        if(date.getMonth > 8){
+            query = { $gte: `${date.getFullYear()}-09-1`, $lte: `${date.getFullYear()+1}-06-1`}
+        }else{
+            query = { $gte: `${date.getFullYear()-1}-09-1`, $lte: `${date.getFullYear()}-06-1`}
+        }
+        var schedules = await SchedulePeriod.find({ endDate: query }).catch((err) => {throw err})
+        var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        // if group does not response then create new otherwise take old data
+        var data = []
+        for(var i = 0; i < schedules.length; i++){
+            var supervisor_schedule = await SupervisorSchedule.findOne({schedulePeriod: schedules[i]._id, supervisor: supervisor._id}).catch((err) => {throw err})
+            if(!supervisor_schedule){
+                supervisor_schedule = new SupervisorSchedule({
+                    schedulePeriod: schedules[i]._id,
+                    supervisor: supervisor._id,
+                    data: ''
+                })
+                await supervisor_schedule.save().catch((err) => {throw err})
+            }
+            data.push({_id: supervisor_schedule._id, endOfChanging: schedules[i].endOfChanging, startDate: schedules[i].startDate, endDate: schedules[i].endDate, term: schedules[i].term})
+        }
+        res.status(200).json(data)
+    }catch(err){
+        console.log(err)
+        res.status(400).json({message: "Unexpected Error in viewing schedules", error: err})
+    }
+}
+
+const viewSpecificSchedule = async(req, res) => {
+    try{
+        var supervisor_schedule = await SupervisorSchedule.findOne({_id: req.params.id}).populate("schedulePeriod").catch((err) => {throw err})
+        var supervisor = await Supervisor.findOne({user: req.decoded._id}).populate("user").catch((err) => {throw err})
+        if(supervisor_schedule){
+            if(supervisor.equals(supervisor_schedule.supervisor)){
+                //Write Here
+                res.status(200).json({supervisor: supervisor.user.username, endOfChanging: supervisor_schedule.schedulePeriod.endOfChanging , startDate: supervisor_schedule.schedulePeriod.startDate , endDate: supervisor_schedule.schedulePeriod.endDate, term: supervisor_schedule.schedulePeriod.term, data: supervisor_schedule.data})
+                return
+            }else{
+                res.status(400).json({message: "Unexpected Error in viewing supervisor's specific schedules", error: "supervisor does not have prviliage to access to this schedule"})
+                return
+            }
+        }else{
+            res.status(400).json({message: "Unexpected Error in viewing supervisor's specific schedules", error: "Supervisor Schedule does not find"})
+            return
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing supervisor's specific schedules", error: err})
+    }
+}
+
+const updateSpecificSchedule = async(req, res) => {
+    try{
+        var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
+        var supervisor_schedule = await SupervisorSchedule.findOne({_id: req.body.id, supervisor: supervisor._id}).populate("schedulePeriod").catch((err) => {throw err})
+        if(!supervisor_schedule){
+            res.status(400).json({message: "Missing required Group's Schedule"})
+            return
+        }
+        //check update time 
+        var endOfChanging = new Date(supervisor_schedule.schedulePeriod.endOfChanging)
+        endOfChanging.setDate(endOfChanging.getDate() + 1)
+        var tdy = new Date()
+        if(tdy > endOfChanging){
+            res.status(400).json({message: "Unexpected Error in updating specific supervisor's schedules.", error: "No longer allow updating schedule"})
+            return
+        }
+        //all date check
+        const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+        const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        date = []
+        var startDate = new Date(supervisor_schedule.schedulePeriod.startDate)
+        var endDate = new Date(supervisor_schedule.schedulePeriod.endDate)
+        endDate.setDate(endDate.getDate() + 1)
+        var countDate = startDate
+        while(countDate < endDate){
+            if(countDate.getDay() !== 0 && countDate.getDay() !== 6){
+                var key = `${months[countDate.getMonth()]}${countDate.getDate()}-${days[countDate.getDay()]}`
+                date.push(key)
+            }
+            countDate.setDate(countDate.getDate() + 1)
+        }
+        if(!date.every(item => req.body.data.hasOwnProperty(item))){
+            res.status(400).json({message: "Wrong data received"})
+            return
+        }
+        //all timeslot check 
+        const timeslot = ["9:00", "9:20", "9:40", "10:00", "10:20", "10:40", "11:00", "11:20", "11:40", "12:00", "12:20", "12:40", "13:00", "13:20", "13:40", "14:00", "14:20", "14:40", "15:00", "15:20", "15:40", "16:00", "16:20", "16:40","17:00", "17:20", "17:40"] 
+        Object.keys(req.body.data).forEach((date) => {
+            if(!timeslot.every(item => req.body.data[date].hasOwnProperty(item))){
+                res.status(400).json({message: "Wrong data received"})
+                return
+            }
+        })
+        // update data
+        supervisor_schedule.data = JSON.stringify(req.body.data)
+        await supervisor_schedule.save().catch((err) => {throw err})
+        res.status(200).json({message: "Successfully Updated Supervisor's Schedule"})
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in updating specific supervisor's schedules.", error: err})
+    }
+}
+
+
+
+
+
+
+
 module.exports = { 
                     viewSpecificTopicGroup, viewTopicGroup, approveGroup, rejectGroup, addStudent, adjustGroup,
                     viewTopic, viewSpecificTopic, createTopic, updateTopic, deleteTopic,
                     viewPeerReviewForm, viewOverallPeerReviewForm, viewSpecificPeerReviewForm,
+                    viewSchedule, viewSpecificSchedule, updateSpecificSchedule
                 }

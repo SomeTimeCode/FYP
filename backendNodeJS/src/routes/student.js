@@ -23,6 +23,10 @@ router.get("/viewGenrePreferences", StudentController.viewGenrePreferences)
 router.post("/updateGenrePreferences", StudentController.updateGenrePreferences)
 router.post("/getFYPTopicRecommendation", StudentController.getFYPTopicRecommendation)
 
+//scheduler
+router.get("/viewSchedule", StudentController.viewSchedule)
+router.get("/viewSpecificSchedule/:id", StudentController.viewSpecificSchedule)
+router.post("/updateSpecificSchedule", StudentController.updateSpecificSchedule)
 
 
 module.exports = router

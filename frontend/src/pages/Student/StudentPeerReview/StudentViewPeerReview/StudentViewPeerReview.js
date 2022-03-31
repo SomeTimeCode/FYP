@@ -38,6 +38,8 @@ function StudentViewPeerReview() {
   
   const [peerReviews, setPeerReviews] = useState([])
   const [loading, setLoading] = useState(true)
+  const MySwal = withReactContent(Swal)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async() => {
@@ -47,7 +49,19 @@ function StudentViewPeerReview() {
         };
         let response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/api/student/viewPeerReviewForm `, requestOptions)
         let data = await response.json()
-        setPeerReviews(data)
+        if(response.status === 200){
+          setPeerReviews(data)
+        }else{
+          MySwal.fire({
+            title: "Unexpected Error in getting to this page",
+            text: data.message,
+            confirmButtonText: "Back to Home Page"
+          }).then((result) => {
+              if(result.isConfirmed){
+                  navigate("../")
+              }
+          })
+        }
         setLoading(false)
     }
     fetchData()
