@@ -29,13 +29,12 @@ def nearestIntestestNeighors(pastStudentRatingData, student_rating_list):
     if(len(inputList) < 6):
         output_Number = len(inputList)
     else:
-        output_Number = 6
+        output_Number = 20
     knn = NearestNeighbors(metric="euclidean", algorithm="brute")
     knn.fit(inputList)
     indices = knn.kneighbors(inputList, n_neighbors=output_Number, return_distance=False)
     ouptut = list(indices[-1])
     ouptut.remove(max(ouptut))
-    # print(ouptut)
     return ouptut
 
 def nearestGradeNeighors(pastStudentData, student_course_list):

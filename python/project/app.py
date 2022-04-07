@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, make_response
 import recommendation
+import schedule
 
 app = Flask(__name__)
 
@@ -27,8 +28,8 @@ def test():
 def recommend():
     req = request.get_json()
     # student_list = recommendation.nearestNeighors(req.pastStudents, req.newStudent)
-    print(req)
     similar_interest_students = recommendation.nearestIntestestNeighors(req.get("pastStudentRatingData"), req.get("student_rating_list"))
+    print(similar_interest_students)
     pastStudentList = []
     pastStudentData = []
     for i in range(len(similar_interest_students)):
@@ -41,6 +42,19 @@ def recommend():
     print(return_students)
     res = make_response(jsonify(similar_students=return_students), 200)
     return res
+
+@app.route("/scheduler", methods=['POST'])
+def scheduler():
+    req = request.get_json()
+    # print
+    # supervisor_time = req.get("supervisor_time")
+    # group_time = req.get("group_time")
+    # print(supervisor_time)
+    output = schedule.combinations(req.get("supervisor_time"), req.get("group_time"))
+    return_schedule = max(output, key=len)
+    res = make_response(jsonify(schedule=return_schedule), 200)
+    return res
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5001, debug=True)
