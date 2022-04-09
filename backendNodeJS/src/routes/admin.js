@@ -31,10 +31,21 @@ router.get("/viewRecommendation", adminController.viewRecommendation)
 router.post("/updateRecommendation", upload.single('avatar'), adminController.updateRecommendation)
 router.post("/updateRatingRecommendation", upload.single('avatar'), adminController.updateRatingRecommendation)
 
-//scheduler
+//group management
+router.get("/viewGroups", adminController.viewGroups)
+router.post("/updateGroup", adminController.updateGroup)
+
+//scheduler -- Build Period
 router.get("/viewSchedulePeriod", adminController.viewSchedulePeriod)
 router.post("/createSchedulePeriod", adminController.createSchedulePeriod)
 router.post("/deleteSchedulePeriod", adminController.deleteSchedulePeriod)
+
+//scheduler -- Build Schedule
+router.get("/viewSchedule", adminController.viewSchedule)
+router.get("/viewSpecificSchedule/:id", adminController.viewSpecificSchedule)
+router.post("/generateSpecificSchedule", adminController.generateSpecificSchedule)
+router.post("/updateSpecificSchedule", adminController.updateSpecificSchedule)
+
 
 
 

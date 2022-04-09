@@ -146,7 +146,7 @@ def combinations(supervisor_time, group_time):
         output = []
         # finding the least flexibility group, in which have the most constraint timeslot
         least_flexibility_group = find_least_flexibility(group_time)
-        group_name = list(group_time.keys())[0]
+        group_name = least_flexibility_group[0]
         group_required_time = group_time.get(group_name)[0]
         group_availble_time = group_time.get(group_name)[1]
         supervisor_name = group_time.get(group_name)[2]
@@ -183,17 +183,17 @@ def combinations(supervisor_time, group_time):
 
 # supervisor_time = {
 #                 #supervisor_name: [availble_time]
-#                 "supervisor_1": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26],
-#                 "supervisor_2": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26],
-#                 "supervisor_3": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26],
-#                 "supervisor_4": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]
+#                 "Supervisor1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+#                 "Supervisor2": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+#                 "Supervisor3": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+#                 "Supervisor4": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 #             }
 # group_time = {
 #               # group_name :[required_time, availble_time, supervisor_name, examiner_name]
-#               "group_1": [3, [0,1,2,3,4,5], "supervisor_1", "supervisor_2"],
-#               "group_2": [3, [0,1,2,3,4,5], "supervisor_1", "supervisor_2"],
-#               "group_3": [2, [0,1,2,3,4,5], "supervisor_3", "supervisor_4"],
-#               "group_4": [2, [0,1,2,3,4,5], "supervisor_3", "supervisor_4"]
+#               'A mobile application for schedule notifications_1': [1, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 'Supervisor4', 'Supervisor1'],
+#               'A mobile application for schedule notifications_2': [1, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 'Supervisor4', 'Supervisor1'],
+#               'Application for Class Scheduling_1': [2, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 'Supervisor1', 'Supervisor2']
+#             #   "group_4": [2, [0,1,2,3,4,5], "supervisor_3", "supervisor_4"]
 #              }
 
 # output = combinations(supervisor_time, group_time)

@@ -67,9 +67,10 @@ function CreateUsers() {
                     <thead>
                       <tr>
                         <th>Number</th>
-                        {Object.keys(result.data[Object.keys(result.data)[0]]).map((header) => {return <th>{header}</th>})}
+                        {Object.keys(result.data[Object.keys(result.data)[0]]).map((header) => {return <th key={header}>{header}</th>})}
                       </tr>
                     </thead>
+                    <tbody>
                     {Object.keys(result.data).map((row) => {
                       return <tr key={row}>
                                 <td style={{textAlign: "center"}}>{row}</td>
@@ -77,9 +78,10 @@ function CreateUsers() {
                                 <td style={{textAlign: "center"}}>{result.data[row].message}</td>
                               </tr>
                     })}
+                    </tbody>
                   </>
-                }
-              </table>
+                  }
+                </table>
             </>
           }
         </div>

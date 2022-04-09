@@ -32,6 +32,8 @@ import AdminViewPeriod from "./pages/Admin/CreateSchedule/AdminViewPeriod/AdminV
 import SupervisorViewOverAllPeerReview from "./pages/Supervisor/SupervisorPeerReview/SupervisorViewOverallPeerReview/SupervisorViewOverAllPeerReview";
 import ViewSupervisorSchedule from "./pages/Supervisor/SupervisorSchedule/ViewSupervisorSchedule/ViewSupervisorSchedule";
 import ViewSpecificSupervisorSchedule from "./pages/Supervisor/SupervisorSchedule/ViewSpecificSupervisorSchedule/ViewSpecificSupervisorSchedule";
+import AdminGenerateSpecificSchedule from "./pages/Admin/CreateSchedule/AdminGenerateSpecificSchedule/AdminGenerateSpecificSchedule";
+import AdminGroupManagement from "./pages/Admin/AdminGroupManagement/AdminGroupManagement";
 
 function App() {
   return (
@@ -48,9 +50,11 @@ function App() {
               <Route path="CreatePeerReview" element={<View role={ "admin" } element={ <AdminCreatePeerReview />}/>} />
               <Route path="EditPeerReview/:id" element={<View role={ "admin" } element={ <AdminEditPeerReview />}/>} />
               <Route path="Recommendation" element={<View role={ "admin" } element={ <CreateRecommendation />}/>} />
+              <Route path="Groups" element={<View role={ "admin" } element={ <AdminGroupManagement />}/>} />
               <Route path="ScheduleForm" element={<View role={ "admin" } element={ <AdminViewPeriod />}/>} />
               <Route path="SetSchedule" element={<View role={ "admin" } element={ <AdminSetPeriod />}/>} />
               <Route path="MakeSchedule" element={<View role={ "admin" } element={ <AdminGenerateSchedule />}/>} />
+              <Route path="MakeSchedule/:id" element={<View role={ "admin" } element={ <AdminGenerateSpecificSchedule />}/>} />
             </Route>
             <Route path="/student" element={<ProtectedRoute role={"student"}/>}>
               <Route path="" element={<View role={ "student" } element={ <StudentIndex />}/>} />

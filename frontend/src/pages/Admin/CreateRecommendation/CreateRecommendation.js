@@ -142,17 +142,17 @@ function CreateRecommendation() {
                     </th>
                     {
                       response.courselist.map((course) => {
-                        return <><th key={course}>{course}</th></>
+                        return <th key={course}>{course}</th>
                       })
                     }
                   </tr>
                   {
                     Object.keys(response.data).map((user) => {
-                      return (<tr key={user}>
+                      return (<tr key={`${user}-data`}>
                                 <td>{user}</td>
                                 {
-                                  response.data[user].map((info) => {
-                                    return <td key={`${user}_${info}`}>{info}</td>
+                                  response.data[user].map((info, index) => {
+                                    return <td key={`${user}_${index}_${info}`}>{info}</td>
                                   })
                                 }
                               </tr>
@@ -196,13 +196,13 @@ function CreateRecommendation() {
                     </th>
                     {
                       rating.genrelist.map((genre) => {
-                        return <><th key={genre}>{genre}</th></>
+                        return <th key={genre}>{genre}</th>
                       })
                     }
                   </tr>
                   {
                     Object.keys(rating.data).map((user) => {
-                      return (<tr key={user}>
+                      return (<tr key={`${user}-rating`}>
                                 <td>{user}</td>
                                 {
                                   rating.data[user].map((info, index) => {

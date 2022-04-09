@@ -1,0 +1,66 @@
+#AdminGroupManagementBase{
+    min-height: inherit;
+    min-width: inherit;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    font-size: 40px;
+}
+
+#AdminGroupManagementBase #title{
+    height: 5vh;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+#AdminGroupManagementBase #CardList{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#AdminGroupManagementBase .CardBase{
+    width: 80%;
+    border: 1px solid black;
+    padding: 2vh 2vw;
+    font-size: 0.7em;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    line-height: 1.5;
+}
+
+#AdminGroupManagementBase .CardBase select{
+    font-size: 0.7em;
+}
+
+#AdminGroupManagementBase .CardBase input{
+    font-size: 0.7em;
+}
+
+#AdminGroupManagementBase .CardBase .update{
+    margin-top: 2vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1vh 2vw;
+    cursor: pointer;
+    font-size: 0.8em;
+    width: 20%;
+    border: 1px solid black;
+    transition: 1s;
+}
+
+#AdminGroupManagementBase .CardBase .update:hover{
+    color: white;
+    background-color: black;
+    transition: 1s;
+}

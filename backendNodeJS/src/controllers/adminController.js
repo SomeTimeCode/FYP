@@ -11,6 +11,10 @@ const SchedulePeriod = require("../models/schedulePeriodModel");
 const GroupSchedule = require("../models/groupScheduleModel");
 const SupervisorSchedule = require("../models/supervisorScheduleModel")
 const AdminSchedule = require("../models/adminScheduleModel")
+const fetch = require('node-fetch');
+const {Headers} = require('node-fetch');
+const Group = require('../models/groupModel');
+
 
 const createAccounts = async(req, res) =>{
     try{
@@ -435,9 +439,427 @@ const createSchedulePeriod = async(req, res) => {
     }
 }
 
+const viewSchedule = async(req, res) =>{
+    try{
+        var date = new Date()
+        var query;
+        if(date.getMonth > 8){
+            query = { $gte: `${date.getFullYear()}-09-1`, $lte: `${date.getFullYear()+1}-06-1`}
+        }else{
+            query = { $gte: `${date.getFullYear()-1}-09-1`, $lte: `${date.getFullYear()}-06-1`}
+        }
+        var schedules = await SchedulePeriod.find({ endDate: query }).catch((err) => {throw err})
+        // if group does not response then create new otherwise take old data
+        var data = []
+        for(var i = 0; i < schedules.length; i++){
+            var admin_schedule = await AdminSchedule.findOne({schedulePeriod: schedules[i]._id}).catch((err) => {throw err})
+            if(!admin_schedule){
+                admin_schedule = new AdminSchedule({
+                    schedulePeriod: schedules[i]._id,
+                    data: ''
+                })
+                await admin_schedule.save().catch((err) => {throw err})
+            }
+            data.push({_id: admin_schedule._id, endOfChanging: schedules[i].endOfChanging, startDate: schedules[i].startDate, endDate: schedules[i].endDate, term: schedules[i].term})
+        }
+        res.status(200).json(data)
+    }catch(err){
+        console.log(err)
+        res.status(400).json({message: "Unexpected Error in viewing schedules", error: err})
+    }
+}
+
+
+const viewGroups = async(req, res) => {
+    try{
+        var groups = await Group.find().populate({path: 'examiner', populate:{path: 'user'}}).populate({path: 'supervisor', populate:{path: 'user'}}).catch((err) => {throw err})
+        output = []
+        for(var i = 0; i < groups.length; i++){
+            if(groups[i].examiner == undefined){
+                var obj = {_id: groups[i]._id, group_name: groups[i].group_name, status: groups[i].status, supervisor: groups[i].supervisor.user.username, examiner: null}
+            }else{
+                var obj = {_id: groups[i]._id, group_name: groups[i].group_name, status: groups[i].status, supervisor: groups[i].supervisor.user.username, examiner: groups[i].examiner.user.username}
+            }
+            output.push(obj)
+        }
+        res.status(200).json(output)
+        return
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing groups", error: err})
+    }
+}
+
+const updateGroup = async(req, res) => {
+    try{
+        var examiner = await User.findOne({username: req.body.examiner}).catch((err) => {throw err})
+        examiner = await Supervisor.findOne({user: examiner}).catch((err) => {throw err})
+        var group = await Group.findOne({_id: req.body._id}).catch((err) => {throw err})
+        if(!group){
+            res.status(400).json({message: "Unexpected Error in updating group information",  error: "Group doesnot exist"})
+        }
+        console.log(examiner)
+        if(examiner){
+            group["status"] = req.body.status
+            group["examiner"] = examiner
+            await group.save().then((obj) => {console.log(obj._id)}).catch((err) => {throw err})
+            res.status(200).json({message: "Update Success"})
+        }else{
+            res.status(400).json({message: "Unexpected Error in updating group information",  error: "Examiner not exist in the supervisor Group"})
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in updating group information",  error: err})
+    }
+}
+
+
+
+const viewSpecificSchedule = async(req, res) => {
+    try{
+        var admin_schedule = await AdminSchedule.findOne({_id: req.params.id}).populate("schedulePeriod").catch((err) => {throw err})
+        if(admin_schedule){
+            //Write Here
+            if(admin_schedule.data == ''){
+                const timeslot = ["9:00", "9:20", "9:40", "10:00", "10:20", "10:40", "11:00", "11:20", "11:40", "12:00", "12:20", "12:40", "13:00", "13:20", "13:40", "14:00", "14:20", "14:40", "15:00", "15:20", "15:40", "16:00", "16:20", "16:40","17:00", "17:20", "17:40"] 
+                const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+                const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                date = []
+                var startDate = new Date(admin_schedule.schedulePeriod.startDate)
+                var endDate = new Date(admin_schedule.schedulePeriod.endDate)
+                endDate.setDate(endDate.getDate() + 1)
+                var countDate = startDate
+                while(countDate < endDate){
+                    if(countDate.getDay() !== 0 && countDate.getDay() !== 6){
+                        var key = `${months[countDate.getMonth()]}${countDate.getDate()}-${days[countDate.getDay()]}`
+                        date.push(key)
+                    }
+                    countDate.setDate(countDate.getDate() + 1)
+                }
+                // console.log(date)
+                var default_time_slot = []
+                var time_slot_hash = {}
+                for(var i=0; i < date.length; i++){
+                    for(var j = 0; j < timeslot.length; j++){
+                        default_time_slot.push(j + i*27)
+                        time_slot_hash[`${date[i]}-${timeslot[j]}`] = (j + i*27)
+                    }
+                }
+                // console.log(default_time_slot)
+                // get all supervisor_time
+                const supervisors = await Supervisor.find().populate("user").catch((err)=>{throw err})
+                const supervisor_schedules = await SupervisorSchedule.find({schedulePeriod: admin_schedule.schedulePeriod}).populate({path: 'supervisor', populate:{path: 'user'}}).catch((err)=>{throw err})
+                var hash_supervisor_schedule = {}
+                for(var i=0; i < supervisor_schedules.length; i++){
+                    hash_supervisor_schedule[supervisor_schedules[i].supervisor.user.username] = supervisor_schedules[i]
+                }
+                var supervisor_time = {}
+                for(var i=0 ; i < supervisors.length; i++){
+                    if(hash_supervisor_schedule.hasOwnProperty[supervisors[i].user.username]){
+                        var available_time_slot = []
+                        var data = JSON.parse(hash_supervisor_schedule[supervisors[i].user.username].data)
+                        for(var j = 0; j<date.length; j++){
+                            for(var k=0; k<timeslot.length; k++){
+                                if(data[date[j]][timeslot[k]].available === true){
+                                    available_time_slot.push(k + j*27)
+                                }
+                            }
+                        }
+                        supervisor_time[supervisors[i].user.username] = available_time_slot
+                    }else{
+                        supervisor_time[supervisors[i].user.username] = [...default_time_slot]
+                    }
+                }
+                // console.log(supervisor_time)
+                // get all group_time
+                const groups = await Group.find({status: "approve"}).populate({path: 'supervisor', populate:{path: 'user'}}).populate({path: 'examiner', populate:{path: 'user'}}).catch((err)=>{throw err})
+                const group_schedule = await GroupSchedule.find({schedulePeriod: admin_schedule.schedulePeriod}).populate("group").catch((err)=>{throw err})
+                var hash_group_schedule = {}
+                for(var i=0; i < group_schedule.length; i++){
+                    hash_group_schedule[group_schedule[i].group.group_name] = group_schedule[i]
+                }
+                groups_without_examiner = []
+                groups_with_examiner = []
+                for(var i =0; i<groups.length; i++){
+                    if(groups[i].examiner){
+                        groups_with_examiner.push(groups[i])
+                    }else{
+                        groups_without_examiner.push({_id: groups[i]._id, group_name: groups[i].group_name, supervisor: groups[i].supervisor.user.username})
+                    }
+                }
+                var group_time = {}
+                for(var i=0 ; i < groups_with_examiner.length; i++){
+                    if(hash_group_schedule.hasOwnProperty[groups_with_examiner[i].group_name]){
+                        var available_time_slot = []
+                        data = JSON.parse(hash_group_schedule[groups_with_examiner[i].group_name].data)
+                        for(var j = 0; j<date.length; j++){
+                            for(var k=0; k<timeslot.length; k++){
+                                if(data[date[j]][timeslot[k]].available === true){
+                                    available_time_slot.push(k + j*27)
+                                }
+                            }
+                        }
+                        group_time[groups_with_examiner[i].group_name] = [groups_with_examiner[i].group_members.length, available_time_slot, groups_with_examiner[i].supervisor.user.username, groups_with_examiner[i].examiner.user.username]
+                    }else{
+                        group_time[groups_with_examiner[i].group_name] = [groups_with_examiner[i].group_members.length, [...default_time_slot], groups_with_examiner[i].supervisor.user.username, groups_with_examiner[i].examiner.user.username]
+                    }
+                }
+                var data = {}
+                data["presentation_time"] = null
+                data["presentation_place"] = null
+                console.log(admin_schedule.schedulePeriod)
+                res.status(200).json({groups_without_examiner: groups_without_examiner, group_time: group_time, supervisor_time: supervisor_time, start_of_date: admin_schedule.schedulePeriod.startDate, end_of_date: admin_schedule.schedulePeriod.endDate, term: admin_schedule.schedulePeriod.term, time_slot_hash: time_slot_hash, data: data})
+                return
+            }else{
+                const timeslot = ["9:00", "9:20", "9:40", "10:00", "10:20", "10:40", "11:00", "11:20", "11:40", "12:00", "12:20", "12:40", "13:00", "13:20", "13:40", "14:00", "14:20", "14:40", "15:00", "15:20", "15:40", "16:00", "16:20", "16:40","17:00", "17:20", "17:40"] 
+                const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+                const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                date = []
+                var startDate = new Date(admin_schedule.schedulePeriod.startDate)
+                var endDate = new Date(admin_schedule.schedulePeriod.endDate)
+                endDate.setDate(endDate.getDate() + 1)
+                var countDate = startDate
+                while(countDate < endDate){
+                    if(countDate.getDay() !== 0 && countDate.getDay() !== 6){
+                        var key = `${months[countDate.getMonth()]}${countDate.getDate()}-${days[countDate.getDay()]}`
+                        date.push(key)
+                    }
+                    countDate.setDate(countDate.getDate() + 1)
+                }
+                // console.log(date)
+                var default_time_slot = []
+                var time_slot_hash = {}
+                for(var i=0; i < date.length; i++){
+                    for(var j = 0; j < timeslot.length; j++){
+                        default_time_slot.push(j + i*27)
+                        time_slot_hash[`${date[i]}-${timeslot[j]}`] = (j + i*27)
+                    }
+                }
+                // console.log(default_time_slot)
+                // get all supervisor_time
+                const supervisors = await Supervisor.find().populate("user").catch((err)=>{throw err})
+                const supervisor_schedules = await SupervisorSchedule.find({schedulePeriod: admin_schedule.schedulePeriod}).populate({path: 'supervisor', populate:{path: 'user'}}).catch((err)=>{throw err})
+                var hash_supervisor_schedule = {}
+                for(var i=0; i < supervisor_schedules.length; i++){
+                    hash_supervisor_schedule[supervisor_schedules[i].supervisor.user.username] = supervisor_schedules[i]
+                }
+                var supervisor_time = {}
+                for(var i=0 ; i < supervisors.length; i++){
+                    if(hash_supervisor_schedule.hasOwnProperty[supervisors[i].user.username]){
+                        var available_time_slot = []
+                        var data = JSON.parse(hash_supervisor_schedule[supervisors[i].user.username].data)
+                        for(var j = 0; j<date.length; j++){
+                            for(var k=0; k<timeslot.length; k++){
+                                if(data[date[j]][timeslot[k]].available === true){
+                                    available_time_slot.push(k + j*27)
+                                }
+                            }
+                        }
+                        supervisor_time[supervisors[i].user.username] = available_time_slot
+                    }else{
+                        supervisor_time[supervisors[i].user.username] = [...default_time_slot]
+                    }
+                }
+                // console.log(supervisor_time)
+                // get all group_time
+                const groups = await Group.find({status: "approve"}).populate({path: 'supervisor', populate:{path: 'user'}}).populate({path: 'examiner', populate:{path: 'user'}}).catch((err)=>{throw err})
+                const group_schedule = await GroupSchedule.find({schedulePeriod: admin_schedule.schedulePeriod}).populate("group").catch((err)=>{throw err})
+                var hash_group_schedule = {}
+                for(var i=0; i < group_schedule.length; i++){
+                    hash_group_schedule[group_schedule[i].group.group_name] = group_schedule[i]
+                }
+                groups_without_examiner = []
+                groups_with_examiner = []
+                for(var i =0; i<groups.length; i++){
+                    if(groups[i].examiner){
+                        groups_with_examiner.push(groups[i])
+                    }else{
+                        groups_without_examiner.push({_id: groups[i]._id, group_name: groups[i].group_name, supervisor: groups[i].supervisor.user.username})
+                    }
+                }
+                var group_time = {}
+                for(var i=0 ; i < groups_with_examiner.length; i++){
+                    if(hash_group_schedule.hasOwnProperty[groups_with_examiner[i].group_name]){
+                        var available_time_slot = []
+                        data = JSON.parse(hash_group_schedule[groups_with_examiner[i].group_name].data)
+                        for(var j = 0; j<date.length; j++){
+                            for(var k=0; k<timeslot.length; k++){
+                                if(data[date[j]][timeslot[k]].available === true){
+                                    available_time_slot.push(k + j*27)
+                                }
+                            }
+                        }
+                        group_time[groups_with_examiner[i].group_name] = [groups_with_examiner[i].group_members.length, available_time_slot, groups_with_examiner[i].supervisor.user.username, groups_with_examiner[i].examiner.user.username]
+                    }else{
+                        group_time[groups_with_examiner[i].group_name] = [groups_with_examiner[i].group_members.length, [...default_time_slot], groups_with_examiner[i].supervisor.user.username, groups_with_examiner[i].examiner.user.username]
+                    }
+                }
+                res.status(200).json({groups_without_examiner: groups_without_examiner, group_time: group_time, supervisor_time: supervisor_time, start_of_date: admin_schedule.schedulePeriod.startDate, end_of_date: admin_schedule.schedulePeriod.endDate, term: admin_schedule.schedulePeriod.term, time_slot_hash: time_slot_hash, data: JSON.parse(admin_schedule.data)})
+                return
+            }
+            // generate the time and default time
+            
+        }else{
+            res.status(400).json({message: "Unexpected Error in viewing admin's specific schedules", error: "Admin Schedule does not find"})
+            return
+        }
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in viewing admin's specific schedules", error: err})
+    }
+}
+
+// not yet done
+const updateSpecificSchedule = async(req, res) => {
+    try{
+        var admin_schedule = await AdminSchedule.findOne({_id: req.body.id}).populate("schedulePeriod").catch((err) => {throw err})
+        if(!admin_schedule){
+            res.status(400).json({message: "Missing required Group's Schedule"})
+            return
+        }
+        //all date check
+        // update data
+        admin_schedule.data = JSON.stringify({presentation_place: req.body.presentationPlace, presentation_time: req.body.presentationTime})
+        console.log(admin_schedule)
+        await admin_schedule.save().catch((err) => {throw err})
+        res.status(200).json({message: "Successfully Updated admin's Schedule"})
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in updating admin's specific schedules", error: err})
+    }
+}
+
+const generateSpecificSchedule = async(req, res) => {
+    try{
+        const admin_schedule = await AdminSchedule.findOne({_id: req.body.id}).populate("schedulePeriod").catch((err)=>{throw err})
+        // generate the time and default time
+        const timeslot = ["9:00", "9:20", "9:40", "10:00", "10:20", "10:40", "11:00", "11:20", "11:40", "12:00", "12:20", "12:40", "13:00", "13:20", "13:40", "14:00", "14:20", "14:40", "15:00", "15:20", "15:40", "16:00", "16:20", "16:40","17:00", "17:20", "17:40"] 
+        const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+        const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        date = []
+        var startDate = new Date(admin_schedule.schedulePeriod.startDate)
+        var endDate = new Date(admin_schedule.schedulePeriod.endDate)
+        endDate.setDate(endDate.getDate() + 1)
+        var countDate = startDate
+        while(countDate < endDate){
+            if(countDate.getDay() !== 0 && countDate.getDay() !== 6){
+                var key = `${months[countDate.getMonth()]}${countDate.getDate()}-${days[countDate.getDay()]}`
+                date.push(key)
+            }
+            countDate.setDate(countDate.getDate() + 1)
+        }
+        // console.log(date)
+        var default_time_slot = []
+        for(var i=0; i < date.length; i++){
+            for(var j = 0; j < timeslot.length; j++){
+                default_time_slot.push(j + i*27)
+            }
+        }
+        // console.log(default_time_slot)
+        // get all supervisor_time
+        const supervisors = await Supervisor.find().populate("user").catch((err)=>{throw err})
+        const supervisor_schedules = await SupervisorSchedule.find({schedulePeriod: admin_schedule.schedulePeriod}).populate({path: 'supervisor', populate:{path: 'user'}}).catch((err)=>{throw err})
+        var hash_supervisor_schedule = {}
+        for(var i=0; i < supervisor_schedules.length; i++){
+            hash_supervisor_schedule[supervisor_schedules[i].supervisor.user.username] = supervisor_schedules[i]
+        }
+        var supervisor_time = {}
+        for(var i=0 ; i < supervisors.length; i++){
+            if(hash_supervisor_schedule.hasOwnProperty[supervisors[i].user.username]){
+                var available_time_slot = []
+                var data = JSON.parse(hash_supervisor_schedule[supervisors[i].user.username].data)
+                for(var j = 0; j<date.length; j++){
+                    for(var k=0; k<timeslot.length; k++){
+                        if(data[date[j]][timeslot[k]].available === true){
+                            available_time_slot.push(k + j*27)
+                        }
+                    }
+                }
+                supervisor_time[supervisors[i].user.username] = available_time_slot
+            }else{
+                supervisor_time[supervisors[i].user.username] = [...default_time_slot]
+            }
+        }
+        // console.log(supervisor_time)
+        // get all group_time
+        const groups = await Group.find({status: "approve"}).populate({path: 'supervisor', populate:{path: 'user'}}).populate({path: 'examiner', populate:{path: 'user'}}).catch((err)=>{throw err})
+        const group_schedule = await GroupSchedule.find({schedulePeriod: admin_schedule.schedulePeriod}).populate("group").catch((err)=>{throw err})
+        var hash_group_schedule = {}
+        for(var i=0; i < group_schedule.length; i++){
+            hash_group_schedule[group_schedule[i].group.group_name] = group_schedule[i]
+        }
+        groups_without_examiner = []
+        groups_with_examiner = []
+        for(var i =0; i<groups.length; i++){
+            if(groups[i].examiner){
+                groups_with_examiner.push(groups[i])
+            }else{
+                groups_without_examiner.push({_id: groups[i]._id, group_name: groups[i].group_name, supervisor: groups[i].supervisor.user.username})
+            }
+        }
+        var group_time = {}
+        for(var i=0 ; i < groups_with_examiner.length; i++){
+            if(hash_group_schedule.hasOwnProperty[groups_with_examiner[i].group_name]){
+                var available_time_slot = []
+                data = JSON.parse(hash_group_schedule[groups_with_examiner[i].group_name].data)
+                for(var j = 0; j<date.length; j++){
+                    for(var k=0; k<timeslot.length; k++){
+                        if(data[date[j]][timeslot[k]].available === true){
+                            available_time_slot.push(k + j*27)
+                        }
+                    }
+                }
+                group_time[groups_with_examiner[i].group_name] = [groups_with_examiner[i].group_members.length, available_time_slot, groups_with_examiner[i].supervisor.user.username, groups_with_examiner[i].examiner.user.username]
+            }else{
+                group_time[groups_with_examiner[i].group_name] = [groups_with_examiner[i].group_members.length, [...default_time_slot], groups_with_examiner[i].supervisor.user.username, groups_with_examiner[i].examiner.user.username]
+            }
+        }
+        // console.log(group_time)
+        // console.log(supervisor_time)
+        // console.log(req.body.presentationTime)
+        if(req.body.presentationTime){
+            console.log("check")
+            for(var [group_has_presentation_key, group_has_presentation_value] of Object.entries(req.body.presentationTime)){
+                delete group_time[group_has_presentation_key]
+                var update_supervisor = supervisor_time[group_has_presentation_value.supervisor]
+                update_supervisor = update_supervisor.filter((elem) => !(group_has_presentation_value.timeslot.includes(elem)))
+                supervisor_time[group_has_presentation_value.supervisor] = update_supervisor
+                var update_examiner = supervisor_time[group_has_presentation_value.examiner]
+                update_examiner = update_examiner.filter((elem) => !(group_has_presentation_value.timeslot.includes(elem)))
+                supervisor_time[group_has_presentation_value.examiner] = update_examiner
+            }
+        }
+        console.log("######")
+        console.log(group_time)
+        console.log(supervisor_time)
+        const requestOptions = {
+            method: "POST",
+            body: JSON.stringify({group_time: group_time, supervisor_time: supervisor_time}),
+            headers: new Headers({
+                "content-type": "application/json"
+            })
+        }
+        const response = await fetch("http://localhost:5001/scheduler", requestOptions).catch((err) => {throw err})
+        var data = await response.json()
+        console.log(data)
+        if(response.status != 200){
+            res.status(400).json({message: "Unexpected Error in generating admin's specific schedules", error: "Error in generating schedule"})
+            return 
+        }
+        var no_schedule_group = []
+        for(var i = 0; i < groups_with_examiner.length; i++){
+            if(!(data.hasOwnProperty(groups_with_examiner[i].group_name))){
+                no_schedule_group.push(groups_with_examiner[i].group_name)
+            }
+        }
+        res.status(200).json({groups_without_examiner: groups_without_examiner, schedule: data.schedule, no_schedule_group: no_schedule_group, schedulePeriod: admin_schedule.schedulePeriod})
+    }catch(err){
+        res.status(400).json({message: "Unexpected Error in generating admin's specific schedules", error: err})
+    }
+}
+
+
 module.exports = { createAccounts, 
                    viewPeerReview, createPeerReview, viewSpecificPeerReview, editSpecificPeerReview, deleteSpecificPeerReviewForm,
                    createPeerReviewQuestion, viewPeerReviewQuestion,
                    viewRecommendation, updateRecommendation, updateRatingRecommendation,
-                   viewSchedulePeriod, createSchedulePeriod, deleteSchedulePeriod
+                   viewSchedulePeriod, createSchedulePeriod, deleteSchedulePeriod,
+                   viewGroups, updateGroup,
+                   viewSchedule, viewSpecificSchedule, updateSpecificSchedule, generateSpecificSchedule
                  }

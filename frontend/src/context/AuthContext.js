@@ -36,7 +36,7 @@ export const AuthContextProvider = (props) => {
           })
     };
 
-    const adminLink = ["", "/CreateUsers","/PeerReview", "/Recommendation", "/ScheduleForm", "/MakeSchedule"]
+    const adminLink = ["", "/CreateUsers","/PeerReview", "/Groups","/Recommendation", "/ScheduleForm", "/MakeSchedule"]
     const studentLink = ["", "/Recommendation","/FYPTopics", "/PeerReview", "/GroupSchedule"]
     const supervisorLink = ["", "/FYPTopics", "/Groups", "/PeerReview", "/Schedule"]
 

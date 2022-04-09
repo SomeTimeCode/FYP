@@ -50,10 +50,17 @@ def scheduler():
     # supervisor_time = req.get("supervisor_time")
     # group_time = req.get("group_time")
     # print(supervisor_time)
+    print(req.get("group_time"))
     output = schedule.combinations(req.get("supervisor_time"), req.get("group_time"))
-    return_schedule = max(output, key=len)
-    res = make_response(jsonify(schedule=return_schedule), 200)
-    return res
+    print(len(output))
+    if(len(output) == 0):
+        res = make_response(jsonify(schedule=[]), 200)
+        return res
+    else:
+        return_schedule = max(output, key=len)
+        print(return_schedule)
+        res = make_response(jsonify(schedule=return_schedule), 200)
+        return res
 
 
 if __name__ == "__main__":
