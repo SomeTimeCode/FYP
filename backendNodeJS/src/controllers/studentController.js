@@ -13,6 +13,25 @@ const bcrypt = require('bcryptjs')
 const fetch = require('node-fetch');
 const {Headers} = require('node-fetch')
 
+// view Index page
+const viewIndex = async (req, res) => {
+    try{
+        const student = await Student.findOne({user: req.decoded._id}).populate("user").catch((err) => {throw err})
+        if(student.group){
+            var group = await Group.findOne({_id: student.group}).populate({path: 'group_members', populate:{path: 'user'}}).populate({path: 'supervisor', populate:{path: 'user'}}).catch((err) => {throw err})
+            group_member_list = group.group_members.map((member) => {
+                return member.user.username
+            })
+            group_info = {group_exist: true, group_member_list: group_member_list, supervisor: group.supervisor.user.username, group_status: group.status, group_name: group.group_name}
+        }else{
+            group_info = {group_exist: false}
+        }
+        res.status(200).json({username: student.user.username, group_info: group_info})
+    }catch(err){
+        res.status(400).json({error: err, message: "Error in viewing personal index"})
+        return
+    }
+}
 
 // view fyp topic
 const viewTopic = async (req, res) => {
@@ -591,7 +610,9 @@ const updateSpecificSchedule = async(req, res) => {
 
 
 
-module.exports = { viewTopic, viewSpecificTopic, createGroup, joinGroup,
+module.exports = { 
+                   viewIndex,               
+                   viewTopic, viewSpecificTopic, createGroup, joinGroup,
                    viewPeerReviewForm, viewSpecificPeerReviewForm, editSpecificPeerReviewForm,
                    viewGenrePreferences, updateGenrePreferences, getFYPTopicRecommendation,
                    viewSchedule, viewSpecificSchedule, updateSpecificSchedule

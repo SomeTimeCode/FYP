@@ -6,6 +6,7 @@ router.get("/", (req, res) => {
     res.status(200).json({ message: "Welcome to RayRay /api/supervisor" });
 });
 
+router.get("/index", supervisorController.viewIndex)
 
 //topic management
 router.get("/topic/view", supervisorController.viewTopic)

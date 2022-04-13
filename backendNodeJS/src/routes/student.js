@@ -7,6 +7,9 @@ router.get("/", (req, res) => {
     res.status(200).json({ message: "Welcome to RayRay /api/student." });
 });
 
+//index page
+router.get("/index", StudentController.viewIndex)
+
 router.get("/topic/view", StudentController.viewTopic)
 // joining or creating group
 router.get("/topic/:id" , StudentController.viewSpecificTopic)

@@ -1,13 +1,11 @@
-import React, { useContext } from 'react'
-import AuthContext from '../../../context/AuthContext'
+import React from 'react'
+import './AdminIndex.css'
 
 function AdminIndex() {
 
-    const context = useContext(AuthContext)
-
     return (
-        <div>
-            I am Admin
+        <div id='AdminIndexBase'>
+            Admin, Welcome to the System
         </div>
     )
 }

@@ -10,11 +10,18 @@ const SchedulePeriod = require('../models/schedulePeriodModel')
 const SupervisorSchedule = require('../models/supervisorScheduleModel')
 const supervisorServices = require("../services/supervisorServices")
 
+
+const viewIndex = async (req, res) => {
+    try{
+        var supervisor = await Supervisor.findOne({user: req.decoded._id}).populate("user").catch((err) => {throw err})
+        res.status(200).json({username: supervisor.user.username})
+    }catch(err){
+        res.status(400).json({error: err, message: "Error in viewing personal index"})
+        return
+    }
+}
+
 // FYP Group controller
-// pending group --> approve/merge
-// group merge/split/add member can override the restriction
-// get user only allow is under the same supervisor or no supervisor
-// when make change if is new user or from other topic need to make change for those student
 const viewTopicGroup = async (req, res) => {
     try{
         var supervisor = await Supervisor.findOne({user: req.decoded._id}).catch((err) => {throw err})
@@ -795,6 +802,7 @@ const updateSpecificSchedule = async(req, res) => {
 
 
 module.exports = { 
+                    viewIndex,
                     viewSpecificTopicGroup, viewTopicGroup, approveGroup, rejectGroup, addStudent, adjustGroup,
                     viewTopic, viewSpecificTopic, createTopic, updateTopic, deleteTopic,
                     viewPeerReviewForm, viewOverallPeerReviewForm, viewSpecificPeerReviewForm,
