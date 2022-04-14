@@ -12,12 +12,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(morgan('dev'))
 
-const corsOptions = {
-    origin: "http://localhost:3000",
-    methods: "GET,POST",
-};
-  
-app.use(cors(corsOptions));
+app.use(cors());
 
 
 // parse application/x-www-form-urlencoded

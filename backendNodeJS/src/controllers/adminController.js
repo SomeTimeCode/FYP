@@ -835,10 +835,12 @@ const generateSpecificSchedule = async(req, res) => {
                 "content-type": "application/json"
             })
         }
+        console.info(`PYTHON_SERVER_URL: ${PYTHON_SERVER_URL}`)
         const response = await fetch(`${PYTHON_SERVER_URL}/scheduler`, requestOptions).catch((err) => {throw err})
         var data = await response.json()
         console.log(data)
         if(response.status != 200){
+            console.error(response)
             res.status(400).json({message: "Unexpected Error in generating admin's specific schedules", error: "Error in generating schedule"})
             return 
         }
@@ -850,6 +852,7 @@ const generateSpecificSchedule = async(req, res) => {
         }
         res.status(200).json({groups_without_examiner: groups_without_examiner, schedule: data.schedule, no_schedule_group: no_schedule_group, schedulePeriod: admin_schedule.schedulePeriod})
     }catch(err){
+        console.log(err)
         res.status(400).json({message: "Unexpected Error in generating admin's specific schedules", error: err})
     }
 }

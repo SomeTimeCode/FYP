@@ -1,8 +1,8 @@
 FROM node:16 as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
-ENV REACT_APP_BACKEND_URI="http://aaron-fyp-api.ecread.info"
-ENV PUBLIC_URL="http://aaron-fyp.ecread.info"
+ENV REACT_APP_BACKEND_URI="https://aaron-fyp-api.ecread.info"
+ENV PUBLIC_URL="https://aaron-fyp.ecread.info"
 COPY package*.json ./
 RUN npm install
 COPY . ./
