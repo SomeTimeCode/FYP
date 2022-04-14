@@ -5,6 +5,7 @@ const {Headers} = require('node-fetch')
 const multer = require("multer");
 const upload = multer();
 const adminController = require('../controllers/adminController')
+const { PYTHON_SERVER_URL } = require("../config.js")
 
 router.get("/", (req, res) => {
     res.status(200).json({ message: "Welcome to RayRay /api/admin." });
@@ -58,7 +59,7 @@ router.get("/test", async (req, res) => {
             "content-type": "application/json"
         })
     }
-    const response = await fetch("http://localhost:5001/test", requestOptions).catch((err) => {throw err})
+    const response = await fetch(`${PYTHON_SERVER_URL}/test`, requestOptions).catch((err) => {throw err})
     var data = await response.json()
     console.log(data)
     res.status(200).json(data)

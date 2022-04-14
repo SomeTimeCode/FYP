@@ -1,0 +1,10 @@
+name: FYP
+channels:
+  - conda-forge/label/cf202003
+  - conda-forge
+  - defaults
+dependencies:
+  - flask
+  - numpy
+  - pandas
+  - scikit-learn

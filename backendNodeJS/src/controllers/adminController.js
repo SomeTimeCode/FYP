@@ -14,7 +14,7 @@ const AdminSchedule = require("../models/adminScheduleModel")
 const fetch = require('node-fetch');
 const {Headers} = require('node-fetch');
 const Group = require('../models/groupModel');
-
+const { PYTHON_SERVER_URL } = require("../config.js")
 
 const createAccounts = async(req, res) =>{
     try{
@@ -835,7 +835,7 @@ const generateSpecificSchedule = async(req, res) => {
                 "content-type": "application/json"
             })
         }
-        const response = await fetch("http://localhost:5001/scheduler", requestOptions).catch((err) => {throw err})
+        const response = await fetch(`${PYTHON_SERVER_URL}/scheduler`, requestOptions).catch((err) => {throw err})
         var data = await response.json()
         console.log(data)
         if(response.status != 200){

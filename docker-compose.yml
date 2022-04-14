@@ -2,8 +2,9 @@ version: '3'
 services:
   backend:
     build: ./backendNodeJS
-    enironment:
+    environment:
       - PORT=5000
+      - PYTHON_SERVER_URL="http://python:5001"
     env_file:
       - .env
     ports:
@@ -15,9 +16,9 @@ services:
     env_file:
       - .env
     ports:
-      - 80:3000
+      - 3000:80
   python:
-    build: ./pytnon/project
+    build: ./python/project
     environment:
       - PORT=5001
     env_file:

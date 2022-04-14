@@ -12,6 +12,7 @@ const GroupSchedule = require('../models/groupScheduleModel')
 const bcrypt = require('bcryptjs')
 const fetch = require('node-fetch');
 const {Headers} = require('node-fetch')
+const { PYTHON_SERVER_URL } = require("../config.js")
 
 
 // view fyp topic
@@ -386,7 +387,7 @@ const getFYPTopicRecommendation = async(req, res) => {
                 "content-type": "application/json"
             })
         }
-        const response = await fetch("http://localhost:5001/recommend", requestOptions).catch((err) => {throw err})
+        const response = await fetch(`${PYTHON_SERVER_URL}/recommend`, requestOptions).catch((err) => {throw err})
         var output = await response.json()
         output = output.similar_students.map((student) => {
             return [data[student][data[student].length - 2], data[student][data[student].length - 1]]

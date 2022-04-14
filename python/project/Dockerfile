@@ -3,14 +3,11 @@ FROM continuumio/miniconda3
 WORKDIR /app
 
 # Create the environment:
-COPY freeze.yml .
-RUN conda env create -f freeze.yml
+COPY environment.yml .
+RUN conda env create -f environment.yml
 
-SHELL ["conda", "run", "-n", "myenv", "/bin/bash", "-c"]
-
-RUN echo "Make sure flask is installed:"
-RUN python -c "import flask"
+SHELL ["conda", "run", "-n", "FYP", "/bin/bash", "-c"]
 
 # The code to run when container is started:
-COPY run.py .
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "myenv", "python", "app.py"]
+COPY . .
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "FYP", "python", "app.py"]

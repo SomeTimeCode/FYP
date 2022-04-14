@@ -1,7 +1,6 @@
 # https://towardsdatascience.com/item-based-collaborative-filtering-in-python-91f747200fab
 # https://arxiv.org/ftp/arxiv/papers/1908/1908.03475.pdf
 
-from turtle import distance
 from sklearn import metrics
 from sklearn.neighbors import NearestNeighbors
 
