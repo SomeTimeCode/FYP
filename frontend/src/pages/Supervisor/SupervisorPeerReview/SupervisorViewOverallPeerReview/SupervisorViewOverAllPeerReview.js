@@ -15,9 +15,17 @@ function Card(props){
           <div>Term: {props.data.term}</div>
           <div>Start of Date: {props.data.start_of_date.substring(0,10)}</div>
           <div>End of Date: {props.data.end_of_date.substring(0,10)}</div>
-          <div>
-            Performance: {Object.keys(props.data.performance).map((student) => {return `${student}: ${props.data.performance[student].toFixed(4)} ${" "}`})}
-          </div>
+          {props.data.performance === 'No response has collected' ? 
+            <div>
+              No response has collected
+            </div>
+            :
+            <>
+            <div>
+              Performance: {Object.keys(props.data.performance).map((student) => {return `${student}: ${props.data.performance[student].toFixed(4)} ${" "}`})}
+            </div>
+            </>
+          }
         </div>
       </div>
     </div>
