@@ -18,6 +18,10 @@ function Question(props){
       obj[props.question._id] = 5
     }else if(e.target.value < 0){
       obj[props.question._id] = 0
+    }else if(e.target.value === ''){
+      obj[props.question._id] = 0
+    }else if (e.target.value.length > 1){
+      obj[props.question._id] = e.target.value.slice(-1)
     }else{
       obj[props.question._id] = e.target.value
     }
