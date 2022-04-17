@@ -168,6 +168,8 @@ def combinations(supervisor_time, group_time):
                 combinated = combinations(clone_supervisor_time, clone_group_time)
                 if(len(combinated) == len(clone_group_time)):
                     print([(group_name, group_availble_time[i:i+group_required_time])] + combinated)
+                    return [(group_name, group_availble_time[i:i+group_required_time])] + combinated
+                else: 
                     output.append([(group_name, group_availble_time[i:i+group_required_time])] + combinated)
                 # if(len(combinated) == len(clone_group_time)):
                 #     print("check")
