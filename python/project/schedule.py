@@ -139,7 +139,8 @@ def combinations(supervisor_time, group_time):
         for i in range(len(group_availble_time) - group_required_time + 1):
             # check the timeslot is possible for the group base on the supervisor time, examiner time and the provided timeslot
             if(check_approiate_timeslot(supervisor_availble_time, examiner_availble_time,  group_availble_time[i:i+group_required_time])):
-                output.append([(group_name, group_availble_time[i:i+group_required_time])])
+                return [(group_name, group_availble_time[i:i+group_required_time])]
+                # output.append([(group_name, group_availble_time[i:i+group_required_time])])
         # return all the possible timeslots of the group
         return output
     else:
@@ -156,6 +157,7 @@ def combinations(supervisor_time, group_time):
         # finding all the possible timeslot for the least flexibility group
         for i in range(len(group_availble_time) - group_required_time + 1):
             # check the timeslot is possible for the group based on the superviosr time, examiner time and the provided timeslot
+            print("test")
             if(check_approiate_timeslot(supervisor_availble_time, examiner_availble_time,  group_availble_time[i:i+group_required_time])):
                 clone_group_time = group_time.copy()
                 clone_group_time.pop(least_flexibility_group[0])
@@ -164,15 +166,21 @@ def combinations(supervisor_time, group_time):
                 clone_supervisor_time, clone_group_time = update_timeslot(supervisor_name, examiner_name, clone_supervisor_time, clone_group_time, group_availble_time[i:i+group_required_time])
                 # finding the rest of the combinations of the remaining group can form after the least flexibility group taken away the timeslot
                 combinated = combinations(clone_supervisor_time, clone_group_time)
-                if(len(combinated) == 1):
-                    temp = [(group_name, group_availble_time[i:i+group_required_time])] + combinated[0]
-                    output.append(temp)
-                elif(len(combinated) == 0):
-                    output.append([(group_name, group_availble_time[i:i+group_required_time])])
-                else:
-                    for j in range(len(combinated)):
-                        temp = [(group_name, group_availble_time[i:i+group_required_time])] + combinated[j]
-                        output.append(temp)
+                if(len(combinated) == len(clone_group_time)):
+                    print([(group_name, group_availble_time[i:i+group_required_time])] + combinated)
+                    return [(group_name, group_availble_time[i:i+group_required_time])] + combinated
+                # if(len(combinated) == len(clone_group_time)):
+                #     print("check")
+                #     return [(group_name, group_availble_time[i:i+group_required_time])] + combinated[0]
+                # if(len(combinated) == 1):
+                #     temp = [(group_name, group_availble_time[i:i+group_required_time])] + combinated[0]
+                #     output.append(temp)
+                # elif(len(combinated) == 0):
+                #     output.append([(group_name, group_availble_time[i:i+group_required_time])])
+                # else:
+                #     for j in range(len(combinated)):
+                #         temp = [(group_name, group_availble_time[i:i+group_required_time])] + combinated[j]
+                #         output.append(temp)
         # finding all the possible timeslot without the least flexibility group
         clone_group_time = group_time.copy()
         clone_group_time.pop(least_flexibility_group[0])
@@ -182,20 +190,21 @@ def combinations(supervisor_time, group_time):
         return output
 
 # supervisor_time = {
-#                 #supervisor_name: [availble_time]
-#                 "Supervisor1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
-#                 "Supervisor2": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
-#                 "Supervisor3": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
-#                 "Supervisor4": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
-#             }
+                # #supervisor_name: [availble_time]
+                # "Supervisor1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+                # "Supervisor2": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+                # "Supervisor3": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+                # "Supervisor4": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+            # }
 # group_time = {
-#               # group_name :[required_time, availble_time, supervisor_name, examiner_name]
-#               'A mobile application for schedule notifications_1': [1, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 'Supervisor4', 'Supervisor1'],
-#               'A mobile application for schedule notifications_2': [1, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 'Supervisor4', 'Supervisor1'],
-#               'Application for Class Scheduling_1': [2, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 'Supervisor1', 'Supervisor2']
-#             #   "group_4": [2, [0,1,2,3,4,5], "supervisor_3", "supervisor_4"]
-#              }
+              # # group_name :[required_time, availble_time, supervisor_name, examiner_name]
+              # 'A mobile application for schedule notifications_1': [2, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 'Supervisor4', 'Supervisor1'],
+              # 'A mobile application for schedule notifications_2': [2, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 'Supervisor4', 'Supervisor1'],
+              # 'Application for Class Scheduling_1': [3, [0, 1, 3, 4, 6, 7], 'Supervisor1', 'Supervisor2']
+            # #   "group_4": [2, [0,1,2,3,4,5], "supervisor_3", "supervisor_4"]
+             # }
 
 # output = combinations(supervisor_time, group_time)
+# print(output)
 # see = max(output, key=len)
 # print(see)
