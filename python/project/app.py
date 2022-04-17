@@ -57,9 +57,7 @@ def scheduler():
         res = make_response(jsonify(schedule=[]), 200)
         return res
     else:
-        return_schedule = max(output, key=len)
-        print(return_schedule)
-        res = make_response(jsonify(schedule=return_schedule), 200)
+        res = make_response(jsonify(schedule=output), 200)
         return res
 
 
